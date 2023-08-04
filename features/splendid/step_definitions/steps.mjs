@@ -165,6 +165,21 @@ Given(/^this was the final round$/, function () {
     })
 });
 
+Given(/^(.*?) had the following reserved cards:$/, function (playerName, dataTable) {
+    const cards = dataTable.raw().map(r => this.parseCard(r[0]));
+    const playerState = this.playerState(playerName);
+    this.setState({
+        ...this.engine.state,
+        players: {
+            ...this.engine.state.players,
+            [playerState.details.id]: {
+                ...playerState,
+                reserved: cards,
+            }
+        }
+    })
+});
+
 When(/^(.*?) draws the following tokens:$/, function (playerName, dataTable) {
     this.perform(
         'take-tokens',
@@ -176,6 +191,14 @@ When(/^(.*?) draws the following tokens:$/, function (playerName, dataTable) {
 When(/^(.*?) buys the card (.*?)$/, function (playerName, card) {
     this.perform(
         'buy-card',
+        playerName,
+        {card: this.parseCard(card)}
+    )
+});
+
+When(/^(.*?) reserves the card (.*?)$/, function (playerName, card) {
+    this.perform(
+        'reserve-card',
         playerName,
         {card: this.parseCard(card)}
     )
@@ -230,10 +253,16 @@ Then(/^the card in row (\d+) column (\d+) will be (.*?)$/, function (row, column
 });
 
 Then(/^(.*?) will have (\d+) points?$/, function (playerName, score) {
-    const details = this.playerState(playerName);
-    assert.equal(details.points, score);
+    const playerState = this.playerState(playerName);
+    assert.equal(playerState.points, score);
 });
 
 Then(/^this will be the final round$/, function () {
     assert.ok(this.engine.state.finalRound);
+});
+
+Then(/^(.*?) will have the following reserved cards:$/, function(playerName, dataTable) {
+    const actual = this.playerState(playerName).reserved;
+    const expected = dataTable.raw().map((row) => this.parseCard(row[0]));
+    assert.ok(_.isEqual(actual, expected));
 });
