@@ -1,0 +1,7 @@
+{
+  "reporter": "html",
+  "exclude": [
+    "cucumber.js",
+    "features/**/*.mjs"
+  ]
+}

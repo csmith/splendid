@@ -1,0 +1,28 @@
+{
+  "name": "splendid",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "c8 cucumber-js",
+    "dev": "vite dev",
+    "build": "vite build",
+    "run": "node src/index.js"
+  },
+  "dependencies": {
+    "@sveltejs/adapter-auto": "^2.1.0",
+    "@sveltejs/kit": "^1.22.4",
+    "cors": "^2.8.5",
+    "events": "^3.3.0",
+    "express": "^4.18.2",
+    "lodash": "^4.17.21",
+    "socket.io": "^4.7.1",
+    "socket.io-client": "^4.7.1",
+    "svelte": "^4.1.2",
+    "vite": "^4.4.8"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^9.3.0",
+    "@sveltejs/adapter-node": "^1.3.1",
+    "c8": "^8.0.1"
+  }
+}
