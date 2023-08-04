@@ -30,15 +30,25 @@ Before(function () {
         }
     }
 
+    this.parseCosts = function (str) {
+        return Object.fromEntries(
+            ['emerald', 'sapphire', 'ruby', 'diamond', 'onyx'].map((type, index) => [type, parseInt(str[index])])
+        )
+    }
+
     this.parseCard = function (str) {
         const parts = str.split('/');
         return {
             level: parseInt(parts[0]),
             points: parseInt(parts[1]),
             bonus: parts[2],
-            cost: Object.fromEntries(
-                ['emerald', 'sapphire', 'ruby', 'diamond', 'onyx'].map((type, index) => [type, parseInt(parts[3][index])])
-            )
+            cost: this.parseCosts(parts[3]),
+        }
+    }
+
+    this.parseNoble = function (str) {
+        return {
+            cost: this.parseCosts(str)
         }
     }
 
@@ -64,7 +74,7 @@ Given(/^it was (.*?)'s turn$/, function (playerName) {
     })
 });
 
-Given(/^there were the following tokens available:$/, function (dataTable) {
+Given(/^the following tokens were available:$/, function (dataTable) {
     let tokens = _.mapValues(this.engine.state.tokens, () => 0);
     dataTable.hashes().forEach(row => {
         tokens[row.type] = parseInt(row.amount);
@@ -180,6 +190,20 @@ Given(/^(.*?) had the following reserved cards:$/, function (playerName, dataTab
     })
 });
 
+Given(/the following nobles were available:$/, function (dataTable) {
+    this.setState({
+        ...this.engine.state,
+        nobles: dataTable.raw().map((r) => this.parseNoble(r[0])),
+    })
+});
+
+Given(/^the game phase was (.*?)$/, function (phase) {
+    this.setState({
+        ...this.engine.state,
+        phase,
+    });
+})
+
 When(/^(.*?) draws the following tokens:$/, function (playerName, dataTable) {
     this.perform(
         'take-tokens',
@@ -201,6 +225,14 @@ When(/^(.*?) reserves the card (.*?)$/, function (playerName, card) {
         'reserve-card',
         playerName,
         {card: this.parseCard(card)}
+    )
+});
+
+When(/^(.*?) receives the noble (.*?)$/, function (playerName, noble) {
+    this.perform(
+        'receive-noble',
+        playerName,
+        {noble: this.parseNoble(noble)}
     )
 });
 
@@ -229,8 +261,7 @@ Then(/^the following tokens will be available:$/, function (dataTable) {
 });
 
 Then(/^an? "(.*?)" error will occur$/, function (message) {
-    assert.ok(this.error !== null);
-    assert.equal(message, this.error.message);
+    assert.equal(message, this.error?.message);
 });
 
 Then(/^the game phase will be (.*?)$/, function (phase) {
@@ -261,7 +292,7 @@ Then(/^this will be the final round$/, function () {
     assert.ok(this.engine.state.finalRound);
 });
 
-Then(/^(.*?) will have the following reserved cards:$/, function(playerName, dataTable) {
+Then(/^(.*?) will have the following reserved cards:$/, function (playerName, dataTable) {
     const actual = this.playerState(playerName).reserved;
     const expected = dataTable.raw().map((row) => this.parseCard(row[0]));
     assert.ok(_.isEqual(actual, expected));

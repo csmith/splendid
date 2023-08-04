@@ -40,7 +40,7 @@ Feature: players can reserve cards
       | gold | 0      |
 
   Scenario: Alice reserves a card while there are gold tokens available
-    Given there were the following tokens available:
+    Given the following tokens were available:
       | type | amount |
       | gold | 3      |
     When Alice reserves the card 1/0/sapphire/00011
@@ -57,7 +57,7 @@ Feature: players can reserve cards
       | gold | 2      |
 
   Scenario: Alice reserves a card while there are no gold tokens available
-    Given there were the following tokens available:
+    Given the following tokens were available:
       | type | amount |
       | gold | 0      |
     When Alice reserves the card 1/0/sapphire/00011

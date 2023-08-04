@@ -9,7 +9,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes two tokens of the same type from a stack of four
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type    | amount |
       | emerald | 4      |
     When Alice draws the following tokens:
@@ -25,7 +25,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes two tokens of the same type from a stack of three
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type    | amount |
       | emerald | 3      |
     When Alice draws the following tokens:
@@ -42,7 +42,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes three tokens of different types
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type     | amount |
       | emerald  | 3      |
       | ruby     | 3      |
@@ -66,7 +66,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes more than three tokens of different types
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type     | amount |
       | emerald  | 3      |
       | ruby     | 3      |
@@ -95,7 +95,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes more than two tokens of the same type
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type    | amount |
       | emerald | 5      |
     When Alice draws the following tokens:
@@ -112,7 +112,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes two tokens of one type, and one of another
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type    | amount |
       | emerald | 5      |
       | onyx    | 1      |
@@ -133,7 +133,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes gold tokens
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type    | amount |
       | emerald | 5      |
       | gold    | 5      |
@@ -152,7 +152,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes tokens that aren't available
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type     | amount |
       | onyx     | 0      |
       | sapphire | 1      |
@@ -179,7 +179,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes two different tokens because no more are available
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type     | amount |
       | sapphire | 1      |
       | ruby     | 1      |
@@ -199,7 +199,7 @@ Feature: players can take tokens
 
   Scenario: Alice takes tokens and ends up with more than 10
     Given it was Alice's turn
-    And there were the following tokens available:
+    And the following tokens were available:
       | type | amount |
       | onyx | 4      |
     And Alice had the following tokens:
