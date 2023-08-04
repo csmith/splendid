@@ -7,6 +7,7 @@ import BuyCard from "./actions/BuyCard.js";
 import ReserveCard from "./actions/ReserveCard.js";
 import EndTurn from "./actions/EndTurn.js";
 import ReceiveNoble from "./actions/ReceiveNoble.js";
+import ReserveFromDeck from "./actions/ReserveFromDeck.js";
 
 export default {
     setup: {
@@ -23,6 +24,7 @@ export default {
             Deal,
             BuyCard,
             ReserveCard,
+            ReserveFromDeck,
             EndTurn,
         ]
     },

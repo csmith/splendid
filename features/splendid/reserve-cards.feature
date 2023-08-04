@@ -73,6 +73,62 @@ Feature: players can reserve cards
       | type | amount |
       | gold | 0      |
 
+  Scenario: Alice reserves a card from a deck while there are gold tokens available
+    Given the following tokens were available:
+      | type | amount |
+      | gold | 3      |
+    When Alice reserves a card from deck 1
+    Then Alice will have the following tokens:
+      | type | amount |
+      | gold | 1      |
+    And Alice will have the following reserved cards:
+      | 1/1/diamond/10100 |
+    And Alice will have 0 points
+    And the size of deck 1 will be 0
+    And it will be Bob's turn
+    And the following tokens will be available:
+      | type | amount |
+      | gold | 2      |
+
+  Scenario: Alice reserves a card fom a deck while there are no gold tokens available
+    Given the following tokens were available:
+      | type | amount |
+      | gold | 0      |
+    When Alice reserves a card from deck 1
+    Then Alice will have the following tokens:
+      | type | amount |
+      | gold | 0      |
+    And Alice will have the following reserved cards:
+      | 1/1/diamond/10100 |
+    And Alice will have 0 points
+    And the size of deck 1 will be 0
+    And it will be Bob's turn
+    And the following tokens will be available:
+      | type | amount |
+      | gold | 0      |
+
+  Scenario: Alice tries to reserve a card fom an invalid deck (1)
+    Given the following tokens were available:
+      | type | amount |
+      | gold | 0      |
+    When Alice reserves a card from deck 0
+    Then an "Invalid level" error will occur
+    And it will be Alice's turn still
+
+  Scenario: Alice tries to reserve a card fom an invalid deck (2)
+    Given the following tokens were available:
+      | type | amount |
+      | gold | 0      |
+    When Alice reserves a card from deck 8
+    Then an "Invalid level" error will occur
+    And it will be Alice's turn still
+
+  Scenario: Alice tries to reserve a card fom an empty deck
+    Given there were no cards in deck 1
+    When Alice reserves a card from deck 1
+    Then a "Deck is empty" error will occur
+    And it will be Alice's turn still
+
   Scenario: Alice buys a card she has in reserve
     Given Alice had the following reserved cards:
       | 3/3/emerald/07200 |

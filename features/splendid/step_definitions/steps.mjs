@@ -143,6 +143,13 @@ Given(/^the top card of deck (\d+) was (.*?)$/, function (deck, card) {
     })
 });
 
+Given(/^there were no cards in deck (\d+)$/, function (deck) {
+    this.setState({
+        ...this.engine.state,
+        decks: replaceNth(this.engine.state.decks, deck - 1, () => [])
+    })
+});
+
 Given(/^(.*?) had (\d+) points?$/, function (playerName, points) {
     const playerState = this.playerState(playerName);
     this.setState({
@@ -228,6 +235,15 @@ When(/^(.*?) reserves the card (.*?)$/, function (playerName, card) {
     )
 });
 
+When(/^(.*?) reserves a card from deck (\d+)$/, function (playerName, deck) {
+    this.perform(
+        'reserve-card-from-deck',
+        playerName,
+        {level: deck}
+    )
+});
+
+
 When(/^(.*?) receives the noble (.*?)$/, function (playerName, noble) {
     this.perform(
         'receive-noble',
@@ -296,4 +312,8 @@ Then(/^(.*?) will have the following reserved cards:$/, function (playerName, da
     const actual = this.playerState(playerName).reserved;
     const expected = dataTable.raw().map((row) => this.parseCard(row[0]));
     assert.ok(_.isEqual(actual, expected));
+});
+
+Then(/^the size of deck (\d+) will be (\d+)$/, function(deck, size) {
+    assert.equal(this.engine.state.decks[deck].length, size);
 });
