@@ -17,8 +17,12 @@
 
     const handleJoinClick = () => dispatch('action', {name: 'join'});
     const handleStartClick = () => dispatch('action', {name: 'start'});
-    const handleSelectedGems = ({detail: selection}) => dispatch('action', {name: 'take-tokens', args: {tokens: selection}})
+    const handleSelectedGems = ({detail: selection}) => dispatch('action', {
+        name: 'take-tokens',
+        args: {tokens: selection}
+    })
     const handleBuyCard = ({detail}) => dispatch('action', {name: 'buy-card', args: {card: detail}});
+    const handleReserveCard = ({detail}) => dispatch('action', {name: 'reserve-card', args: {card: detail}});
 </script>
 
 <style>
@@ -72,7 +76,12 @@
     </div>
 {/if}
 <section class="board">
-    <Grid state={state} canSelect={selectCard} player={state.players[playerId]} on:buyCard={handleBuyCard}/>
+    <Grid
+            state={state}
+            canSelect={selectCard}
+            player={state.players[playerId]}
+            on:buyCard={handleBuyCard}
+            on:reserveCard={handleReserveCard}/>
     <Players state={state}/>
     <Gems state={state} canTake={takeTokens} on:selected={handleSelectedGems}/>
 </section>
