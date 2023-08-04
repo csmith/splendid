@@ -4,6 +4,8 @@ import Deal from "./actions/Deal.js";
 import ChangePhase from "./actions/ChangePhase.js";
 import TakeTokens from "./actions/TakeTokens.js";
 import BuyCard from "./actions/BuyCard.js";
+import ReserveCard from "./actions/ReserveCard.js";
+import EndTurn from "./actions/EndTurn.js";
 
 export default {
     setup: {
@@ -19,13 +21,19 @@ export default {
             TakeTokens,
             Deal,
             BuyCard,
+            ReserveCard,
+            EndTurn,
         ]
     },
     noble: {
-        actions: [],
+        actions: [
+            EndTurn,
+        ],
     },
     discard: {
-        actions: [],
+        actions: [
+            EndTurn,
+        ],
     },
     end: {
         actions: [],

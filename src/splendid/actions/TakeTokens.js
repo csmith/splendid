@@ -1,6 +1,6 @@
 import _ from "lodash";
 import {addObjects, subtractObjects} from "../../common/util.js";
-import {findPlayer, nextPlayer} from "../../common/state.js";
+import {findPlayer, isLastPlayer, nextPlayer} from "../../common/state.js";
 
 const allowedTokens = ['emerald', 'ruby', 'diamond', 'sapphire', 'onyx'];
 
@@ -40,22 +40,22 @@ export default {
         }
 
         const playerData = findPlayer(state, player);
-        const totalTokens = requestedTokens + _.sum(Object.values(playerData.tokens));
-        const nextPhase = (totalTokens > 10) ? 'discard' : 'play';
-        const nextTurn = (nextPhase === 'discard') ? state.turn : nextPlayer(state);
 
-        return {
-            ...state,
-            phase: nextPhase,
-            turn: nextTurn,
-            players: {
-                ...state.players,
-                [player.id]: {
-                    ...playerData,
-                    tokens: addObjects(playerData.tokens, filteredTokens),
-                }
+        return _.concat(
+            {
+                ...state,
+                players: {
+                    ...state.players,
+                    [player.id]: {
+                        ...playerData,
+                        tokens: addObjects(playerData.tokens, filteredTokens),
+                    }
+                },
+                tokens: subtractObjects(state.tokens, filteredTokens),
             },
-            tokens: subtractObjects(state.tokens, filteredTokens),
-        }
+            {
+                action: 'end-turn',
+            },
+        );
     },
 }

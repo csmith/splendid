@@ -1,7 +1,7 @@
 import _ from "lodash";
 import {addObjects, subtractObjects} from "../../common/util.js";
-import {findPlayer, isLastPlayer, nextPlayer} from "../../common/state.js";
-import {canAffordCard, canReceiveNoble, costForCard} from "../util.js";
+import {findPlayer} from "../../common/state.js";
+import {canAffordCard, costForCard} from "../util.js";
 
 export default {
     name: 'buy-card',
@@ -28,19 +28,11 @@ export default {
         const missingCount = _.sum(Object.values(missing));
 
         const deductions = {...subtractObjects(cost, missing), gold: missingCount};
-
-        const canReceiveNobles = state.nobles.some((noble) => canReceiveNoble(playerData, noble));
         const newScore = playerData.points + card.points;
-        const nextTurn = canReceiveNobles ? state.turn : nextPlayer(state);
-        const finalRound = state.finalRound || newScore >= 15;
-        const nextPhase = canReceiveNobles ? 'noble' : (finalRound && isLastPlayer(state, player) ? 'end' : 'play');
 
         return _.concat(
             {
                 ...state,
-                turn: nextTurn,
-                phase: nextPhase,
-                finalRound: finalRound,
                 players: {
                     ...state.players,
                     [player.id]: {
@@ -61,7 +53,10 @@ export default {
                     level: card.level - 1,
                     column: index,
                 },
-            }
+            },
+            {
+                action: 'end-turn',
+            },
         );
     },
 }
