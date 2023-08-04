@@ -8,6 +8,7 @@ import ReserveCard from "./actions/ReserveCard.js";
 import EndTurn from "./actions/EndTurn.js";
 import ReceiveNoble from "./actions/ReceiveNoble.js";
 import ReserveFromDeck from "./actions/ReserveFromDeck.js";
+import DiscardTokens from "./actions/DiscardTokens.js";
 
 export default {
     setup: {
@@ -36,6 +37,7 @@ export default {
     },
     discard: {
         actions: [
+            DiscardTokens,
             EndTurn,
         ],
     },

@@ -243,6 +243,13 @@ When(/^(.*?) reserves a card from deck (\d+)$/, function (playerName, deck) {
     )
 });
 
+When(/^(.*?) discards the following tokens:$/, function (playerName, dataTable) {
+    this.perform(
+        'discard-tokens',
+        playerName,
+        {tokens: Object.fromEntries(dataTable.hashes().map(row => [row.type, parseInt(row.amount)]))}
+    )
+});
 
 When(/^(.*?) receives the noble (.*?)$/, function (playerName, noble) {
     this.perform(
@@ -280,7 +287,7 @@ Then(/^an? "(.*?)" error will occur$/, function (message) {
     assert.equal(message, this.error?.message);
 });
 
-Then(/^the game phase will be (.*?)$/, function (phase) {
+Then(/^the game phase will be (.*?)(?: still)?$/, function (phase) {
     assert.equal(this.engine.state.phase, phase);
 });
 
