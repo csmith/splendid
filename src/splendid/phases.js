@@ -6,6 +6,7 @@ import TakeTokens from "./actions/TakeTokens.js";
 import BuyCard from "./actions/BuyCard.js";
 import ReserveCard from "./actions/ReserveCard.js";
 import EndTurn from "./actions/EndTurn.js";
+import ReceiveNoble from "./actions/ReceiveNoble.js";
 
 export default {
     setup: {
@@ -27,6 +28,7 @@ export default {
     },
     noble: {
         actions: [
+            ReceiveNoble,
             EndTurn,
         ],
     },

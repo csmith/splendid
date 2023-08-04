@@ -8,6 +8,14 @@
 
     /** @type {import('../../../splendid/state.js').default} */
     export let state;
+
+    export let canSelect;
+
+    const receiveNoble = (noble) => {
+        if (canSelect && canReceiveNoble(player, noble)) {
+            dispatch('receiveNoble', noble);
+        }
+    }
 </script>
 
 <style>
@@ -60,11 +68,16 @@
         border-top: 1px solid black;
         border-left: 1px solid black;
     }
+
+    .selectable {
+        cursor: pointer;
+        box-shadow: 0 0 5px red;
+    }
 </style>
 
 <section>
     {#each state.nobles as noble}
-        <div class="noble">
+        <div class="noble" class:selectable={canSelect && canReceiveNoble(player, noble)} on:click={() => receiveNoble(noble)}>
             <span class="score">3</span>
             <ul class="costs">
                 {#each Object.entries(noble.cost) as entry}

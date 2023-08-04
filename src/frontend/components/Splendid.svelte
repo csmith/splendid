@@ -15,6 +15,7 @@
     $: showStart = actions.some(action => action.name === 'start');
     $: selectCard = actions.some(action => action.name === 'buy-card' || action.name === 'reserve-card');
     $: takeTokens = actions.some(action => action.name === 'take-tokens');
+    $: receiveNoble = actions.some(action => action.name === 'receive-noble');
 
     const handleJoinClick = () => dispatch('action', {name: 'join'});
     const handleStartClick = () => dispatch('action', {name: 'start'});
@@ -24,6 +25,7 @@
     })
     const handleBuyCard = ({detail}) => dispatch('action', {name: 'buy-card', args: {card: detail}});
     const handleReserveCard = ({detail}) => dispatch('action', {name: 'reserve-card', args: {card: detail}});
+    const handleReceiveNoble = ({detail}) => dispatch('action', {name: 'receive-noble', args: {card: detail}});
 </script>
 
 <style>
@@ -85,5 +87,9 @@
             on:reserveCard={handleReserveCard}/>
     <Players state={state}/>
     <Gems state={state} canTake={takeTokens} on:selected={handleSelectedGems}/>
-    <Nobles state={state} player={state.players[playerId]}/>
+    <Nobles
+            state={state}
+            canSelect={receiveNoble}
+            player={state.players[playerId]}
+            on:receiveNoble={{handleReceiveNoble}}/>
 </section>
