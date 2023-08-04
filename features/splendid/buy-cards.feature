@@ -134,3 +134,49 @@ Feature: players can buy cards
       | ruby     | 6      |
       | onyx     | 4      |
       | gold     | 5      |
+
+  Scenario: Alice buys a card that takes her to 15 points, but she's not the last player
+    Given Alice had the following tokens:
+      | type | amount |
+      | ruby | 2      |
+    And Alice had the following bonuses:
+      | type     | amount |
+      | sapphire | 7      |
+    And Alice had 12 points
+    And the turn order was:
+      | Alice |
+      | Bob   |
+    When Alice buys the card 3/3/emerald/07200
+    Then Alice will have 15 points
+    And it will be Bob's turn
+    And the game phase will be play
+    And this will be the final round
+
+  Scenario: Alice buys a card that takes her to 15 points, and she is the last player
+    Given Alice had the following tokens:
+      | type | amount |
+      | ruby | 2      |
+    And Alice had the following bonuses:
+      | type     | amount |
+      | sapphire | 7      |
+    And Alice had 12 points
+    And the turn order was:
+      | Bob   |
+      | Alice |
+    When Alice buys the card 3/3/emerald/07200
+    Then Alice will have 15 points
+    And the game phase will be end
+
+  Scenario: The last player to go in the final round buys a card
+    Given Alice had the following tokens:
+      | type | amount |
+      | ruby | 2      |
+    And Alice had the following bonuses:
+      | type     | amount |
+      | sapphire | 7      |
+    And the turn order was:
+      | Bob   |
+      | Alice |
+    And this was the final round
+    When Alice buys the card 3/3/emerald/07200
+    Then the game phase will be end

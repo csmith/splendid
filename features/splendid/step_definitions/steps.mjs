@@ -9,19 +9,19 @@ import _ from "lodash";
 import assert from "assert";
 
 Before(function () {
-    this.setState = function(state) {
+    this.setState = function (state) {
         this.engine = new Engine(state, phases, (e) => e, 'Splendid')
     };
 
-    this.playerState = function(name) {
+    this.playerState = function (name) {
         return findPlayerByName(this.engine.state, name);
     }
 
-    this.playerDetails = function(name) {
+    this.playerDetails = function (name) {
         return this.playerState(name).details;
     }
 
-    this.perform = function(name, playerName, args) {
+    this.perform = function (name, playerName, args) {
         try {
             this.engine.perform(name, this.playerDetails(playerName), args);
             this.error = null;
@@ -30,7 +30,7 @@ Before(function () {
         }
     }
 
-    this.parseCard = function(str) {
+    this.parseCard = function (str) {
         const parts = str.split('/');
         return {
             level: parseInt(parts[0]),
@@ -117,7 +117,7 @@ Given(/^(.*?) had the following bonuses:$/, function (playerName, dataTable) {
 });
 
 
-Given(/^the following cards were visible:$/, function(dataTable) {
+Given(/^the following cards were visible:$/, function (dataTable) {
     const cards = _.reverse(dataTable.raw().map(row => row.map(card => this.parseCard(card))));
 
     this.setState({
@@ -126,10 +126,42 @@ Given(/^the following cards were visible:$/, function(dataTable) {
     })
 });
 
-Given(/^the top card of deck (\d+) was (.*?)$/, function(deck, card) {
+Given(/^the top card of deck (\d+) was (.*?)$/, function (deck, card) {
     this.setState({
         ...this.engine.state,
-        decks: replaceNth(this.engine.state.decks, deck-1, () => [this.parseCard(card)])
+        decks: replaceNth(this.engine.state.decks, deck - 1, () => [this.parseCard(card)])
+    })
+});
+
+Given(/^(.*?) had (\d+) points?$/, function (playerName, points) {
+    const playerState = this.playerState(playerName);
+    this.setState({
+        ...this.engine.state,
+        players: {
+            ...this.engine.state.players,
+            [playerState.details.id]: {
+                ...playerState,
+                points
+            }
+        }
+    })
+});
+
+Given(/^the turn order was:$/, function (dataTable) {
+    const order = dataTable.raw().map((row) => row[0]);
+    this.setState({
+        ...this.engine.state,
+        players: _.mapValues(this.engine.state.players, (v) => ({
+            ...v,
+            order: order.indexOf(v.details.name)
+        }))
+    })
+});
+
+Given(/^this was the final round$/, function () {
+    this.setState({
+        ...this.engine.state,
+        finalRound: true,
     })
 });
 
@@ -191,13 +223,17 @@ Then(/^there will be (\d+) nobles available?$/, function (count) {
     assert.equal(this.engine.state.nobles.length, count);
 });
 
-Then(/^the card in row (\d+) column (\d+) will be (.*?)$/, function(row, column, card) {
-    const actual = this.engine.state.cards[3-row][column-1];
+Then(/^the card in row (\d+) column (\d+) will be (.*?)$/, function (row, column, card) {
+    const actual = this.engine.state.cards[3 - row][column - 1];
     const expected = this.parseCard(card);
     assert.ok(_.isEqual(actual, expected));
 });
 
-Then(/^(.*?) will have (\d+) points?$/, function(playerName, score) {
+Then(/^(.*?) will have (\d+) points?$/, function (playerName, score) {
     const details = this.playerState(playerName);
     assert.equal(details.points, score);
+});
+
+Then(/^this will be the final round$/, function () {
+    assert.ok(this.engine.state.finalRound);
 });
