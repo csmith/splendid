@@ -69,7 +69,7 @@
                         {/each}
                     </li>
                     <li>Reserved cards: {player.reserved.length}</li>
-                    <li>Nobels: {JSON.stringify(player.nobles)}</li>
+                    <li>Nobles: {player.nobles.length}</li>
                 </ul>
             </li>
         {/each}
