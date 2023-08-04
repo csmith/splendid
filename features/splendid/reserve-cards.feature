@@ -72,3 +72,23 @@ Feature: players can reserve cards
     And the following tokens will be available:
       | type | amount |
       | gold | 0      |
+
+  Scenario: Alice buys a card she has in reserve
+    Given Alice had the following reserved cards:
+      | 3/3/emerald/07200 |
+      | 3/2/emerald/07200 |
+      | 3/1/emerald/07200 |
+    And Alice had the following tokens:
+      | type     | amount |
+      | sapphire | 7      |
+      | ruby     | 2      |
+    When Alice buys the card 3/2/emerald/07200
+    Then Alice will have 2 points
+    And Alice will have the following reserved cards:
+      | 3/3/emerald/07200 |
+      | 3/1/emerald/07200 |
+    And it will be Bob's turn
+    And Alice will have the following tokens:
+      | type     | amount |
+      | sapphire | 0      |
+      | ruby     | 0      |

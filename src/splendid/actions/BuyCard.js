@@ -12,8 +12,9 @@ export default {
 
     perform: function (state, {player, card}) {
         const index = _.findIndex(state.cards[card.level - 1], (c) => _.isEqual(c, card));
-        if (index === -1) {
-            // TODO: it could be a reserve card
+        const reserveIndex = _.findIndex(state.players[player.id].reserved, (c) => _.isEqual(c, card));
+
+        if (index === -1 && reserveIndex === -1) {
             throw new Error('Card not found');
         }
 
@@ -39,6 +40,10 @@ export default {
                         ...playerData,
                         points: newScore,
                         tokens: subtractObjects(playerData.tokens, deductions),
+                        reserved: reserveIndex === -1 ? playerData.reserved : [
+                            ...playerData.reserved.slice(0, reserveIndex),
+                            ...playerData.reserved.slice(reserveIndex + 1),
+                        ],
                         bonuses: {
                             ...playerData.bonuses,
                             [card.bonus]: playerData.bonuses[card.bonus] + 1,
@@ -47,7 +52,7 @@ export default {
                 },
                 tokens: addObjects(state.tokens, deductions),
             },
-            {
+            index === -1 ? [] : {
                 action: 'deal',
                 args: {
                     level: card.level - 1,
