@@ -59,7 +59,7 @@
     section {
         display: grid;
         grid-template-columns: repeat(5, 100px);
-        grid-gap: 20px;
+        grid-gap: 10px;
     }
 
     .canSelect .card {
@@ -192,6 +192,14 @@
     td.satisfied {
         background-color: lightgreen;
     }
+
+    .tokens {
+        grid-column: 1 / span 2;
+    }
+
+    .reserve {
+        grid-column: 3 / span 3;
+    }
 </style>
 
 <section class:canSelect="{canSelect}">
@@ -224,6 +232,34 @@
             {/if}
         {/each}
     {/each}
+    {#if player}
+        <div class="tokens">Your tokens</div>
+        <div class="reserve">Your reserve</div>
+        <div class="tokens">
+            Look in the sidebar for now 🙃
+        </div>
+        {#each [0, 1, 2] as index}
+            {#if player.reserved.length > index}
+                <div class="card level{player.reserved[index].level-1}"
+                     on:click={() => selectCard(player.reserved[index])}>
+                    {#if player.reserved[index].points > 0}
+                        <span class="score">{player.reserved[index].points}</span>
+                    {/if}
+                    <span class="bonus {player.reserved[index].bonus}">{player.reserved[index].bonus}</span>
+                    <ul class="costs">
+                        {#each Object.entries(player.reserved[index].cost) as entry}
+                            <li><span class="cost {entry[0]}">{entry[1]}</span></li>
+                        {/each}
+                    </ul>
+                    {#if canAffordCard(player, player.reserved[index])}
+                        <span class="affordable">✅</span>
+                    {/if}
+                </div>
+            {:else}
+                <div class="placeholder"></div>
+            {/if}
+        {/each}
+    {/if}
 </section>
 
 <dialog bind:this={buyDialog} on:click={handleDialogClick} on:close={handleBuyDialogClose}>
