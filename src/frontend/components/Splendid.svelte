@@ -3,6 +3,7 @@
     import Players from "./splendid/Players.svelte";
     import Grid from "./splendid/Grid.svelte";
     import Gems from "./splendid/Gems.svelte";
+    import Nobles from "./splendid/Nobles.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -84,4 +85,5 @@
             on:reserveCard={handleReserveCard}/>
     <Players state={state}/>
     <Gems state={state} canTake={takeTokens} on:selected={handleSelectedGems}/>
+    <Nobles state={state} player={state.players[playerId]}/>
 </section>
