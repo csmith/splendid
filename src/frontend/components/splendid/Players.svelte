@@ -52,13 +52,17 @@
     h3 {
         margin: 0;
     }
+
+    .points {
+        display: inline-block;
+    }
 </style>
 
 <section>
     <ul>
         {#each _.sortBy(Object.values(state.players), 'order') as player}
-            <li>
-                <h3>{#if state.turn === player.details.id}⏵{/if} {player.details.name} ({player.points})</h3>
+            <li id="player-{player.details.id}">
+                <h3>{#if state.turn === player.details.id}⏵{/if} {player.details.name} (<span class="points">{player.points}</span>)</h3>
                 <ul>
                     <li>
                         {#each Object.entries(player.tokens) as pair}

@@ -14,6 +14,7 @@
     const state = client.gameState;
     const events = client.gameEvents;
     const playerId = client.playerId;
+    const nextEvent = client.nextEvent;
 
     let displayName = '';
     let joinGameId = '';
@@ -37,6 +38,10 @@
 
     const onGameAction = ({detail: {name, args}}) => {
         client.perform(name, args);
+    }
+
+    const onEventProcessed = () => {
+        client.advanceEvents();
     }
 </script>
 
@@ -63,7 +68,9 @@
                 state={$state}
                 playerId={$playerId}
                 events={$events}
-                on:action={onGameAction}/>
+                nextEvent={$nextEvent}
+                on:action={onGameAction}
+                on:eventProcessed={onEventProcessed}/>
     {/if}
     <hr>
     Available actions:

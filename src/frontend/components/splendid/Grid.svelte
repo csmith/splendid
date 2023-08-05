@@ -74,15 +74,15 @@
         position: relative;
     }
 
-    .level0 {
+    .card.level0 {
         background-color: #8fbda1;
     }
 
-    .level1 {
+    .card.level1 {
         background-color: #bdb78f;
     }
 
-    .level2 {
+    .card.level2 {
         background-color: #8f9cbd;
     }
 
@@ -205,15 +205,15 @@
 <section class:canSelect="{canSelect}">
     {#each levels as level}
         {#if state.decks[level].length > 0}
-            <div class="card back level{level}" on:click={() => selectDeck(level)}>
+            <div class="card back level{level}" id="deck{level}" on:click={() => selectDeck(level)}>
                 {state.decks[level].length}
             </div>
         {:else}
             <div class="placeholder"></div>
         {/if}
-        {#each state.cards[level] as card}
+        {#each state.cards[level] as card, i}
             {#if card}
-                <div class="card level{level}" on:click={() => selectCard(card)}>
+                <div id="card-{level}-{i}" class="card level{level}" on:click={() => selectCard(card)}>
                     {#if card.points > 0}
                         <span class="score">{card.points}</span>
                     {/if}
@@ -228,7 +228,7 @@
                     {/if}
                 </div>
             {:else}
-                <div class="placeholder"></div>
+                <div class="placeholder" id="placeholder-{level}-{i}"></div>
             {/if}
         {/each}
     {/each}
@@ -256,7 +256,7 @@
                     {/if}
                 </div>
             {:else}
-                <div class="placeholder"></div>
+                <div class="placeholder" id="reserve-{index}"></div>
             {/if}
         {/each}
     {/if}

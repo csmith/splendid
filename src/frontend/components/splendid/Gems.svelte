@@ -83,7 +83,7 @@
 </style>
 
 <section>
-    <ul>
+    <ul id="token-supply">
         {#each Object.entries(state.tokens) as pair}
             <li class="token {pair[0]}" class:selectable={canSelect[pair[0]]}
                 on:click|preventDefault={() => selectGem(pair[0])}>{pair[1]}</li>

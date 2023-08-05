@@ -18,6 +18,9 @@ export default class {
     #gameState = writable(this.#engine.state);
     #gameEvents = writable([]);
 
+    #pendingEvents = [];
+    #nextEvent = writable(null);
+
     #manager;
     #socket;
 
@@ -31,6 +34,9 @@ export default class {
         this.#socket.on('game-joined', (args) => this.#onGameJoined(args));
         this.#socket.on('game-action', (args) => this.#onGameAction(args));
         this.#socket.on('game-event', (args) => this.#onGameEvent(args));
+        this.#socket.onAny((event, ...args) => {
+            console.log(event, args);
+        });
     }
 
     on(event, callback) {
@@ -39,10 +45,6 @@ export default class {
 
     connect() {
         this.#socket.connect();
-
-        this.#socket.onAny((event, ...args) => {
-            console.log(event, args);
-        });
     }
 
     get isInGame() {
@@ -131,17 +133,35 @@ export default class {
     }
 
     #onGameEvent(args) {
-        console.log('onGameEvent', args);
-        this.#engine.applyEvent(args);
-        this.#gameEvents.set(get(this.#gameEvents).concat([args]));
-        this.#gameState.set(this.#engine.state);
+        this.#pendingEvents.push(args);
+        if (this.#pendingEvents.length === 1) {
+            this.#nextEvent.set(args);
+        }
     }
 
     #onGameJoined({type, id, events}) {
         this.#storage.setItem('game', id);
         this.#gameId.set(id);
         this.#gameType.set(type);
-        events.forEach((e) => this.#onGameEvent(e));
+        events.forEach((e) => this.#processEvent(e));
+    }
+
+    advanceEvents() {
+        const event = this.#pendingEvents.shift()
+        if (event) {
+            this.#processEvent(event);
+            this.#nextEvent.set(this.#pendingEvents[0])
+        }
+    }
+
+    #processEvent(e) {
+        this.#engine.applyEvent(e);
+        this.#gameEvents.set(get(this.#gameEvents).concat([e]));
+        this.#gameState.set(this.#engine.state);
+    }
+
+    get nextEvent() {
+        return this.#nextEvent;
     }
 
 }

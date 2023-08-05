@@ -46,6 +46,7 @@ export default {
             {
                 if: index !== -1,
                 event: 'discard-card',
+                playerId: state.turn,
                 card,
             },
             {

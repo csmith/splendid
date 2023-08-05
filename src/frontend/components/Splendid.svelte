@@ -7,6 +7,7 @@
     import DiscardTokens from "./splendid/DiscardTokens.svelte";
     import Banner from "./splendid/Banner.svelte";
     import Events from "./splendid/Events.svelte";
+    import EventHandler from "./splendid/EventHandler.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -14,6 +15,7 @@
     export let events = [];
     export let state = {};
     export let playerId = '';
+    export let nextEvent = undefined;
 
     $: showJoin = actions.includes('join');
     $: showStart = actions.includes('start');
@@ -34,6 +36,7 @@
         name: 'reserve-card-from-deck',
         args: {level}
     });
+
     const handleReceiveNoble = ({detail}) => dispatch('action', {name: 'receive-noble', args: {noble: detail}});
     const handleTokensDiscarded = ({detail}) => dispatch('action', {name: 'discard-tokens', args: {tokens: detail}});
 </script>
@@ -114,4 +117,9 @@
         {/if}
     </div>
     <Events state={state} events={events}/>
+    <EventHandler
+            state={state}
+            nextEvent={nextEvent}
+            playerId={playerId}
+            on:eventProcessed={() => dispatch('eventProcessed')}/>
 </section>
