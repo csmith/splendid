@@ -17,7 +17,7 @@
 
     const selectDeck = (level) => {
         if (canSelect) {
-
+            dispatch('reserveFromDeck', level+1);
         }
     };
 

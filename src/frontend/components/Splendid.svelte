@@ -25,7 +25,8 @@
     })
     const handleBuyCard = ({detail}) => dispatch('action', {name: 'buy-card', args: {card: detail}});
     const handleReserveCard = ({detail}) => dispatch('action', {name: 'reserve-card', args: {card: detail}});
-    const handleReceiveNoble = ({detail}) => dispatch('action', {name: 'receive-noble', args: {card: detail}});
+    const handleReserveFromDeck = ({detail: level}) => dispatch('action', {name: 'reserve-card-from-deck', args: {level}});
+    const handleReceiveNoble = ({detail}) => dispatch('action', {name: 'receive-noble', args: {noble: detail}});
 </script>
 
 <style>
@@ -84,12 +85,13 @@
             canSelect={selectCard}
             player={state.players[playerId]}
             on:buyCard={handleBuyCard}
-            on:reserveCard={handleReserveCard}/>
+            on:reserveCard={handleReserveCard}
+            on:reserveFromDeck={handleReserveFromDeck}/>
     <Players state={state}/>
     <Gems state={state} canTake={takeTokens} on:selected={handleSelectedGems}/>
     <Nobles
             state={state}
             canSelect={receiveNoble}
             player={state.players[playerId]}
-            on:receiveNoble={{handleReceiveNoble}}/>
+            on:receiveNoble={handleReceiveNoble}/>
 </section>

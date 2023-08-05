@@ -322,5 +322,5 @@ Then(/^(.*?) will have the following reserved cards:$/, function (playerName, da
 });
 
 Then(/^the size of deck (\d+) will be (\d+)$/, function(deck, size) {
-    assert.equal(this.engine.state.decks[deck].length, size);
+    assert.equal(this.engine.state.decks[deck-1].length, size);
 });

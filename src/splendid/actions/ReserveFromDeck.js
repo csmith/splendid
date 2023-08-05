@@ -34,7 +34,7 @@ export default {
                         reserved: _.concat(playerData.reserved, card),
                     }
                 },
-                decks: replaceNth(state.decks, level, (d) => d.slice(1)),
+                decks: replaceNth(state.decks, level-1, (d) => d.slice(1)),
                 tokens: subtractObjects(state.tokens, {gold: getsGold ? 1 : 0}),
             },
             {
