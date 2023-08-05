@@ -1,7 +1,6 @@
 import Join from "./actions/Join.js";
 import Start from "./actions/Start.js";
 import Deal from "./actions/Deal.js";
-import ChangePhase from "./actions/ChangePhase.js";
 import TakeTokens from "./actions/TakeTokens.js";
 import BuyCard from "./actions/BuyCard.js";
 import ReserveCard from "./actions/ReserveCard.js";
@@ -16,7 +15,6 @@ export default {
             Join,
             Start,
             Deal,
-            ChangePhase,
         ]
     },
     play: {

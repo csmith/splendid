@@ -33,10 +33,13 @@ export default {
                 tokens: subtractObjects(state.tokens, {gold: getsGold ? 1 : 0}),
             },
             {
+                event: 'discard-card',
+                card,
+            },
+            {
                 action: 'deal',
                 args: {
-                    level: card.level - 1,
-                    column: index,
+                    level: card.level,
                 },
             },
             {

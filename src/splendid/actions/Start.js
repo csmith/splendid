@@ -46,16 +46,16 @@ export default {
                 turn: turnOrder[0],
             },
             // Deal four cards from each deck.
-            _.flatMap(decks, (d, level) =>
-                _.times(4, (column) => ({
+            _.flatMap(decks, (d, i) =>
+                _.times(4, () => ({
                     action: 'deal',
-                    args: {level, column},
+                    args: {level: i + 1},
                 }))
             ),
             // Begin the play phase
             {
-                action: 'change-phase',
-                args: {phase: 'play'},
+                event: 'change-phase',
+                phase: 'play',
             }
         )
     }

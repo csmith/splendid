@@ -59,8 +59,7 @@ export default {
                 if: index > -1,
                 action: 'deal',
                 args: {
-                    level: card.level - 1,
-                    column: index,
+                    level: card.level,
                 },
             },
             {

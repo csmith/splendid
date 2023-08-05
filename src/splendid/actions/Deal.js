@@ -1,17 +1,20 @@
-import {replaceNth} from "../../common/util.js";
-
 export default {
     name: 'deal',
 
     available: () => false,
 
-    perform: function(state, {level, column}) {
-        const card = state.decks[level][0];
+    perform: function (state, {level}) {
+        const card = state.decks[level-1][0];
 
-        return {
-            ...state,
-            decks: replaceNth(state.decks, level, (d) => d.slice(1)),
-            cards: replaceNth(state.cards, level, (row) => replaceNth(row, column, () => card)),
-        }
+        return [
+            {
+                event: 'remove-card-from-deck',
+                level,
+            },
+            {
+                event: 'place-card',
+                card,
+            }
+        ];
     }
 }
