@@ -303,7 +303,7 @@ Then(/^there will be (\d+) nobles available?$/, function (count) {
 Then(/^the card in row (\d+) column (\d+) will be (.*?)$/, function (row, column, card) {
     const actual = this.engine.state.cards[3 - row][column - 1];
     const expected = this.parseCard(card);
-    assert.ok(_.isEqual(actual, expected));
+    assert.equal(JSON.stringify(actual), JSON.stringify(expected));
 });
 
 Then(/^(.*?) will have (\d+) points?$/, function (playerName, score) {
@@ -318,7 +318,7 @@ Then(/^this will be the final round$/, function () {
 Then(/^(.*?) will have the following reserved cards:$/, function (playerName, dataTable) {
     const actual = this.playerState(playerName).reserved;
     const expected = dataTable.raw().map((row) => this.parseCard(row[0]));
-    assert.ok(_.isEqual(actual, expected));
+    assert.equal(JSON.stringify(actual), JSON.stringify(expected));
 });
 
 Then(/^the size of deck (\d+) will be (\d+)$/, function (deck, size) {
