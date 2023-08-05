@@ -54,7 +54,7 @@ Before(function () {
 
     this.error = null;
 
-    this.setState(state);
+    this.setState(_.cloneDeep(state));
 });
 
 Given(/^the following players joined the game:$/, function (dataTable) {

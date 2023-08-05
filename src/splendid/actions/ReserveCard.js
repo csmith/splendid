@@ -10,31 +10,27 @@ export default {
             && state.players[player.id].reserved.length < 3;
     },
 
-    perform: function (state, {player, card}) {
+    perform: function (state, {card}) {
         const index = _.findIndex(state.cards[card.level - 1], (c) => _.isEqual(c, card));
         if (index === -1) {
             throw new Error('Card not found');
         }
 
-        const playerData = findPlayer(state, player);
         const getsGold = state.tokens.gold > 0;
 
         return _.concat(
             {
-                ...state,
-                players: {
-                    ...state.players,
-                    [player.id]: {
-                        ...playerData,
-                        tokens: addObjects(playerData.tokens, {gold: getsGold ? 1 : 0}),
-                        reserved: _.concat(playerData.reserved, card),
-                    }
-                },
-                tokens: subtractObjects(state.tokens, {gold: getsGold ? 1 : 0}),
-            },
-            {
                 event: 'discard-card',
                 card,
+            },
+            {
+                event: 'reserve-card',
+                card,
+            },
+            {
+                if: getsGold,
+                event: 'take-tokens',
+                tokens: {gold: 1},
             },
             {
                 action: 'deal',

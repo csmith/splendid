@@ -20,19 +20,12 @@ export default {
 
         return _.concat(
             {
-                ...state,
-                nobles: _.concat(
-                    _.slice(state.nobles, 0, index),
-                    _.slice(state.nobles, index + 1)
-                ),
-                players: {
-                    ...state.players,
-                    [player.id]: {
-                        ...state.players[player.id],
-                        nobles: _.concat(state.players[player.id].nobles, noble),
-                        points: state.players[player.id].points + 3,
-                    }
-                }
+                event: 'receive-noble',
+                noble,
+            },
+            {
+                event: 'add-points',
+                points: 3,
             },
             {
                 action: 'end-turn',

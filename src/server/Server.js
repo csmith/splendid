@@ -29,7 +29,7 @@ export default class {
         }
 
         const id = crypto.randomUUID();
-        const engine = new Engine(game.state, game.phases, game.masker, game.name);
+        const engine = new Engine(_.cloneDeep(game.state), game.phases, game.masker, game.name);
 
         this.#games[id] = engine;
 

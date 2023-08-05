@@ -26,21 +26,14 @@ export default {
             }
         });
 
-        return _.concat(
+        return [
             {
-                ...state,
-                players: {
-                    ...state.players,
-                    [player.id]: {
-                        ...playerData,
-                        tokens: subtractObjects(playerData.tokens, filteredTokens),
-                    }
-                },
-                tokens: addObjects(state.tokens, filteredTokens),
+                event: 'return-tokens',
+                tokens: filteredTokens,
             },
             {
                 action: 'end-turn',
             },
-        );
+        ];
     },
 }

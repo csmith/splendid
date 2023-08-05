@@ -23,23 +23,23 @@ export default {
         const playerData = findPlayer(state, player);
         const getsGold = state.tokens.gold > 0;
 
-        return _.concat(
+        return [
             {
-                ...state,
-                players: {
-                    ...state.players,
-                    [player.id]: {
-                        ...playerData,
-                        tokens: addObjects(playerData.tokens, {gold: getsGold ? 1 : 0}),
-                        reserved: _.concat(playerData.reserved, card),
-                    }
-                },
-                decks: replaceNth(state.decks, level-1, (d) => d.slice(1)),
-                tokens: subtractObjects(state.tokens, {gold: getsGold ? 1 : 0}),
+                event: 'remove-card-from-deck',
+                level,
+            },
+            {
+                event: 'reserve-card',
+                card,
+            },
+            {
+                if: getsGold,
+                event: 'take-tokens',
+                tokens: {gold: 1},
             },
             {
                 action: 'end-turn',
             },
-        );
+        ];
     }
 }

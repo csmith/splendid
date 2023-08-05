@@ -26,9 +26,8 @@ export default {
         const turnOrder = _.shuffle(Object.keys(state.players));
 
         return _.concat(
-            // Sort the tokens out, shuffle the decks, and assign turn order.
             {
-                ...state,
+                event: 'setup',
                 tokens: {
                     emerald: 7 - tokensToRemove,
                     diamond: 7 - tokensToRemove,
@@ -39,24 +38,21 @@ export default {
                 },
                 nobles: _.take(_.shuffle(nobles), players + 1),
                 decks: decks.map((d) => _.shuffle(d)),
-                players: _.mapValues(state.players, (p, id) => ({
-                    ...p,
-                    order: turnOrder.indexOf(id),
-                })),
-                turn: turnOrder[0],
             },
-            // Deal four cards from each deck.
+            {
+                event: 'set-player-order',
+                order: turnOrder,
+            },
             _.flatMap(decks, (d, i) =>
                 _.times(4, () => ({
                     action: 'deal',
                     args: {level: i + 1},
                 }))
             ),
-            // Begin the play phase
             {
                 event: 'change-phase',
                 phase: 'play',
             }
-        )
+        );
     }
 }

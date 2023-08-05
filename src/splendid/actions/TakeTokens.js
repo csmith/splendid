@@ -11,7 +11,7 @@ export default {
         return player.id === state.turn;
     },
 
-    perform: function (state, {player, tokens}) {
+    perform: function (state, {tokens}) {
         const filteredTokens = Object.fromEntries(allowedTokens.map(t => [t, tokens[t] || 0]));
         const requestedTokens = _.sum(Object.values(filteredTokens));
         const doubleTokens = _.findKey(filteredTokens, amount => amount === 2);
@@ -39,23 +39,14 @@ export default {
             });
         }
 
-        const playerData = findPlayer(state, player);
-
-        return _.concat(
+        return [
             {
-                ...state,
-                players: {
-                    ...state.players,
-                    [player.id]: {
-                        ...playerData,
-                        tokens: addObjects(playerData.tokens, filteredTokens),
-                    }
-                },
-                tokens: subtractObjects(state.tokens, filteredTokens),
+                event: 'take-tokens',
+                tokens: filteredTokens
             },
             {
                 action: 'end-turn',
             },
-        );
+        ];
     },
 }

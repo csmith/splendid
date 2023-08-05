@@ -13,38 +13,61 @@ export default {
 
         // First, if there are any nobles that can be received, the player must receive one
         if (state.phase === 'play' && state.nobles.some((n) => canReceiveNoble(currentPlayer, n))) {
-            return {
-                ...state,
-                finalRound,
-                phase: 'noble'
-            }
+            return [
+                {
+                    if: finalRound && !state.finalRound,
+                    event: 'final-round'
+                },
+                {
+                    event: 'change-phase',
+                    phase: 'noble',
+                },
+            ];
         }
 
         // If this is the final round and this is the last player, the game is over
         if (finalRound && isLastPlayer(state, currentPlayer.details)) {
-            return {
-                ...state,
-                finalRound,
-                phase: 'end',
-                turn: undefined,
-            }
+            return [
+                {
+                    event: 'change-phase',
+                    phase: 'end',
+                },
+                {
+                    event: 'change-player',
+                    player: undefined,
+                }
+            ];
         }
 
         // If we're not finishing immediately, and the current player is over their token limit, they must discard
         if (_.sum(Object.values(currentPlayer.tokens)) > 10) {
-            return {
-                ...state,
-                finalRound,
-                phase: 'discard'
-            }
+            return [
+                {
+                    if: finalRound && !state.finalRound,
+                    event: 'final-round'
+                },
+                {
+                    event: 'change-phase',
+                    phase: 'discard',
+                }
+            ]
         }
 
         // Otherwise, the next player plays
-        return {
-            ...state,
-            finalRound,
-            phase: 'play',
-            turn: nextPlayer(state),
-        }
+        return [
+            {
+                if: finalRound && !state.finalRound,
+                event: 'final-round'
+            },
+            {
+                if: state.phase !== 'play',
+                event: 'change-phase',
+                phase: 'play',
+            },
+            {
+                event: 'change-player',
+                player: nextPlayer(state),
+            }
+        ];
     }
 }
