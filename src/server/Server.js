@@ -33,7 +33,7 @@ export default class {
 
         this.#games[id] = engine;
 
-        return {id, engine};
+        return {id, engine, masker: game.masker};
     }
 
     joinGame(id) {
@@ -41,7 +41,9 @@ export default class {
         if (!engine) {
             throw new Error(`Game ${id} not found`);
         }
-        return {id, engine};
+
+        const game = this.#availableGames.find(game => game.name === engine.type);
+        return {id, engine, masker: game.masker};
     }
 
 };

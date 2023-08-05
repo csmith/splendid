@@ -1,7 +1,7 @@
 export default {
     name: 'add-bonus',
 
-    perform: (state, {type}) => {
-        state.players[state.turn].bonuses[type]++;
+    perform: (state, {playerId, type}) => {
+        state.players[playerId].bonuses[type]++;
     }
 }

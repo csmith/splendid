@@ -21,10 +21,12 @@ export default {
         return _.concat(
             {
                 event: 'receive-noble',
+                playerId: state.turn,
                 noble,
             },
             {
                 event: 'add-points',
+                playerId: state.turn,
                 points: 3,
             },
             {

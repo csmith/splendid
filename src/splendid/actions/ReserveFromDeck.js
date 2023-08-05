@@ -30,11 +30,13 @@ export default {
             },
             {
                 event: 'reserve-card',
+                playerId: state.turn,
                 card,
             },
             {
                 if: getsGold,
                 event: 'take-tokens',
+                playerId: state.turn,
                 tokens: {gold: 1},
             },
             {

@@ -1,7 +1,7 @@
 export default {
     name: 'add-points',
 
-    perform: (state, {points}) => {
-        state.players[state.turn].points += points;
+    perform: (state, {playerId, points}) => {
+        state.players[playerId].points += points;
     }
 }

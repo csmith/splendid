@@ -1,4 +1,3 @@
-import _ from "lodash";
 import {isUUID} from "../common/util.js";
 
 export default class {
@@ -14,6 +13,8 @@ export default class {
 
     /** @type {import('../common/engine.js').default} */
     #engine;
+
+    #masker;
 
     constructor(server, socket) {
         this.#server = server;
@@ -68,12 +69,20 @@ export default class {
         }
     }
 
-    #setGame({id, engine}) {
+    #setGame({id, engine, masker}) {
         this.#gameId = id;
         this.#engine = engine;
+        this.#masker = masker;
         this.#engine.onAction((a) => this.#onEngineAction(a));
         this.#engine.onEvent((a) => this.#onEngineEvent(a));
-        this.#socket.emit('game-joined', {id, type: engine.type, events: engine.events})
+        this.#socket.emit(
+            'game-joined',
+            {
+                id,
+                type: engine.type,
+                events: engine.events.map((e) => masker(e, this.#player.id)),
+            }
+        )
     }
 
     #onClientJoinGame(code) {
@@ -116,7 +125,7 @@ export default class {
     }
 
     #onEngineEvent(args) {
-        this.#socket.emit('game-event', args);
+        this.#socket.emit('game-event', this.#masker(args, this.#player.id));
     }
 
 };

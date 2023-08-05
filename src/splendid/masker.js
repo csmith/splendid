@@ -1,22 +1,19 @@
-import _ from 'lodash';
-
-export default function (state, playerId) {
-    return _.mapValues(state, (v, k) => {
-        if (k === 'decks') {
-            return v.map(deck => ({length: deck.length}));
-        } else if (k === 'players') {
-            return _.mapValues(v, (vv, player) => {
-                if (player === playerId) {
-                    return vv;
-                } else {
-                    return {
-                        ...vv,
-                        reserved: {length: vv.reserved.length},
-                    }
-                }
-            });
-        } else {
-            return v;
+export default function ({event, ...args}, playerId) {
+    if (event === 'setup') {
+        return {
+            event,
+            ...args,
+            decks: args.decks.map(deck => deck.map(card => ({level: card.level}))),
         }
-    })
+    } else if (event === 'reserve-card' && args.playerId !== playerId) {
+        return {
+            event,
+            ...args,
+            card: {
+                level: args.card.level
+            },
+        }
+    } else {
+        return {event, ...args};
+    }
 }

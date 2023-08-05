@@ -34,11 +34,13 @@ export default {
             {
                 if: _.sum(Object.values(deductions)) > 0,
                 event: 'return-tokens',
+                playerId: state.turn,
                 tokens: deductions,
             },
             {
                 if: reserveIndex !== -1,
                 event: 'discard-reserve',
+                playerId: state.turn,
                 card,
             },
             {
@@ -49,10 +51,12 @@ export default {
             {
                 if: card.points > 0,
                 event: 'add-points',
+                playerId: state.turn,
                 points: card.points,
             },
             {
                 event: 'add-bonus',
+                playerId: state.turn,
                 type: card.bonus,
             },
             {

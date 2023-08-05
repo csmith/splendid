@@ -29,6 +29,7 @@ export default {
         return [
             {
                 event: 'return-tokens',
+                playerId: state.turn,
                 tokens: filteredTokens,
             },
             {
