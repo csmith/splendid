@@ -1,4 +1,6 @@
 <script>
+    import _ from 'lodash';
+
     /** @type {import('../../../splendid/state.js').default} */
     export let state;
 </script>
@@ -54,9 +56,9 @@
 
 <section>
     <ul>
-        {#each Object.values(state.players) as player}
+        {#each _.sortBy(Object.values(state.players), 'order') as player}
             <li>
-                <h3>{player.details.name} ({player.points})</h3>
+                <h3>{#if state.turn === player.details.id}⏵{/if} {player.details.name} ({player.points})</h3>
                 <ul>
                     <li>
                         {#each Object.entries(player.tokens) as pair}
