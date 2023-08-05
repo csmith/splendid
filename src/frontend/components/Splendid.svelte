@@ -5,6 +5,7 @@
     import Gems from "./splendid/Gems.svelte";
     import Nobles from "./splendid/Nobles.svelte";
     import DiscardTokens from "./splendid/DiscardTokens.svelte";
+    import Banner from "./splendid/Banner.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -86,25 +87,28 @@
     </div>
 {/if}
 
-<section class="board">
-    <Grid
-            state={state}
-            canSelect={selectCard}
-            player={state.players[playerId]}
-            on:buyCard={handleBuyCard}
-            on:reserveCard={handleReserveCard}
-            on:reserveFromDeck={handleReserveFromDeck}/>
-    <Players state={state}/>
-    <Gems state={state} canTake={takeTokens} on:selected={handleSelectedGems}/>
-    <Nobles
-            state={state}
-            canSelect={receiveNoble}
-            player={state.players[playerId]}
-            on:receiveNoble={handleReceiveNoble}/>
-    {#if discardTokens}
-        <DiscardTokens
+<section>
+    <Banner state={state} playerId={playerId}/>
+    <div class="board">
+        <Grid
                 state={state}
+                canSelect={selectCard}
                 player={state.players[playerId]}
-                on:tokensDiscarded={handleTokensDiscarded}/>
-    {/if}
+                on:buyCard={handleBuyCard}
+                on:reserveCard={handleReserveCard}
+                on:reserveFromDeck={handleReserveFromDeck}/>
+        <Players state={state}/>
+        <Gems state={state} canTake={takeTokens} on:selected={handleSelectedGems}/>
+        <Nobles
+                state={state}
+                canSelect={receiveNoble}
+                player={state.players[playerId]}
+                on:receiveNoble={handleReceiveNoble}/>
+        {#if discardTokens}
+            <DiscardTokens
+                    state={state}
+                    player={state.players[playerId]}
+                    on:tokensDiscarded={handleTokensDiscarded}/>
+        {/if}
+    </div>
 </section>
