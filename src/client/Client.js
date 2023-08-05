@@ -16,6 +16,7 @@ export default class {
     #gameType = writable(null);
     #gameId = writable(null);
     #gameState = writable(this.#engine.state);
+    #gameEvents = writable([]);
 
     #manager;
     #socket;
@@ -79,6 +80,10 @@ export default class {
         return this.#gameState;
     }
 
+    get gameEvents() {
+        return this.#gameEvents;
+    }
+
     get gameType() {
         return this.#gameType;
     }
@@ -128,6 +133,7 @@ export default class {
     #onGameEvent(args) {
         console.log('onGameEvent', args);
         this.#engine.applyEvent(args);
+        this.#gameEvents.set(get(this.#gameEvents).concat([args]));
         this.#gameState.set(this.#engine.state);
     }
 

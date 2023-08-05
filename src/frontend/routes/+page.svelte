@@ -12,6 +12,7 @@
     const gameId = client.gameId;
     const gameType = client.gameType;
     const state = client.gameState;
+    const events = client.gameEvents;
     const playerId = client.playerId;
 
     let displayName = '';
@@ -57,7 +58,12 @@
     <h1>Game ID: {$gameId}</h1>
     <hr>
     {#if $gameType === 'Splendid'}
-        <Splendid actions={$actions} state={$state} playerId={$playerId} on:action={onGameAction} />
+        <Splendid
+                actions={$actions}
+                state={$state}
+                playerId={$playerId}
+                events={$events}
+                on:action={onGameAction}/>
     {/if}
     <hr>
     Available actions:

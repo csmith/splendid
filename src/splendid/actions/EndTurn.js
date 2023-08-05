@@ -34,7 +34,7 @@ export default {
                 },
                 {
                     event: 'change-player',
-                    player: undefined,
+                    playerId: undefined,
                 }
             ];
         }
@@ -66,7 +66,7 @@ export default {
             },
             {
                 event: 'change-player',
-                player: nextPlayer(state),
+                playerId: nextPlayer(state),
             }
         ];
     }

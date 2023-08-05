@@ -6,10 +6,12 @@
     import Nobles from "./splendid/Nobles.svelte";
     import DiscardTokens from "./splendid/DiscardTokens.svelte";
     import Banner from "./splendid/Banner.svelte";
+    import Events from "./splendid/Events.svelte";
 
     const dispatch = createEventDispatcher();
 
     export let actions = [];
+    export let events = [];
     export let state = {};
     export let playerId = '';
 
@@ -111,4 +113,5 @@
                     on:tokensDiscarded={handleTokensDiscarded}/>
         {/if}
     </div>
+    <Events state={state} events={events}/>
 </section>
