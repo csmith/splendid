@@ -4,6 +4,7 @@
     import Grid from "./splendid/Grid.svelte";
     import Gems from "./splendid/Gems.svelte";
     import Nobles from "./splendid/Nobles.svelte";
+    import DiscardTokens from "./splendid/DiscardTokens.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -16,6 +17,7 @@
     $: selectCard = actions.some(action => action.name === 'buy-card' || action.name === 'reserve-card');
     $: takeTokens = actions.some(action => action.name === 'take-tokens');
     $: receiveNoble = actions.some(action => action.name === 'receive-noble');
+    $: discardTokens = actions.some(action => action.name === 'discard-tokens');
 
     const handleJoinClick = () => dispatch('action', {name: 'join'});
     const handleStartClick = () => dispatch('action', {name: 'start'});
@@ -25,8 +27,12 @@
     })
     const handleBuyCard = ({detail}) => dispatch('action', {name: 'buy-card', args: {card: detail}});
     const handleReserveCard = ({detail}) => dispatch('action', {name: 'reserve-card', args: {card: detail}});
-    const handleReserveFromDeck = ({detail: level}) => dispatch('action', {name: 'reserve-card-from-deck', args: {level}});
+    const handleReserveFromDeck = ({detail: level}) => dispatch('action', {
+        name: 'reserve-card-from-deck',
+        args: {level}
+    });
     const handleReceiveNoble = ({detail}) => dispatch('action', {name: 'receive-noble', args: {noble: detail}});
+    const handleTokensDiscarded = ({detail}) => dispatch('action', {name: 'discard-tokens', args: {tokens: detail}});
 </script>
 
 <style>
@@ -79,6 +85,7 @@
         <button on:click={handleStartClick}>Start</button>
     </div>
 {/if}
+ 
 <section class="board">
     <Grid
             state={state}
@@ -94,4 +101,10 @@
             canSelect={receiveNoble}
             player={state.players[playerId]}
             on:receiveNoble={handleReceiveNoble}/>
+    {#if discardTokens}
+        <DiscardTokens
+                state={state}
+                player={state.players[playerId]}
+                on:tokensDiscarded={handleTokensDiscarded}/>
+    {/if}
 </section>
