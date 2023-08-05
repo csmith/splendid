@@ -2,20 +2,20 @@ import {Manager} from "socket.io-client";
 import {derived, get, writable} from "svelte/store";
 import {newPlayer} from "../common/player.js";
 import Engine from "../common/engine.js";
-import phases from "../splendid/phases.js";
+import game from "../splendid/game.js";
 
 export default class {
 
     #storage;
 
+    // TODO: Don't just use the splendid game :D
+    #engine = new Engine(game);
+
     #connected = writable(false);
     #player = writable(null);
     #gameType = writable(null);
     #gameId = writable(null);
-    #gameState = writable({phase: ''});
-
-    // TODO: Don't just use the splendid phases :D
-    #engine = derived(this.#gameState, $state => new Engine($state, phases));
+    #gameState = writable(this.#engine.state);
 
     #manager;
     #socket;
@@ -29,6 +29,7 @@ export default class {
         this.#socket.on('disconnect', () => this.#onDisconnect());
         this.#socket.on('game-joined', (args) => this.#onGameJoined(args));
         this.#socket.on('game-action', (args) => this.#onGameAction(args));
+        this.#socket.on('game-event', (args) => this.#onGameEvent(args));
     }
 
     on(event, callback) {
@@ -60,7 +61,15 @@ export default class {
     }
 
     get actions() {
-        return derived(this.#engine, $engine => $engine.actions(get(this.#player)));
+        return derived(this.#gameState, () => {
+            console.log(get(this.#gameState), get(this.#player));
+            const player = get(this.#player);
+            if (player) {
+                return this.#engine.actions(player);
+            } else {
+                return [];
+            }
+        });
     }
 
     get gameId() {
@@ -83,6 +92,8 @@ export default class {
         this.#player.set(player);
         this.#storage.setItem('player', JSON.stringify(player));
         this.#socket.emit('set-player', player);
+        // Bop the store as things may change now we know who we are
+        this.#gameState.set(get(this.#gameState));
     }
 
     startGame(game) {
@@ -111,15 +122,21 @@ export default class {
         this.#connected.set(false);
     }
 
-    #onGameAction({name, args, state}) {
+    #onGameAction({state}) {
         this.#gameState.set(state);
     }
 
-    #onGameJoined({type, id, state}) {
+    #onGameEvent(args) {
+        console.log('onGameEvent', args);
+        this.#engine.applyEvent(args);
+        this.#gameState.set(this.#engine.state);
+    }
+
+    #onGameJoined({type, id, events}) {
         this.#storage.setItem('game', id);
         this.#gameId.set(id);
-        this.#gameState.set(state);
         this.#gameType.set(type);
+        events.forEach((e) => this.#onGameEvent(e));
     }
 
 }

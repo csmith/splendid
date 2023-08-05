@@ -72,7 +72,8 @@ export default class {
         this.#gameId = id;
         this.#engine = engine;
         this.#engine.onAction((a) => this.#onEngineAction(a));
-        this.#socket.emit('game-joined', {id, type: engine.type, state: engine.stateFor(this.#player.id)})
+        this.#engine.onEvent((a) => this.#onEngineEvent(a));
+        this.#socket.emit('game-joined', {id, type: engine.type, events: engine.events})
     }
 
     #onClientJoinGame(code) {
@@ -110,8 +111,12 @@ export default class {
         this.#setGame(this.#server.startGame(name));
     }
 
-    #onEngineAction({name, args, state}) {
-        this.#socket.emit('game-action', {name, args, state: this.#engine.stateFor(this.#player.id, state)});
+    #onEngineAction(args) {
+        this.#socket.emit('game-action', args);
+    }
+
+    #onEngineEvent(args) {
+        this.#socket.emit('game-event', args);
     }
 
 };

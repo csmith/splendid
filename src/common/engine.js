@@ -5,18 +5,13 @@ export default class {
 
     #emitter = new EventEmitter();
 
+    #game;
     #state;
-    #phases;
-    #events;
-    #masker;
-    #type;
+    #events = [];
 
-    constructor(state, phases, events, masker, type) {
-        this.#state = state;
-        this.#phases = phases;
-        this.#events = events;
-        this.#masker = masker;
-        this.#type = type;
+    constructor(game) {
+        this.#game = game;
+        this.#state = _.cloneDeep(game.state);
     }
 
     onAction(handler) {
@@ -27,8 +22,16 @@ export default class {
         this.#emitter.off("action", handler);
     }
 
+    onEvent(handler) {
+        this.#emitter.on("event", handler);
+    }
+
+    offEvent(handler) {
+        this.#emitter.off("event", handler);
+    }
+
     get #phase() {
-        return this.#phases[this.#state.phase];
+        return this.#game.phases[this.#state.phase];
     }
 
     actions(player) {
@@ -66,10 +69,9 @@ export default class {
                     if (_.has(r, "action")) {
                         this.#perform(r.action, r.args);
                     } else if (_.has(r, "event")) {
-                        this.#handleEvent(r.event, r);
+                        this.applyEvent(r);
                     } else {
-                        this.#state = r;
-                        this.#emitter.emit("action", {name, args, state: r});
+                        console.log(`Invalid result of action ${name}: ${JSON.stringify(r)}`);
                     }
                 }
             } catch (e) {
@@ -78,17 +80,14 @@ export default class {
         });
     }
 
-    #handleEvent(name, args) {
-        const event = this.#events.find((e) => e.name === name);
-        if (!event) {
+    applyEvent({event, ...args}) {
+        const e = this.#game.events.find((e) => e.name === event);
+        if (!e) {
             throw new Error(`Event ${name} not found`);
         }
-        event.perform(this.#state, args);
-        this.#emitter.emit('event', args);
-    }
-
-    stateFor(player, state) {
-        return this.#masker(state || this.#state, player);
+        e.perform(this.#state, args);
+        this.#events.push({...args, event});
+        this.#emitter.emit('event', {...args, event});
     }
 
     get currentPlayer() {
@@ -100,7 +99,16 @@ export default class {
     }
 
     get type() {
-        return this.#type;
+        return this.#game.name;
+    }
+
+    get events() {
+        return this.#events;
+    }
+
+    // For tests
+    set state(state) {
+        this.#state = state;
     }
 
 }

@@ -9,8 +9,10 @@ import assert from "assert";
 import game from "../../../src/splendid/game.js";
 
 Before(function () {
+    this.engine = new Engine(game)
+
     this.setState = function (state) {
-        this.engine = new Engine(state, game.phases, game.events, game.masker, game.name)
+        this.engine.state = state;
     };
 
     this.playerState = function (name) {
@@ -53,8 +55,6 @@ Before(function () {
     }
 
     this.error = null;
-
-    this.setState(_.cloneDeep(state));
 });
 
 Given(/^the following players joined the game:$/, function (dataTable) {
