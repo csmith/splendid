@@ -7,12 +7,14 @@ export default class {
 
     #state;
     #phases;
+    #events;
     #masker;
     #type;
 
-    constructor(state, phases, masker, type) {
+    constructor(state, phases, events, masker, type) {
         this.#state = state;
         this.#phases = phases;
+        this.#events = events;
         this.#masker = masker;
         this.#type = type;
     }
@@ -59,13 +61,30 @@ export default class {
         const result = action.perform(this.#state, args);
 
         _.castArray(result).forEach((r) => {
-            if (_.has(r, "action")) {
-                this.#perform(r.action, r.args);
-            } else {
-                this.#state = r;
-                this.#emitter.emit("action", {name, args, state: r});
+            try {
+                if (!_.has(r, "if") || r.if) {
+                    if (_.has(r, "action")) {
+                        this.#perform(r.action, r.args);
+                    } else if (_.has(r, "event")) {
+                        this.#handleEvent(r.event, r);
+                    } else {
+                        this.#state = r;
+                        this.#emitter.emit("action", {name, args, state: r});
+                    }
+                }
+            } catch (e) {
+                console.log(`Failed to process result of action ${name}`, e);
             }
         });
+    }
+
+    #handleEvent(name, args) {
+        const event = this.#events.find((e) => e.name === name);
+        if (!event) {
+            throw new Error(`Event ${name} not found`);
+        }
+        event.perform(this.#state, args);
+        this.#emitter.emit('event', args);
     }
 
     stateFor(player, state) {

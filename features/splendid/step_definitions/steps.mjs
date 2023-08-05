@@ -1,16 +1,16 @@
 import {Before, Given, Then, When} from "@cucumber/cucumber";
 import state from "../../../src/splendid/state.js";
 import Engine from "../../../src/common/engine.js";
-import phases from "../../../src/splendid/phases.js";
 import {newPlayer} from "../../../src/common/player.js";
 import {findPlayerByName} from "../../../src/common/state.js";
 import {replaceNth} from "../../../src/common/util.js";
 import _ from "lodash";
 import assert from "assert";
+import game from "../../../src/splendid/game.js";
 
 Before(function () {
     this.setState = function (state) {
-        this.engine = new Engine(state, phases, (e) => e, 'Splendid')
+        this.engine = new Engine(state, game.phases, game.events, game.masker, game.name)
     };
 
     this.playerState = function (name) {
@@ -321,6 +321,6 @@ Then(/^(.*?) will have the following reserved cards:$/, function (playerName, da
     assert.ok(_.isEqual(actual, expected));
 });
 
-Then(/^the size of deck (\d+) will be (\d+)$/, function(deck, size) {
-    assert.equal(this.engine.state.decks[deck-1].length, size);
+Then(/^the size of deck (\d+) will be (\d+)$/, function (deck, size) {
+    assert.equal(this.engine.state.decks[deck - 1].length, size);
 });

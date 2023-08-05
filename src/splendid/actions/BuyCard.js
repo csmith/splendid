@@ -29,30 +29,34 @@ export default {
         const missingCount = _.sum(Object.values(missing));
 
         const deductions = {...subtractObjects(cost, missing), gold: missingCount};
-        const newScore = playerData.points + card.points;
 
-        return _.concat(
+        return [
             {
-                ...state,
-                players: {
-                    ...state.players,
-                    [player.id]: {
-                        ...playerData,
-                        points: newScore,
-                        tokens: subtractObjects(playerData.tokens, deductions),
-                        reserved: reserveIndex === -1 ? playerData.reserved : [
-                            ...playerData.reserved.slice(0, reserveIndex),
-                            ...playerData.reserved.slice(reserveIndex + 1),
-                        ],
-                        bonuses: {
-                            ...playerData.bonuses,
-                            [card.bonus]: playerData.bonuses[card.bonus] + 1,
-                        }
-                    }
-                },
-                tokens: addObjects(state.tokens, deductions),
+                if: _.sum(Object.values(deductions)) > 0,
+                event: 'return-tokens',
+                tokens: deductions,
             },
-            index === -1 ? [] : {
+            {
+                if: reserveIndex !== -1,
+                event: 'discard-reserve',
+                card,
+            },
+            {
+                if: index !== -1,
+                event: 'discard-card',
+                card,
+            },
+            {
+                if: card.points > 0,
+                event: 'add-points',
+                points: card.points,
+            },
+            {
+                event: 'add-bonus',
+                type: card.bonus,
+            },
+            {
+                if: index > -1,
                 action: 'deal',
                 args: {
                     level: card.level - 1,
@@ -62,6 +66,6 @@ export default {
             {
                 action: 'end-turn',
             },
-        );
+        ];
     },
 }
