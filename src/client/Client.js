@@ -62,10 +62,9 @@ export default class {
 
     get actions() {
         return derived(this.#gameState, () => {
-            console.log(get(this.#gameState), get(this.#player));
             const player = get(this.#player);
             if (player) {
-                return this.#engine.actions(player);
+                return this.#engine.actions(player).map((a) => a.name);
             } else {
                 return [];
             }

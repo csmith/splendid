@@ -13,12 +13,12 @@
     export let state = {};
     export let playerId = '';
 
-    $: showJoin = actions.some(action => action.name === 'join');
-    $: showStart = actions.some(action => action.name === 'start');
-    $: selectCard = actions.some(action => action.name === 'buy-card' || action.name === 'reserve-card');
-    $: takeTokens = actions.some(action => action.name === 'take-tokens');
-    $: receiveNoble = actions.some(action => action.name === 'receive-noble');
-    $: discardTokens = actions.some(action => action.name === 'discard-tokens');
+    $: showJoin = actions.includes('join');
+    $: showStart = actions.includes('start');
+    $: selectCard = actions.includes('buy-card') || actions.includes('reserve-card');
+    $: takeTokens = actions.includes('take-tokens');
+    $: receiveNoble = actions.includes('receive-noble');
+    $: discardTokens = actions.includes('discard-tokens');
 
     const handleJoinClick = () => dispatch('action', {name: 'join'});
     const handleStartClick = () => dispatch('action', {name: 'start'});
