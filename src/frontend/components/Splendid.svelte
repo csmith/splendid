@@ -85,7 +85,7 @@
         <button on:click={handleStartClick}>Start</button>
     </div>
 {/if}
- 
+
 <section class="board">
     <Grid
             state={state}
