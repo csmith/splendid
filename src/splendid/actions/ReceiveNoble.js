@@ -9,7 +9,7 @@ export default {
     },
 
     perform: function (state, {player, noble}) {
-        const index = _.findIndex(state.nobles, (n) => _.isEqual(n, noble));
+        const index = _.findIndex(state.nobles, (n) => n.id === noble.id);
         if (index === -1) {
             throw new Error('Noble not found');
         }

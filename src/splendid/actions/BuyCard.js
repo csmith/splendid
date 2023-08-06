@@ -11,8 +11,8 @@ export default {
     },
 
     perform: function (state, {player, card}) {
-        const index = _.findIndex(state.cards[card.level - 1], (c) => _.isEqual(c, card));
-        const reserveIndex = _.findIndex(state.players[player.id].reserved, (c) => _.isEqual(c, card));
+        const index = _.findIndex(state.cards[card.level - 1], (c) => c.id === card.id);
+        const reserveIndex = _.findIndex(state.players[player.id].reserved, (c) => c.id === card.id);
 
         if (index === -1 && reserveIndex === -1) {
             throw new Error('Card not found');

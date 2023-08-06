@@ -77,7 +77,7 @@
 
 <section>
     {#each state.nobles as noble}
-        <div class="noble" class:selectable={canSelect && canReceiveNoble(player, noble)} on:click={() => receiveNoble(noble)}>
+        <div class="noble" id="noble-{noble.id}" class:selectable={canSelect && canReceiveNoble(player, noble)} on:click={() => receiveNoble(noble)}>
             <span class="score">3</span>
             <ul class="costs">
                 {#each Object.entries(noble.cost) as entry}

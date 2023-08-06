@@ -27,6 +27,7 @@
      *
      * @param {boolean?} opts.hideSource If truthy, hide the source element
      * @param {string?} opts.innerText If set, replace the inner text of the copy
+     * @param {number?} opts.duration If set, the duration of the animation
      */
     const copyAndMoveElement = async (source, target, opts) => {
         const sourceOffset = getOffset(source);
@@ -49,7 +50,16 @@
             translateX: targetOffset.left - sourceOffset.left,
             translateY: targetOffset.top - sourceOffset.top,
             easing: 'easeInOutQuad',
-            complete: () => document.body.removeChild(copy),
+            complete: () => {
+                document.body.removeChild(copy)
+                if (opts.hideSource) {
+                    // Make sure it becomes visible again, if nothing else changes it
+                    setTimeout(() => {
+                        source.style.visibility = 'visible';
+                    }, 100);
+                }
+            },
+            duration: opts.duration || 500,
         }).finished;
     }
 
@@ -62,7 +72,7 @@
     }
 
     const animateCard = async (card, endContainer) => {
-        const index = _.findIndex(state.cards[card.level-1], (c) => _.isEqual(c, card));
+        const index = _.findIndex(state.cards[card.level-1], (c) => c.id === card.id);
         if (index === -1) {
             return;
         }
@@ -80,7 +90,7 @@
                 document.querySelector(`#player-${e.playerId}`)) :
             document.querySelector(`.placeholder.level${e.level-1}`);
 
-        return copyAndMoveElement(source, target, {innerText: ''});
+        return copyAndMoveElement(source, target, {innerText: '', duration: 100});
     }
 
     /**
@@ -99,7 +109,7 @@
             ],
             duration: 1000,
             begin: () => el.style.zIndex = 1000,
-            end: () => el.style.zIndex = originZIndex,
+            complete: () => el.style.zIndex = originZIndex,
             update: (anim) => {
                 if (anim.progress > 40 && !updated) {
                     updated = true;
@@ -146,9 +156,15 @@
                 break;
             case 'discard-reserve':
                 if (e.playerId === playerId) {
-                    const index = _.findIndex(state.players[playerId].reserved, (c) => _.isEqual(c, e.card));
+                    const index = _.findIndex(state.players[playerId].reserved, (c) => c.id === e.card.id);
                     await copyAndMoveElement(document.querySelector(`#reserve-${index}`), document.querySelector(`#player-${e.playerId}`), {hideSource: true});
                 }
+                break;
+            case 'receive-noble':
+                await copyAndMoveElement(document.querySelector(`#noble-${e.noble.id}`), document.querySelector(`#player-${e.playerId}`), {hideSource: true});
+                break;
+            case 'place-card':
+                // Do nothing – we've already animated the deal
                 break;
             default:
                 await wait(250);
