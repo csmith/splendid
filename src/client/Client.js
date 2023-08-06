@@ -22,6 +22,8 @@ export default class {
     #pendingEvents = [];
     #nextEvent = writable(null);
 
+    #gameToJoin;
+
     #manager;
     #socket;
 
@@ -29,6 +31,11 @@ export default class {
         this.#storage = storage;
         this.#manager = new Manager('ws:///', {autoConnect: false});
         this.#socket = this.#manager.socket('/game-server');
+
+        const savedPlayer = this.#storage.getItem('player');
+        if (savedPlayer) {
+            this.#player.set(JSON.parse(savedPlayer))
+        }
 
         this.#socket.on('connect', () => this.#onConnect());
         this.#socket.on('disconnect', () => this.#onDisconnect());
@@ -103,6 +110,10 @@ export default class {
         this.#socket.emit('set-player', player);
         // Bop the store as things may change now we know who we are
         this.#gameState.set(get(this.#gameState));
+
+        if (this.#gameToJoin) {
+            this.joinGame(this.#gameToJoin);
+        }
     }
 
     startGame(game) {
@@ -129,11 +140,10 @@ export default class {
 
     #onConnect() {
         this.#connected.set(true);
-        if (this.#storage.getItem('player')) {
-            this.#setPlayer(JSON.parse(this.#storage.getItem('player')));
-        }
-        if (this.#storage.getItem('game')) {
-            this.joinGame(this.#storage.getItem('game'));
+
+        const player = get(this.#player);
+        if (player) {
+            this.#setPlayer(player);
         }
     }
 
@@ -153,7 +163,6 @@ export default class {
     }
 
     #onGameJoined({type, id, events}) {
-        this.#storage.setItem('game', id);
         this.#gameId.set(id);
         this.#gameType.set(type);
         events.forEach((e) => this.#processEvent(e));
@@ -175,6 +184,13 @@ export default class {
 
     get nextEvent() {
         return this.#nextEvent;
+    }
+
+    set game(value) {
+        this.#gameToJoin = value;
+        if (this.#socket.connected && get(this.#player)) {
+            this.joinGame(value)
+        }
     }
 
 }
