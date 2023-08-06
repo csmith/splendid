@@ -12,4 +12,6 @@ RUN npm run build
 
 EXPOSE 3000
 
+VOLUME /usr/src/app/data
+
 CMD [ "npm", "run", "run" ]
