@@ -20,12 +20,13 @@ export default {
         }
 
         const card = state.decks[level-1][0];
-        const playerData = findPlayer(state, player);
         const getsGold = state.tokens.gold > 0;
 
         return [
             {
                 event: 'remove-card-from-deck',
+                playerId: state.turn,
+                reason: 'reserve',
                 level,
             },
             {

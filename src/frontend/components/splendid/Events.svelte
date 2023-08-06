@@ -18,7 +18,11 @@
             case 'add-points':
                 return `${player} gains ${e.points} points`;
             case 'change-player':
-                return `It is now ${player}'s turn`;
+                if (player) {
+                    return `It is now ${player}'s turn`;
+                } else {
+                    return `It is no-one's turn`;
+                }
             case 'change-phase':
                 return `The game is now in the "${e.phase}" phase`;
             case 'discard-card':

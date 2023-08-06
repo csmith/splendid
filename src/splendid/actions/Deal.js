@@ -12,6 +12,7 @@ export default {
         return [
             {
                 event: 'remove-card-from-deck',
+                reason: 'deal',
                 level,
             },
             {

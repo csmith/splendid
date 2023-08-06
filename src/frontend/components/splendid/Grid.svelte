@@ -209,7 +209,7 @@
                 {state.decks[level].length}
             </div>
         {:else}
-            <div class="placeholder"></div>
+            <div class="placeholder" id="deck{level}"></div>
         {/if}
         {#each state.cards[level] as card, i}
             {#if card}
@@ -228,7 +228,7 @@
                     {/if}
                 </div>
             {:else}
-                <div class="placeholder" id="placeholder-{level}-{i}"></div>
+                <div class="placeholder level{level}"></div>
             {/if}
         {/each}
     {/each}
@@ -240,7 +240,7 @@
         </div>
         {#each [0, 1, 2] as index}
             {#if player.reserved.length > index}
-                <div class="card level{player.reserved[index].level-1}"
+                <div class="card level{player.reserved[index].level-1}" id="reserve-{index}"
                      on:click={() => selectCard(player.reserved[index])}>
                     {#if player.reserved[index].points > 0}
                         <span class="score">{player.reserved[index].points}</span>

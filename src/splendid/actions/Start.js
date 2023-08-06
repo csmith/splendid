@@ -22,7 +22,8 @@ export default {
     perform: function (state) {
         const players = countPlayers(state);
         const tokensToRemove = tokensToRemovePerPlayerCount[players];
-        const decks = _.times(3, (level) => _.filter(cards, (c) => c.level === level + 1));
+        const cardsWithIds = cards.map((i) => ({...i, id: crypto.randomUUID()}));
+        const decks = _.times(3, (level) => _.filter(cardsWithIds, (c) => c.level === level + 1));
         const turnOrder = _.shuffle(Object.keys(state.players));
 
         return _.concat(

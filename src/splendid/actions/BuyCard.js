@@ -1,5 +1,5 @@
 import _ from "lodash";
-import {addObjects, subtractObjects} from "../../common/util.js";
+import {subtractObjects} from "../../common/util.js";
 import {findPlayer} from "../../common/state.js";
 import {canAffordCard, costForCard} from "../util.js";
 
@@ -46,6 +46,7 @@ export default {
             {
                 if: index !== -1,
                 event: 'discard-card',
+                reason: 'buy',
                 playerId: state.turn,
                 card,
             },

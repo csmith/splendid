@@ -91,7 +91,7 @@ export default class {
         if (!e) {
             throw new Error(`Event ${name} not found`);
         }
-        e.perform(this.#state, args);
+        e.perform(this.#state, _.cloneDeep(args));
         this.#events.push({...args, event});
         this.#emitter.emit('event', {...args, event});
     }

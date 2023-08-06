@@ -21,6 +21,7 @@ export default {
         return _.concat(
             {
                 event: 'discard-card',
+                reason: 'reserve',
                 playerId: state.turn,
                 card,
             },

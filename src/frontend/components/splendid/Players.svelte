@@ -41,6 +41,7 @@
         color: white;
         font-weight: bold;
         margin: 5px;
+        position: relative;
     }
 
     ul, li {
@@ -49,12 +50,23 @@
         list-style-type: none;
     }
 
+    section > ul > li {
+        padding: 5px;
+    }
+
     h3 {
         margin: 0;
     }
 
     .points {
         display: inline-block;
+        position: relative;
+        background-color: white;
+        border: 1px solid black;
+        width: 1em;
+        height: 1em;
+        padding: 3px;
+        line-height: 1;
     }
 </style>
 
@@ -62,7 +74,7 @@
     <ul>
         {#each _.sortBy(Object.values(state.players), 'order') as player}
             <li id="player-{player.details.id}">
-                <h3>{#if state.turn === player.details.id}⏵{/if} {player.details.name} (<span class="points">{player.points}</span>)</h3>
+                <h3>{#if state.turn === player.details.id}⏵{/if} {player.details.name} <span class="points">{player.points}</span></h3>
                 <ul>
                     <li>
                         {#each Object.entries(player.tokens) as pair}
