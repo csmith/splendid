@@ -223,7 +223,7 @@
                             <li><span class="cost {entry[0]}">{entry[1]}</span></li>
                         {/each}
                     </ul>
-                    {#if canAffordCard(player, card)}
+                    {#if player && canAffordCard(player, card)}
                         <span class="affordable">✅</span>
                     {/if}
                 </div>
