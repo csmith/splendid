@@ -88,3 +88,15 @@ The base game is fully implemented, but the graphical frontend is rough and
 bare-bones.
 No expansions or variants are implemented yet.
 
+## Detailed implementation notes
+
+### Security
+
+To prevent clients from connecting using another player's ID (which is easily
+obtainable from the game state), clients generate a public/private keypair when
+first connecting to the server.
+If a client tries to join a game where a player with the same ID is already
+playing, the server will validate that they have access to the same private key.
+This is achieved by having clients sign a payload consisting of their socket ID,
+game code and current time.
+ 

@@ -85,11 +85,11 @@ export default class {
         )
     }
 
-    #onClientJoinGame(code) {
+    #onClientJoinGame({code, verification}) {
         this.#requirePlayer();
         this.#requireNoEngine();
 
-        this.#setGame(this.#server.joinGame(code, this.#player));
+        this.#setGame(this.#server.joinGame(code, verification, this.#player, this.#socket.id));
     }
 
     #onClientPerformAction(name, args) {
@@ -99,7 +99,7 @@ export default class {
         this.#engine.perform(name, this.#player, args);
     }
 
-    #onClientSetPlayer({id, name}) {
+    #onClientSetPlayer({id, name, publicKey}) {
         this.#requireNoPlayer();
 
         if (!name || name.size < 1 || name.size > 20 || !/^[a-zA-Z0-9 \-]+$/.test(name)) {
@@ -110,7 +110,11 @@ export default class {
             throw new Error('Invalid player id');
         }
 
-        this.#player = {id, name};
+        if (!publicKey) {
+            throw new Error('Invalid public key');
+        }
+
+        this.#player = {id, name, publicKey};
     }
 
     #onClientStartGame(name) {

@@ -3,6 +3,7 @@ import {derived, get, writable} from "svelte/store";
 import {newPlayer} from "../common/player.js";
 import Engine from "../common/engine.js";
 import game from "../splendid/game.js";
+import {createAttestation, getPublicKey, newPrivateKey} from "../common/crypto.js";
 
 export default class {
 
@@ -91,7 +92,9 @@ export default class {
     }
 
     createPlayer(displayName) {
-        this.#setPlayer(newPlayer(displayName));
+        const key = newPrivateKey();
+        this.#storage.setItem('player-key', key);
+        this.#setPlayer(newPlayer(displayName, getPublicKey(key)));
     }
 
     #setPlayer(player) {
@@ -107,11 +110,21 @@ export default class {
     }
 
     joinGame(code) {
-        this.#socket.emit('join-game', code);
+        // When joining an existing game, there may already be a player with the same ID.
+        // To prevent other people from impersonating that player, we sign a small chunk of data with our private key.
+        // The server can then verify that we have the private key for the player ID we claim to have.
+        // If the server hasn't seen the player before, it will store the given public key for future verification.
+        this.#socket.emit('join-game', {
+            code,
+            verification: createAttestation(
+                {code, ts: Date.now(), id: this.#socket.id},
+                this.#storage.getItem('player-key'),
+            )
+        });
     }
 
     perform(action, args) {
-         this.#socket.emit('perform-action', action, {...args, player: get(this.#player)});
+        this.#socket.emit('perform-action', action, {...args, player: get(this.#player)});
     }
 
     #onConnect() {
@@ -120,7 +133,7 @@ export default class {
             this.#setPlayer(JSON.parse(this.#storage.getItem('player')));
         }
         if (this.#storage.getItem('game')) {
-            this.#socket.emit('join-game', this.#storage.getItem('game'));
+            this.joinGame(this.#storage.getItem('game'));
         }
     }
 
