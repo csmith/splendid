@@ -3,8 +3,12 @@ import Splendid from "../splendid/game.js";
 import Connection from "./Connection.js";
 import Engine from "../common/engine.js";
 import {verify} from "../common/crypto.js";
+import fs from "fs";
+import path from "path";
 
 export default class {
+
+    #storageDir;
 
     #io;
     #games = {};
@@ -14,6 +18,12 @@ export default class {
     ];
 
     #sockets = {};
+
+    constructor(storageDir) {
+        this.#storageDir = storageDir || './data';
+
+        setInterval(() => this.saveGames(), 1000 * 60);
+    }
 
     bind(server) {
         this.#io = new Server(server, {cors: {origin: '*'}});
@@ -37,8 +47,39 @@ export default class {
         return {id, engine, masker: game.masker};
     }
 
+    #loadGame(id) {
+        if (this.#games[id]) {
+            return this.#games[id];
+        }
+
+        if (fs.existsSync(path.join(this.#storageDir, `${id}.json`))) {
+            const {version, game, events} = JSON.parse(fs.readFileSync(path.join(this.#storageDir, `${id}.json`)));
+            if (version !== 1) {
+                throw new Error(`Invalid saved state version ${version}`);
+            }
+
+            const engine = new Engine(this.#availableGames.find(g => g.name === game));
+            events.forEach(event => engine.applyEvent(event));
+
+            this.#games[id] = engine;
+            return engine;
+        }
+
+        throw new Error(`Game ${id} not found`);
+    }
+
+    saveGames() {
+        Object.entries(this.#games).forEach(([id, engine]) => {
+            fs.writeFileSync(path.join(this.#storageDir, `${id}.json`), JSON.stringify({
+                version: 1,
+                game: engine.type,
+                events: engine.events
+            }));
+        });
+    }
+
     joinGame(id, verification, player, socketId) {
-        const engine = this.#games[id];
+        const engine = this.#loadGame(id);
         if (!engine) {
             throw new Error(`Game ${id} not found`);
         }

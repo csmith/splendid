@@ -7,7 +7,17 @@ const port = 3000;
 const app = express();
 const httpServer = createServer(app);
 
-const server = new Server();
+const server = new Server('./data');
+
+function exitHandler(code) {
+    server.saveGames();
+    process.exit(code);
+}
+
+process.on('SIGQUIT', exitHandler);
+process.on('SIGINT', exitHandler);
+process.on('SIGTERM', exitHandler);
+
 server.bind(httpServer);
 
 app.use(handler);
