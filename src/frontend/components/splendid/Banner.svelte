@@ -1,9 +1,19 @@
 <script>
+    import { calculateWinners } from '../../../splendid/util.js';
     export let state;
 
     export let playerId;
 
     $: pronoun = state.turn === playerId ? 'You' : 'They';
+
+    const winnerNames = () => {
+        const winners = calculateWinners(state).map((id) => state.players[id].details.name);
+        if (winners.length === 1) {
+            return `${winners[0]} wins!`
+        } else {
+            return `It's a tie! ${winners.join(' and ')} win!`
+        }
+    }
 </script>
 
 <style>
@@ -40,7 +50,7 @@
         {:else if state.phase === 'noble'}
             {pronoun} must select a noble to receive.
         {:else if state.phase === 'end'}
-            Game over!
+            Game over! {winnerNames()}
         {/if}
     {/if}
 </section>
