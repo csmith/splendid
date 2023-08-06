@@ -69,7 +69,13 @@ export default class {
                     if (_.has(r, "action")) {
                         this.#perform(r.action, r.args);
                     } else if (_.has(r, "event")) {
-                        this.applyEvent(r);
+                        this.applyEvent({
+                            ...r,
+                            meta: {
+                                id: crypto.randomUUID(),
+                                ts: Date.now(),
+                            },
+                        });
                     } else {
                         console.log(`Invalid result of action ${name}: ${JSON.stringify(r)}`);
                     }
