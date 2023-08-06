@@ -29,7 +29,7 @@ export default class {
 
     constructor(storage = window.localStorage) {
         this.#storage = storage;
-        this.#manager = new Manager('ws:///', {autoConnect: false});
+        this.#manager = new Manager((location.protocol === 'https:' ? 'wss:///' : 'ws:///'), {autoConnect: false});
         this.#socket = this.#manager.socket('/game-server');
 
         const savedPlayer = this.#storage.getItem('player');
