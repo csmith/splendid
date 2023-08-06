@@ -1,7 +1,8 @@
 import _ from "lodash";
 
 export function findPlayer(state, player) {
-    return state.players[player.id];
+    const id = player.id || player;
+    return state.players[id];
 }
 
 export function findPlayerByName(state, name) {

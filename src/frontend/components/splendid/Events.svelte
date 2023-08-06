@@ -1,5 +1,6 @@
 <script>
     import _ from 'lodash';
+    import {isFirstPlayer} from "../../../common/state.js";
 
     export let state;
     export let events = [];
@@ -53,10 +54,22 @@
     }
 </script>
 
+<style>
+    .round-end {
+        height: 3px;
+        background-color: black;
+    }
+</style>
+
 <section>
     <ul>
         {#each events.slice().reverse() as event}
-            <li>{pretty(event)}</li>
+            <li>
+                {pretty(event)}
+            </li>
+            {#if event.event === 'change-player' && event.playerId}
+                <hr class="turn-end" class:round-end={isFirstPlayer(state, event.playerId)}>
+            {/if}
         {/each}
     </ul>
 </section>
