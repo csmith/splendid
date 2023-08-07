@@ -1,6 +1,7 @@
 <script>
     import _ from "lodash";
     import {createEventDispatcher} from "svelte";
+    import Gem from "./Gem.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -60,8 +61,24 @@
 
     ul {
         display: flex;
-        gap: 5px;
+        gap: 20px;
         align-items: center;
+    }
+
+    .holder {
+        position: relative;
+    }
+
+    .amount {
+        position: absolute;
+        top: 2.1em;
+        left: 2.1em;
+        background-color: white;
+        border: 2px solid black;
+        border-radius: 100%;
+        width: 1.5em;
+        height: 1.5em;
+        text-align: center;
     }
 
     .token {
@@ -75,30 +92,43 @@
         border: 2px solid black;
     }
 
-    .selectable.token, .take.token {
+    .selectable .token, .take .token {
         cursor: pointer;
-        box-shadow: 0 0 10px red;
+        box-shadow: 0 0 5px red;
+    }
+
+    button {
+        margin-top: 20px;
     }
 </style>
 
 <section>
+    <h3>Gem supply</h3>
     <ul id="token-supply">
         {#each Object.entries(state.tokens) as pair}
-            <li class="token {pair[0]}" class:selectable={canSelect[pair[0]]}
-                on:click|preventDefault={() => selectGem(pair[0])}>{pair[1]}</li>
+            <li class="holder" class:selectable={canSelect[pair[0]]}
+                on:click|preventDefault={() => selectGem(pair[0])}>
+                <span class="token {pair[0]}">
+                    <Gem type={pair[0]}/>
+                </span>
+                <span class="amount">{pair[1]}</span>
+            </li>
         {/each}
-        {#if _.sum(Object.values(selected)) > 0}
-            <li>You will take ==&gt;</li>
+    </ul>
+    {#if _.sum(Object.values(selected)) > 0}
+        <h3>You will take</h3>
+        <ul id="token-selection">
             {#each Object.entries(selected) as pair}
                 {#if pair[1] > 0}
-                    <li class="take token {pair[0]}" on:click|preventDefault={() => unselectGem(pair[0])}>{pair[1]}</li>
+                    <li class="holder take" on:click|preventDefault={() => unselectGem(pair[0])}>
+                        <span class="token {pair[0]}">
+                            <Gem type={pair[0]}/>
+                        </span>
+                        <span class="amount">{pair[1]}</span>
+                    </li>
                 {/if}
             {/each}
-            {#if hasFullSelection}
-                <li>
-                    <button on:click={submitSelection}>Take</button>
-                </li>
-            {/if}
-        {/if}
-    </ul>
+        </ul>
+        <button on:click={submitSelection} disabled={!hasFullSelection}>Take</button>
+    {/if}
 </section>
