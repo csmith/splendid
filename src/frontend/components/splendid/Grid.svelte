@@ -3,6 +3,7 @@
     import {createEventDispatcher} from "svelte";
     import Gem from "./Gem.svelte";
     import Card from "./Card.svelte";
+    import CardBack from "./CardBack.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -67,67 +68,6 @@
         border: 1px solid black;
     }
 
-    .back.level0 {
-        background-color: #5a7263;
-    }
-
-    .back.level1 {
-        background-color: #706e5c;
-    }
-
-    .back.level2 {
-        background-color: #545b6b;
-    }
-
-    .back {
-        text-align: center;
-        color: white;
-    }
-
-    .score {
-        position: absolute;
-        top: 0;
-        left: 0;
-        font-size: 30px;
-        line-height: 1;
-        padding: 3px 5px 5px 5px;
-        color: white;
-        text-shadow: 0 0 5px black;
-    }
-
-    .bonus {
-        position: absolute;
-        top: 0;
-        right: 0;
-        color: white;
-        width: 30px;
-        height: 30px;
-        padding: 5px;
-    }
-
-    .costs {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-    }
-
-    .affordable {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        font-size: 1.5em;
-        line-height: 1;
-        padding: 5px;
-    }
-
-    .cost {
-        color: white;
-        padding: 2px 4px;
-        display: block;
-        border-top: 1px solid black;
-        border-right: 1px solid black;
-    }
-
     .header {
         color: white;
     }
@@ -185,9 +125,7 @@
 <section class:canSelect="{canSelect}">
     {#each levels as level}
         {#if state.decks[level].length > 0}
-            <div class="card back level{level}" id="deck{level}" on:click={() => selectDeck(level)}>
-                {state.decks[level].length}
-            </div>
+            <CardBack level={level+1} count={state.decks[level].length} on:click={() => selectDeck(level)}/>
         {:else}
             <div class="placeholder" id="deck{level}"></div>
         {/if}
