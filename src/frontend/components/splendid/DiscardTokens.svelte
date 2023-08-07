@@ -52,12 +52,6 @@
         text-align: center;
     }
 
-    ul, li {
-        margin: 0;
-        padding: 0;
-        list-style-type: none;
-    }
-
     ul {
         display: flex;
         gap: 15px;
@@ -65,6 +59,9 @@
         justify-content: center;
     }
 
+    p {
+        margin: 15px 0;
+    }
 </style>
 
 <dialog bind:this={dialog}>
@@ -72,7 +69,7 @@
     <ul>
         {#each Object.entries(player.tokens) as pair}
             <li>
-                <GemCounter type={pair[0]} amount={pair[1] - selection[pair[0]]} interactive={true}
+                <GemCounter type={pair[0]} amount={pair[1] - selection[pair[0]]} interactive={pair[1] - selection[pair[0]] > 0}
                             on:click={() => selectToken(pair[0])}/>
             </li>
         {/each}
@@ -81,17 +78,22 @@
     <ul>
         {#each Object.entries(selection) as pair}
             <li>
-                <GemCounter type={pair[0]} amount={pair[1]} interactive={true} on:click={() => deselectToken(pair[0])}/>
+                <GemCounter type={pair[0]} amount={pair[1]} interactive={pair[1] > 0} on:click={() => deselectToken(pair[0])}/>
             </li>
         {/each}
     </ul>
     <p>You have {totalTokens} tokens, so must discard {numberToDiscard} to bring your total down to 10.</p>
     <p>
-        You have selected {selectedTokens}. Select
-        {#if numberRemaining > 0}
-            {numberRemaining} more.
+        You have selected {selectedTokens}.
+        {#if numberRemaining === 0}
+            Good job!
         {:else}
-            {numberRemaining * -1} less.
+            Select
+            {#if numberRemaining > 0}
+                {numberRemaining} more.
+            {:else}
+                {numberRemaining * -1} less.
+            {/if}
         {/if}
     </p>
     <button on:click={handleSubmit} disabled={!selectedEnough}>Discard</button>
