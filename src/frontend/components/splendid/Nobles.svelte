@@ -84,7 +84,7 @@
                     <li><span class="cost {entry[0]}">{entry[1]}</span></li>
                 {/each}
             </ul>
-            {#if canReceiveNoble(player, noble)}
+            {#if player && canReceiveNoble(player, noble)}
                 <span class="affordable">✅</span>
             {/if}
         </div>
