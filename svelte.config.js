@@ -5,7 +5,7 @@ const config = {
     kit: {
         adapter: adapter(),
         files: {
-            assets: 'src/frontend/static',
+            assets: 'static',
             routes: 'src/frontend/routes',
             appTemplate: 'src/frontend/app.html'
         },

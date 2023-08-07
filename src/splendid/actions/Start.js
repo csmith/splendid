@@ -25,7 +25,6 @@ export default {
         const cardsWithIds = cards.map((i) => ({...i, id: crypto.randomUUID()}));
         const decks = _.times(3, (level) => _.filter(cardsWithIds, (c) => c.level === level + 1));
         const turnOrder = _.shuffle(Object.keys(state.players));
-        const noblesWithIds = nobles.map((i) => ({...i, id: crypto.randomUUID()}));
 
         return _.concat(
             {
@@ -38,7 +37,7 @@ export default {
                     ruby: 7 - tokensToRemove,
                     gold: 5,
                 },
-                nobles: _.take(_.shuffle(noblesWithIds), players + 1),
+                nobles: _.take(_.shuffle(nobles), players + 1),
                 decks: decks.map((d) => _.shuffle(d)),
             },
             {
