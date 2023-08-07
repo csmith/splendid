@@ -80,7 +80,7 @@
     }
 
     const animateDeal = async(e) => {
-        const source = document.querySelector(`#deck${e.level-1}`);
+        const source = document.querySelector(`#deck${e.level}`);
         const target = e.reason === 'reserve' ?
             (e.playerId === playerId ?
                 document.querySelector(`#reserve-${state.players[e.playerId].reserved.length}`) :

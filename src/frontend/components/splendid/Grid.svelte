@@ -4,6 +4,7 @@
     import Gem from "./Gem.svelte";
     import Card from "./Card.svelte";
     import CardBack from "./CardBack.svelte";
+    import CardPlaceholder from "./CardPlaceholder.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -129,13 +130,13 @@
         {#if state.decks[level].length > 0}
             <CardBack level={level+1} count={state.decks[level].length} on:click={() => selectDeck(level)}/>
         {:else}
-            <div class="placeholder" id="deck{level}"></div>
+            <CardPlaceholder id="deck{level}"/>
         {/if}
         {#each state.cards[level] as card, i}
             {#if card}
                 <Card card={card} player={player} on:click={() => selectCard(card)}/>
             {:else}
-                <div class="placeholder level{level}"></div>
+                <CardPlaceholder classes="placeholder level{level}"/>
             {/if}
         {/each}
     {/each}
@@ -147,7 +148,7 @@
             {#if player.reserved.length > index}
                 <Card card={player.reserved[index]} player={player} on:click={() => selectCard(player.reserved[index])}/>
             {:else}
-                <div class="placeholder" id="reserve-{index}"></div>
+                <CardPlaceholder id="reserve-{index}"/>
             {/if}
         {/each}
     {/if}

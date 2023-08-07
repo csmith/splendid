@@ -50,9 +50,13 @@
     .level3 {
         background-color: #545b6b;
     }
+
+    .deck {
+        cursor: pointer;
+    }
 </style>
 
-<div class="back level{level}" id="deck{level}" class:many={count && count > 2} class:many-many={count && count > 10} on:click={() => dispatch('click')}>
+<div class="back level{level}" id="deck{level}" class:deck={!!count} class:many={count && count > 2} class:many-many={count && count > 10} on:click={() => dispatch('click')}>
     {#if count}
         <span class="count">{count}</span>
     {/if}
