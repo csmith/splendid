@@ -5,7 +5,7 @@
 
 <style>
     div {
-        border: 1px solid lightgray;
+        border: 1px solid var(--background-contrast);
         border-radius: 10px;
     }
 </style>

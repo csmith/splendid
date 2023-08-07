@@ -53,26 +53,32 @@
 
     :global(.emerald) {
         background-color: var(--emerald-colour);
+        color: black;
     }
 
     :global(.diamond) {
         background-color: var(--diamond-colour);
+        color: black;
     }
 
     :global(.onyx) {
         background-color: var(--onyx-colour);
+        color: black;
     }
 
     :global(.ruby) {
         background-color: var(--ruby-colour);
+        color: black;
     }
 
     :global(.sapphire) {
         background-color: var(--sapphire-colour);
+        color: black;
     }
 
     :global(.gold) {
         background-color: var(--gold-colour);
+        color: black;
     }
 
     .board {

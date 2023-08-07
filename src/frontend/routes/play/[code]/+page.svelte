@@ -62,7 +62,7 @@
         <input type="submit" value="Join existing game">
     </form>
 {:else}
-    <h1>Game ID: {$gameId}</h1>
+    <h2>Game ID: {$gameId}</h2>
     <hr>
     {#if $gameType === 'Splendid'}
         <Splendid
@@ -74,10 +74,24 @@
                 on:action={onGameAction}
                 on:eventProcessed={onEventProcessed}/>
     {/if}
+
     <hr>
-    Available actions:
-    {JSON.stringify($actions)}
-    <hr>
-    State:
-    {JSON.stringify($state)}
+
+    <details>
+        <summary>Debugging information</summary>
+        <details>
+            <summary>Available actions</summary>
+            <pre>{JSON.stringify($actions)}</pre>
+        </details>
+
+        <details>
+            <summary>Current state</summary>
+            <pre>{JSON.stringify($state, null, 4)}</pre>
+        </details>
+
+        <details>
+            <summary>Events</summary>
+            <pre>{JSON.stringify($events, null, 4)}</pre>
+        </details>
+    </details>
 {/if}

@@ -64,10 +64,7 @@
         display: flex;
         gap: 20px;
         align-items: center;
-    }
-
-    button {
-        margin-top: 20px;
+        margin: 15px 0;
     }
 </style>
 

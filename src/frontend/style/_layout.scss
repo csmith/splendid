@@ -1,0 +1,39 @@
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  & > div {
+    display: contents;
+  }
+}
+
+#site-header {
+  height: 70px;
+  padding: 10px;
+  border-bottom: 1px solid var(--accent);
+  box-shadow: 0 2px 4px var(--shadow);
+  background-color: var(--background-contrast);
+
+  h1 {
+    display: flex;
+    gap: 10px;
+
+    font-size: 35px;
+
+    img {
+      height: 50px;
+    }
+  }
+}
+
+main {
+  padding: 20px;
+  flex-grow: 1;
+}
+
+#site-footer {
+  border-top: 1px solid var(--accent);
+  padding: 10px;
+  background-color: var(--background-contrast);
+}

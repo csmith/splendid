@@ -21,13 +21,14 @@
         width: 100%;
         text-align: center;
         font-size: 1.5em;
-        background-color: lightgray;
+        background-color: var(--background-contrast);
         padding: 10px;
         margin-bottom: 10px;
     }
 
     .yours {
-        background-color: lightcoral;
+        background-color: var(--accent);
+        color: var(--text-alt);
     }
 </style>
 

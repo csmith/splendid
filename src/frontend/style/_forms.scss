@@ -1,0 +1,21 @@
+button, input[type=submit] {
+  padding: 5px 10px;
+  background-color: var(--accent);
+  color: var(--text-alt);
+  font-weight: bold;
+  border: 1px solid var(--border);
+  cursor: pointer;
+
+  &:hover, &:active {
+    background-color: var(--accent-hover);
+  }
+
+  &:disabled {
+    background-color: var(--disabled);
+  }
+}
+
+input[type=text] {
+  padding: 5px 10px;
+
+}

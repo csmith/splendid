@@ -8,27 +8,27 @@
 
 <style>
     section {
-        width: 300px;
         text-align: center;
     }
 
     section > ul > li {
-        border: 1px solid black;
+        border: 1px solid var(--border);
         margin-bottom: 10px;
     }
 
     .tokens {
         display: flex;
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: center;
+        gap: 8px;
         margin: 10px 0;
     }
 
     .discount {
         display: inline-block;
-        border: 2px solid black;
-        width: 1em;
-        height: 1em;
+        border: 2px solid var(--border);
+        width: 2.1em;
+        height: 2.1em;
         line-height: 1;
         padding: 0.5em;
         text-align: center;
@@ -54,11 +54,11 @@
     .points {
         display: inline-block;
         position: relative;
-        background-color: white;
-        border: 1px solid black;
-        width: 1em;
-        height: 1em;
-        padding: 3px;
+        background-color: var(--background);
+        border: 1px solid var(--border);
+        width: 1.4em;
+        height: 1.4em;
+        padding: 0.15em;
         line-height: 1;
     }
 </style>

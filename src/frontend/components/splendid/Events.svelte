@@ -56,7 +56,7 @@
 
 <style>
     .round-end {
-        height: 3px;
+        border-width: 3px;
         background-color: black;
     }
 </style>

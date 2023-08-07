@@ -27,11 +27,11 @@
         position: absolute;
         right: -0.5em;
         bottom: -0.5em;
-        background-color: white;
-        border: 2px solid black;
+        background-color: var(--background);
+        border: 2px solid var(--border);
         border-radius: 100%;
-        width: 1.5em;
-        height: 1.5em;
+        width: 1.6em;
+        height: 1.6em;
         text-align: center;
     }
 
@@ -42,17 +42,17 @@
     .token {
         display: block;
         font-size: 1.5em;
-        width: 1.5em;
-        height: 1.5em;
+        width: 2.1em;
+        height: 2.1em;
         border-radius: 50%;
         text-align: center;
         padding: 0.3em;
-        border: 2px solid black;
+        border: 2px solid var(--border);
     }
 
     .selectable .token {
         cursor: pointer;
-        box-shadow: 0 0 5px red;
+        box-shadow: 0 0 5px var(--highlight);
     }
 </style>
 

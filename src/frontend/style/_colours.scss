@@ -1,0 +1,37 @@
+:root {
+  --background: #e8e8e8;
+  --background-contrast: #dcdcdc;
+  --accent: #3c658d;
+  --accent-hover: #3c658db3;
+  --highlight: orangered;
+  --shadow: #00000033;
+  --border: #101010;
+  --text: #101010;
+  --text-alt: #ffffff;
+  --disabled: #666666;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #333333;
+        --background-contrast: #444444;
+        --highlight: pink;
+        --accent: #3c658d;
+        --accent-hover: #3c658db3;
+        --border: #ffffff;
+        --text: #ffffff;
+        --disabled: #666666;
+    }
+}
+
+body, dialog {
+  background-color: var(--background);
+  color: var(--text);
+}
+
+hr {
+  background-color: var(--accent);
+  color: var(--accent);
+  border-color: var(--accent);
+  border-style: solid;
+}
