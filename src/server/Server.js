@@ -5,6 +5,7 @@ import Engine from "../common/engine.js";
 import {verify} from "../common/crypto.js";
 import fs from "fs";
 import path from "path";
+import {generateId} from "../common/util.js";
 
 export default class {
 
@@ -39,7 +40,12 @@ export default class {
             throw new Error(`Game ${name} not found`);
         }
 
-        const id = crypto.randomUUID();
+        let id = generateId();
+        while (fs.existsSync(path.join(this.#storageDir, `${id}.json`))) {
+            console.log(`Game ID ${id} already exists, generating new ID...`)
+            id = generateId();
+        }
+
         const engine = new Engine(game);
 
         this.#games[id] = engine;
@@ -50,6 +56,10 @@ export default class {
     #loadGame(id) {
         if (this.#games[id]) {
             return this.#games[id];
+        }
+
+        if (!id.match(/^[a-z0-9-]+$/)) {
+            throw new Error(`Invalid game ID`);
         }
 
         if (fs.existsSync(path.join(this.#storageDir, `${id}.json`))) {
