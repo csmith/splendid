@@ -66,7 +66,6 @@
 
     .token {
         display: block;
-        color: white;
         font-size: 1.5em;
         width: 1.5em;
         height: 1.5em;

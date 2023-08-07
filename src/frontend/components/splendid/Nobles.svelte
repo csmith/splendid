@@ -62,7 +62,6 @@
     }
 
     .cost {
-        color: white;
         padding: 2px 4px;
         display: block;
         border-top: 1px solid black;

@@ -43,12 +43,12 @@
 
 <style>
     :root {
-        --emerald-colour: #2ecc71;
-        --diamond-colour: #a6c0d0;
-        --sapphire-colour: #5961b6;
-        --onyx-colour: #666666;
-        --ruby-colour: #e74c3c;
-        --gold-colour: #f1c40f;
+        --emerald-colour: #9defd8;
+        --diamond-colour: #f2fbfe;
+        --sapphire-colour: #c1ccf9;
+        --onyx-colour: #babbc4;
+        --ruby-colour: #fecccf;
+        --gold-colour: #fbf1b5;
     }
 
     :global(.emerald) {

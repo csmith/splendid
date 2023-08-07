@@ -99,10 +99,8 @@
         justify-self: end;
         align-self: center;
         font-size: small;
-        font-weight: bold;
         line-height: 1;
-        color: white;
-        text-shadow: 0 0 2px black, 0 0 1px black;
+        color: black;
     }
 </style>
 

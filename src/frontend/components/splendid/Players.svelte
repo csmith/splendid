@@ -25,7 +25,6 @@
         line-height: 1;
         padding: 0.5em;
         text-align: center;
-        color: white;
         font-weight: bold;
         margin: 5px;
     }
@@ -38,7 +37,6 @@
         line-height: 1;
         padding: 0.5em;
         text-align: center;
-        color: white;
         font-weight: bold;
         margin: 5px;
         position: relative;
