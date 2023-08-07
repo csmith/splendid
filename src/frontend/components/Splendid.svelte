@@ -44,9 +44,9 @@
 <style>
     :root {
         --emerald-colour: #2ecc71;
-        --diamond-colour: #3498db;
-        --sapphire-colour: #9b59b6;
-        --onyx-colour: #34495e;
+        --diamond-colour: #a6c0d0;
+        --sapphire-colour: #5961b6;
+        --onyx-colour: #666666;
         --ruby-colour: #e74c3c;
         --gold-colour: #f1c40f;
     }

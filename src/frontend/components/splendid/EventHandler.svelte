@@ -36,6 +36,8 @@
         copy.style.position = 'absolute';
         copy.style.top = `${sourceOffset.top}px`;
         copy.style.left = `${sourceOffset.left}px`;
+        copy.style.width = `${source.offsetWidth}px`;
+        copy.style.height = `${source.offsetHeight}px`;
         copy.style.zIndex = 1000;
         if (opts.innerText) {
             copy.innerText = opts.innerText;
@@ -72,12 +74,7 @@
     }
 
     const animateCard = async (card, endContainer) => {
-        const index = _.findIndex(state.cards[card.level-1], (c) => c.id === card.id);
-        if (index === -1) {
-            return;
-        }
-
-        const source = document.querySelector(`#card-${card.level-1}-${index}`)
+        const source = document.querySelector(`#card-${card.id}`)
         const target = document.querySelector(endContainer);
         return copyAndMoveElement(source, target, {hideSource: true});
     }
@@ -156,8 +153,7 @@
                 break;
             case 'discard-reserve':
                 if (e.playerId === playerId) {
-                    const index = _.findIndex(state.players[playerId].reserved, (c) => c.id === e.card.id);
-                    await copyAndMoveElement(document.querySelector(`#reserve-${index}`), document.querySelector(`#player-${e.playerId}`), {hideSource: true});
+                    await copyAndMoveElement(document.querySelector(`#card-${e.card.id}`), document.querySelector(`#player-${e.playerId}`), {hideSource: true});
                 }
                 break;
             case 'receive-noble':

@@ -1,6 +1,8 @@
 <script>
     import {canAffordCard} from "../../../splendid/util.js";
     import {createEventDispatcher} from "svelte";
+    import Gem from "./Gem.svelte";
+    import Card from "./Card.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -17,15 +19,13 @@
 
     const selectDeck = (level) => {
         if (canSelect) {
-            dispatch('reserveFromDeck', level+1);
+            dispatch('reserveFromDeck', level + 1);
         }
     };
 
     const selectCard = (card) => {
-        if (canSelect) {
-            selectedCard = card;
-            buyDialog.showModal();
-        }
+        selectedCard = card;
+        buyDialog.showModal();
     };
 
     const buyCard = () => {
@@ -59,31 +59,12 @@
     section {
         display: grid;
         grid-template-columns: repeat(5, 100px);
+        grid-template-rows: repeat(3, 150px) 20px 150px;
         grid-gap: 10px;
     }
 
-    .canSelect .card {
-        cursor: pointer;
-        box-shadow: 0 0 5px red;
-    }
-
-    .card, .placeholder {
-        width: 100px;
-        height: 150px;
+    .placeholder {
         border: 1px solid black;
-        position: relative;
-    }
-
-    .card.level0 {
-        background-color: #8fbda1;
-    }
-
-    .card.level1 {
-        background-color: #bdb78f;
-    }
-
-    .card.level2 {
-        background-color: #8f9cbd;
     }
 
     .back.level0 {
@@ -107,9 +88,9 @@
         position: absolute;
         top: 0;
         left: 0;
-        font-size: 2em;
+        font-size: 30px;
         line-height: 1;
-        padding: 5px;
+        padding: 3px 5px 5px 5px;
         color: white;
         text-shadow: 0 0 5px black;
     }
@@ -119,10 +100,9 @@
         top: 0;
         right: 0;
         color: white;
-        padding: 2px 2px 2px 4px;
-        border-bottom: 1px solid black;
-        border-left: 1px solid black;
-        border-bottom-left-radius: 5px;
+        width: 30px;
+        height: 30px;
+        padding: 5px;
     }
 
     .costs {
@@ -213,48 +193,19 @@
         {/if}
         {#each state.cards[level] as card, i}
             {#if card}
-                <div id="card-{level}-{i}" class="card level{level}" on:click={() => selectCard(card)}>
-                    {#if card.points > 0}
-                        <span class="score">{card.points}</span>
-                    {/if}
-                    <span class="bonus {card.bonus}">{card.bonus}</span>
-                    <ul class="costs">
-                        {#each Object.entries(card.cost) as entry}
-                            <li><span class="cost {entry[0]}">{entry[1]}</span></li>
-                        {/each}
-                    </ul>
-                    {#if player && canAffordCard(player, card)}
-                        <span class="affordable">✅</span>
-                    {/if}
-                </div>
+                <Card card={card} player={player} on:click={() => selectCard(card)}/>
             {:else}
                 <div class="placeholder level{level}"></div>
             {/if}
         {/each}
     {/each}
     {#if player}
-        <div class="tokens">Your tokens</div>
+        <div class="tokens"></div>
         <div class="reserve">Your reserve</div>
-        <div class="tokens">
-            Look in the sidebar for now 🙃
-        </div>
+        <div class="tokens"></div>
         {#each [0, 1, 2] as index}
             {#if player.reserved.length > index}
-                <div class="card level{player.reserved[index].level-1}" id="reserve-{index}"
-                     on:click={() => selectCard(player.reserved[index])}>
-                    {#if player.reserved[index].points > 0}
-                        <span class="score">{player.reserved[index].points}</span>
-                    {/if}
-                    <span class="bonus {player.reserved[index].bonus}">{player.reserved[index].bonus}</span>
-                    <ul class="costs">
-                        {#each Object.entries(player.reserved[index].cost) as entry}
-                            <li><span class="cost {entry[0]}">{entry[1]}</span></li>
-                        {/each}
-                    </ul>
-                    {#if canAffordCard(player, player.reserved[index])}
-                        <span class="affordable">✅</span>
-                    {/if}
-                </div>
+                <Card card={player.reserved[index]} player={player} on:click={() => selectCard(player.reserved[index])}/>
             {:else}
                 <div class="placeholder" id="reserve-{index}"></div>
             {/if}
@@ -266,20 +217,7 @@
     {#if selectedCard}
         <div>
             <h2>Selected card</h2>
-            <div class="card level{selectedCard.level-1}" on:click={() => selectCard(selectedCard)}>
-                {#if selectedCard.points > 0}
-                    <span class="score">{selectedCard.points}</span>
-                {/if}
-                <span class="bonus {selectedCard.bonus}">{selectedCard.bonus}</span>
-                <ul class="costs">
-                    {#each Object.entries(selectedCard.cost) as entry}
-                        <li><span class="cost {entry[0]}">{entry[1]}</span></li>
-                    {/each}
-                </ul>
-                {#if canAffordCard(player, selectedCard)}
-                    <span class="affordable">✅</span>
-                {/if}
-            </div>
+            <Card card={selectedCard}/>
             <table>
                 <tr>
                     <th>Gem</th>
@@ -315,12 +253,15 @@
                 </tr>
             </table>
             <nav>
-                {#if canAffordCard(player, selectedCard)}
-                    <button on:click={buyCard}>Buy card</button>
-                {/if}
-                {#if player.reserved.length < 3}
-                    <button on:click={reserveCard}>Reserve card</button>
-                {/if}
+                <button
+                        on:click={buyCard}
+                        disabled={!canSelect || !canAffordCard(player, selectedCard)}>
+                    Buy card
+                </button>
+                <button on:click={reserveCard}
+                        disabled={!canSelect || player.reserved.length >= 3 || player.reserved.some(card => card.id === selectedCard.id)}>
+                    Reserve card
+                </button>
             </nav>
         </div>
     {/if}
