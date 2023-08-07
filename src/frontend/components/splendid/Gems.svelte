@@ -43,7 +43,10 @@
             && (selectedCount < 1 || v >= 4);
     });
 
-    $: hasFullSelection = _.sum(Object.values(selected)) === 3 || Object.values(selected).some(v => v > 1);
+    $: availableGems = _.sum(Object.keys(noSelectedGems).map(k => state.tokens[k]));
+
+    $: hasFullSelection = _.sum(Object.values(selected)) === Math.min(availableGems, 3)
+        || Object.values(selected).some(v => v > 1);
 
     const selectGem = (type) => {
         if (canSelect[type]) {
