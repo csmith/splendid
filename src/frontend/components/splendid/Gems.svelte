@@ -81,6 +81,10 @@
         text-align: center;
     }
 
+    .empty {
+        filter: grayscale(100%);
+    }
+
     .token {
         display: block;
         font-size: 1.5em;
@@ -106,7 +110,7 @@
     <h3>Gem supply</h3>
     <ul id="token-supply">
         {#each Object.entries(state.tokens) as pair}
-            <li class="holder" class:selectable={canSelect[pair[0]]}
+            <li class="holder" class:empty={pair[1] === 0} class:selectable={canSelect[pair[0]]}
                 on:click|preventDefault={() => selectGem(pair[0])}>
                 <span class="token {pair[0]}">
                     <Gem type={pair[0]}/>
