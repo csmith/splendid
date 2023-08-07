@@ -25,8 +25,10 @@
     };
 
     const selectCard = (card) => {
-        selectedCard = card;
-        buyDialog.showModal();
+        if (player) {
+            selectedCard = card;
+            buyDialog.showModal();
+        }
     };
 
     const buyCard = () => {
