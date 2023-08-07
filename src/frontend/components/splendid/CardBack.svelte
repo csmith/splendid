@@ -10,14 +10,16 @@
 
 <style>
     .back {
+        container-type: inline-size;
         border: 1px solid black;
-        border-radius: 10px;
+        border-radius: 5px;
         box-shadow: 3px 2px 2px rgba(0, 0, 0, 0.3);
         display: grid;
         grid-template-rows: 10% 1fr 10%;
         justify-items: center;
         color: white;
-        padding: 5px;
+        padding: 10px 0;
+        aspect-ratio: 2 / 3;
     }
 
     .count {
@@ -29,6 +31,12 @@
     .blobs {
         grid-row: 3;
         font-size: xx-small;
+    }
+
+    @container (max-width: 50px) {
+        .blobs {
+            font-size: 3px;
+        }
     }
 
     .many {

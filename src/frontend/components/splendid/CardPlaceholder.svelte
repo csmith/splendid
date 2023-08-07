@@ -6,7 +6,8 @@
 <style>
     div {
         border: 1px solid var(--background-contrast);
-        border-radius: 10px;
+        border-radius: 5px;
+        aspect-ratio: 2 / 3;
     }
 </style>
 

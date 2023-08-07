@@ -94,7 +94,7 @@
 
     @media(min-width: 1400px) {
         .board {
-            grid-template-columns: auto auto auto;
+            grid-template-columns: 1fr 1fr auto;
             grid-template-areas:
                 "grid nobles players"
                 "grid gems players";

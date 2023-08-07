@@ -12,13 +12,15 @@
 
 <style>
     .noble {
+        container-type: inline-size;
         display: inline-block;
-        width: 125px;
+        height: 150px;
+        max-height: 100%;
+        max-width: 100%;
         aspect-ratio: 23/29;
-        border: 1px solid black;
-        margin: 5px;
+        border: 1px solid var(--border);
         position: relative;
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 30px, rgba(0, 0, 0, 0) 30px), var(--image), rebeccapurple;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 25%, rgba(0, 0, 0, 0) 25%), var(--image), rebeccapurple;
         background-size: cover;
     }
 
@@ -68,6 +70,12 @@
     .selectable {
         cursor: pointer;
         box-shadow: 0 0 5px red;
+    }
+
+    @container (max-width: 50px) {
+        .score, .costs {
+            display: none;
+        }
     }
 </style>
 
