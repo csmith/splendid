@@ -85,6 +85,36 @@
         display: grid;
         grid-template-columns: 1fr auto;
         grid-gap: 10px;
+
+        grid-template-areas:
+                "grid players"
+                "gems players"
+                "nobles players";
+    }
+
+    @media(min-width: 1400px) {
+        .board {
+            grid-template-columns: auto auto auto;
+            grid-template-areas:
+                "grid nobles players"
+                "grid gems players";
+        }
+    }
+
+    .grid {
+        grid-area: grid;
+    }
+
+    .gems {
+        grid-area: gems;
+    }
+
+    .players {
+        grid-area: players;
+    }
+
+    .nobles {
+        grid-area: nobles;
     }
 </style>
 
@@ -101,27 +131,36 @@
 <section>
     <Banner state={state} playerId={playerId}/>
     <div class="board">
-        <Grid
-                state={state}
-                canSelect={selectCard}
-                player={state.players[playerId]}
-                on:buyCard={handleBuyCard}
-                on:reserveCard={handleReserveCard}
-                on:reserveFromDeck={handleReserveFromDeck}/>
-        <Players state={state}/>
-        <Gems state={state} canTake={takeTokens} on:selected={handleSelectedGems}/>
-        <Nobles
-                state={state}
-                canSelect={receiveNoble}
-                player={state.players[playerId]}
-                on:receiveNoble={handleReceiveNoble}/>
-        {#if discardTokens}
-            <DiscardTokens
+        <div class="grid">
+            <Grid
                     state={state}
+                    canSelect={selectCard}
                     player={state.players[playerId]}
-                    on:tokensDiscarded={handleTokensDiscarded}/>
-        {/if}
+                    on:buyCard={handleBuyCard}
+                    on:reserveCard={handleReserveCard}
+                    on:reserveFromDeck={handleReserveFromDeck}/>
+        </div>
+        <div class="players">
+            <Players state={state}/>
+        </div>
+        <div class="gems">
+            <Gems state={state} canTake={takeTokens} on:selected={handleSelectedGems}/>
+        </div>
+        <div class="nobles">
+            <Nobles
+                    state={state}
+                    canSelect={receiveNoble}
+                    player={state.players[playerId]}
+                    on:receiveNoble={handleReceiveNoble}/>
+        </div>
     </div>
+    {#if discardTokens}
+        <DiscardTokens
+                state={state}
+                player={state.players[playerId]}
+                on:tokensDiscarded={handleTokensDiscarded}/>
+    {/if}
+    <hr>
     <Events state={state} events={events}/>
     <EventHandler
             state={state}

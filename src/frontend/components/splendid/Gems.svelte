@@ -11,7 +11,14 @@
 
     export let canTake;
 
-    let selected = {};
+    let selected = {
+        diamond: 0,
+        sapphire: 0,
+        emerald: 0,
+        ruby: 0,
+        onyx: 0,
+        gold: 0,
+    };
     let canSelect = {};
     let hasFullSelection = false;
 
@@ -64,7 +71,11 @@
         display: flex;
         gap: 20px;
         align-items: center;
-        margin: 15px 0;
+        margin: 15px 0 30px 0;
+    }
+
+    .hidden {
+        visibility: hidden;
     }
 </style>
 
@@ -73,19 +84,21 @@
     <ul id="token-supply">
         {#each Object.entries(state.tokens) as pair}
             <li>
-                <GemCounter type={pair[0]} amount={pair[1]} interactive={canSelect[pair[0]]} on:click={() => selectGem(pair[0])}/>
+                <GemCounter type={pair[0]} amount={pair[1]} interactive={canSelect[pair[0]]}
+                            on:click={() => selectGem(pair[0])}/>
             </li>
         {/each}
     </ul>
-    {#if _.sum(Object.values(selected)) > 0}
-        <h3>You will take</h3>
+    <div class="take" class:hidden={_.sum(Object.values(selected)) === 0}>
+        <h3>You will take:</h3>
         <ul id="token-selection">
             {#each Object.entries(selected) as pair}
                 <li>
-                    <GemCounter type={pair[0]} amount={pair[1]} interactive={true} on:click={() => unselectGem(pair[0])}/>
+                    <GemCounter type={pair[0]} amount={pair[1]} interactive={true}
+                                on:click={() => unselectGem(pair[0])}/>
                 </li>
             {/each}
         </ul>
         <button on:click={submitSelection} disabled={!hasFullSelection}>Take</button>
-    {/if}
+    </div>
 </section>

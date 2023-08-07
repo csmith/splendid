@@ -20,6 +20,7 @@
 </script>
 
 <section>
+    <h3>Wandering nobles</h3>
     {#each state.nobles as noble}
         <Noble {noble} {player} interactive={canSelect} on:click={() => receiveNoble(noble)} />
     {/each}

@@ -62,6 +62,7 @@
 </style>
 
 <section>
+    <h3>Event history</h3>
     <ul>
         {#each events.slice().reverse() as event}
             <li>
