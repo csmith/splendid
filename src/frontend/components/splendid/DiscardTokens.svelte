@@ -1,14 +1,27 @@
 <script>
     import _ from "lodash";
     import {createEventDispatcher, onMount} from "svelte";
+    import GemCounter from "./GemCounter.svelte";
 
     const dispatch = createEventDispatcher();
 
     export let player;
 
     let dialog;
-    let selection = {};
-    $: selectedEnough = _.sum(Object.values(player.tokens)) - _.sum(Object.values(selection)) === 10;
+    let selection = {
+        emerald: 0,
+        diamond: 0,
+        sapphire: 0,
+        onyx: 0,
+        ruby: 0,
+        gold: 0
+    };
+
+    $: totalTokens = _.sum(Object.values(player.tokens));
+    $: selectedTokens = _.sum(Object.values(selection));
+    $: numberToDiscard = totalTokens - 10;
+    $: numberRemaining = numberToDiscard - selectedTokens;
+    $: selectedEnough = totalTokens - selectedTokens === 10;
 
     onMount(() => {
         dialog.showModal();
@@ -45,41 +58,41 @@
         list-style-type: none;
     }
 
-    .token {
-        display: inline-block;
-        border: 2px solid black;
-        border-radius: 50%;
-        width: 1em;
-        height: 1em;
-        line-height: 1;
-        padding: 0.5em;
-        text-align: center;
-        color: white;
-        font-weight: bold;
-        margin: 5px;
-        cursor: pointer;
+    ul {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        justify-content: center;
     }
+
 </style>
 
 <dialog bind:this={dialog}>
     <p>You have too many tokens! Select which to discard:</p>
-    <ul class="tokens">
+    <ul>
         {#each Object.entries(player.tokens) as pair}
-            <li class="token {pair[0]}" on:click={() => selectToken(pair[0])}>{pair[1] - (selection[pair[0]] || 0)}</li>
+            <li>
+                <GemCounter type={pair[0]} amount={pair[1] - selection[pair[0]]} interactive={true}
+                            on:click={() => selectToken(pair[0])}/>
+            </li>
         {/each}
     </ul>
-    {#if _.sum(Object.values(selection)) > 0}
-        <p>You will discard:</p>
-        <ul class="tokens">
-            {#each Object.entries(selection) as pair}
-                {#if pair[1]}
-                <li class="token {pair[0]}"
-                    on:click={() => deselectToken(pair[0])}>{pair[1]}</li>
-                {/if}
-            {/each}
-        </ul>
-    {/if}
-    {#if selectedEnough}
-        <button on:click={handleSubmit}>Discard</button>
-    {/if}
+    <p>&darr;</p>
+    <ul>
+        {#each Object.entries(selection) as pair}
+            <li>
+                <GemCounter type={pair[0]} amount={pair[1]} interactive={true} on:click={() => deselectToken(pair[0])}/>
+            </li>
+        {/each}
+    </ul>
+    <p>You have {totalTokens} tokens, so must discard {numberToDiscard} to bring your total down to 10.</p>
+    <p>
+        You have selected {selectedTokens}. Select
+        {#if numberRemaining > 0}
+            {numberRemaining} more.
+        {:else}
+            {numberRemaining * -1} less.
+        {/if}
+    </p>
+    <button on:click={handleSubmit} disabled={!selectedEnough}>Discard</button>
 </dialog>
