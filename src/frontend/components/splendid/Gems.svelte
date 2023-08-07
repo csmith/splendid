@@ -2,6 +2,7 @@
     import _ from "lodash";
     import {createEventDispatcher} from "svelte";
     import Gem from "./Gem.svelte";
+    import GemCounter from "./GemCounter.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -65,42 +66,6 @@
         align-items: center;
     }
 
-    .holder {
-        position: relative;
-    }
-
-    .amount {
-        position: absolute;
-        top: 2.1em;
-        left: 2.1em;
-        background-color: white;
-        border: 2px solid black;
-        border-radius: 100%;
-        width: 1.5em;
-        height: 1.5em;
-        text-align: center;
-    }
-
-    .empty {
-        filter: grayscale(100%);
-    }
-
-    .token {
-        display: block;
-        font-size: 1.5em;
-        width: 1.5em;
-        height: 1.5em;
-        border-radius: 50%;
-        text-align: center;
-        padding: 0.3em;
-        border: 2px solid black;
-    }
-
-    .selectable .token, .take .token {
-        cursor: pointer;
-        box-shadow: 0 0 5px red;
-    }
-
     button {
         margin-top: 20px;
     }
@@ -110,12 +75,8 @@
     <h3>Gem supply</h3>
     <ul id="token-supply">
         {#each Object.entries(state.tokens) as pair}
-            <li class="holder" class:empty={pair[1] === 0} class:selectable={canSelect[pair[0]]}
-                on:click|preventDefault={() => selectGem(pair[0])}>
-                <span class="token {pair[0]}">
-                    <Gem type={pair[0]}/>
-                </span>
-                <span class="amount">{pair[1]}</span>
+            <li>
+                <GemCounter type={pair[0]} amount={pair[1]} interactive={canSelect[pair[0]]} on:click={() => selectGem(pair[0])}/>
             </li>
         {/each}
     </ul>
@@ -123,14 +84,9 @@
         <h3>You will take</h3>
         <ul id="token-selection">
             {#each Object.entries(selected) as pair}
-                {#if pair[1] > 0}
-                    <li class="holder take" on:click|preventDefault={() => unselectGem(pair[0])}>
-                        <span class="token {pair[0]}">
-                            <Gem type={pair[0]}/>
-                        </span>
-                        <span class="amount">{pair[1]}</span>
-                    </li>
-                {/if}
+                <li>
+                    <GemCounter type={pair[0]} amount={pair[1]} interactive={true} on:click={() => unselectGem(pair[0])}/>
+                </li>
             {/each}
         </ul>
         <button on:click={submitSelection} disabled={!hasFullSelection}>Take</button>

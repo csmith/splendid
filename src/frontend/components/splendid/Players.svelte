@@ -1,5 +1,6 @@
 <script>
     import _ from 'lodash';
+    import GemCounter from "./GemCounter.svelte";
 
     /** @type {import('../../../splendid/state.js').default} */
     export let state;
@@ -16,17 +17,11 @@
         margin-bottom: 10px;
     }
 
-    .token {
-        display: inline-block;
-        border: 2px solid black;
-        border-radius: 50%;
-        width: 1em;
-        height: 1em;
-        line-height: 1;
-        padding: 0.5em;
-        text-align: center;
-        font-weight: bold;
-        margin: 5px;
+    .tokens {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        margin: 10px 0;
     }
 
     .discount {
@@ -74,9 +69,9 @@
             <li id="player-{player.details.id}">
                 <h3>{#if state.turn === player.details.id}⏵{/if} {player.details.name} <span class="points">{player.points}</span></h3>
                 <ul>
-                    <li>
+                    <li class="tokens">
                         {#each Object.entries(player.tokens) as pair}
-                            <span class="token {pair[0]}" title="{pair[0]}">{pair[1]}</span>
+                            <GemCounter type={pair[0]} amount="{pair[1]}" size="small" />
                         {/each}
                     </li>
                     <li>
