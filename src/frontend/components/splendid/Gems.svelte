@@ -11,21 +11,22 @@
 
     export let canTake;
 
-    let selected = {
+    const noSelectedGems = {
+        emerald: 0,
         diamond: 0,
         sapphire: 0,
-        emerald: 0,
-        ruby: 0,
         onyx: 0,
-        gold: 0,
+        ruby: 0,
     };
+
+    let selected = _.cloneDeep(noSelectedGems);
     let canSelect = {};
     let hasFullSelection = false;
 
     $: canSelect = _.mapValues(state.tokens, (v, k) => {
         const count = _.sum(Object.values(selected));
         const double = Object.values(selected).some(v => v > 1);
-        const selectedCount = selected[k] || 0;
+        const selectedCount = selected[k];
 
         return canTake
             // Can't ever select gold
@@ -46,17 +47,19 @@
 
     const selectGem = (type) => {
         if (canSelect[type]) {
-            selected[type] = (selected[type] || 0) + 1;
+            selected[type]++;
         }
     };
 
     const unselectGem = (type) => {
-        selected[type] = (selected[type] || 0) - 1;
+        if (selected[type] > 0) {
+            selected[type]--;
+        }
     }
 
     const submitSelection = () => {
         dispatch('selected', selected);
-        selected = {};
+        selected = _.cloneDeep(noSelectedGems);
     };
 </script>
 
@@ -94,7 +97,7 @@
         <ul id="token-selection">
             {#each Object.entries(selected) as pair}
                 <li>
-                    <GemCounter type={pair[0]} amount={pair[1]} interactive={true}
+                    <GemCounter type={pair[0]} amount={pair[1]} interactive={pair[1] > 0}
                                 on:click={() => unselectGem(pair[0])}/>
                 </li>
             {/each}
