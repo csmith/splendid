@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Game engine</title>
+  <title>Splendid!</title>
 </svelte:head>
 
 <header id="site-header">

@@ -47,6 +47,13 @@
   };
 </script>
 
+<svelte:head>
+  <title>
+    {$state.turn === $playerId ? "**YOUR TURN**" : ""}
+    {$gameType} ({data.code}) on Splendid!
+  </title>
+</svelte:head>
+
 {#if !$hasPlayer}
   <form on:submit|preventDefault={selectDisplayName}>
     <input type="text" bind:value={displayName} placeholder="Display name" />
