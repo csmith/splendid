@@ -44,12 +44,14 @@ Before(function () {
       points: parseInt(parts[1]),
       bonus: parts[2],
       cost: this.parseCosts(parts[3]),
+      id: str,
     };
   };
 
   this.parseNoble = function (str) {
     return {
       cost: this.parseCosts(str),
+      id: str,
     };
   };
 
