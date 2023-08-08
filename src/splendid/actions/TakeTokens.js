@@ -1,5 +1,3 @@
-import { findPlayer, isLastPlayer, nextPlayer } from "../../common/state.js";
-import { addObjects, subtractObjects } from "../../common/util.js";
 import _ from "lodash";
 
 const allowedTokens = ["emerald", "ruby", "diamond", "sapphire", "onyx"];
@@ -11,7 +9,7 @@ export default {
     return player.id === state.turn;
   },
 
-  perform: function (state, { tokens }) {
+  perform: function* (state, { tokens }) {
     const filteredTokens = Object.fromEntries(allowedTokens.map((t) => [t, tokens[t] || 0]));
     const requestedTokens = _.sum(Object.values(filteredTokens));
     const doubleTokens = _.findKey(filteredTokens, (amount) => amount === 2);
@@ -39,7 +37,7 @@ export default {
       });
     }
 
-    return [
+    yield* [
       {
         event: "take-tokens",
         playerId: state.turn,

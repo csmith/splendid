@@ -3,13 +3,13 @@ export default {
 
   available: () => false,
 
-  perform: function (state, { level }) {
+  perform: function* (state, { level }) {
     if (state.decks[level - 1].length === 0) {
-      return [];
+      return;
     }
 
     const card = state.decks[level - 1][0];
-    return [
+    yield* [
       {
         event: "remove-card-from-deck",
         reason: "deal",

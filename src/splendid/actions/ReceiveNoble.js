@@ -8,7 +8,7 @@ export default {
     return player.id === state.turn;
   },
 
-  perform: function (state, { player, noble }) {
+  perform: function* (state, { player, noble }) {
     const index = _.findIndex(state.nobles, (n) => n.id === noble.id);
     if (index === -1) {
       throw new Error("Noble not found");
@@ -18,7 +18,7 @@ export default {
       throw new Error("Not eligible for noble");
     }
 
-    return _.concat(
+    yield* [
       {
         event: "receive-noble",
         playerId: state.turn,
@@ -32,6 +32,6 @@ export default {
       {
         action: "end-turn",
       },
-    );
+    ];
   },
 };

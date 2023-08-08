@@ -62,27 +62,25 @@ export default class {
 
     const result = action.perform(this.#state, args);
 
-    _.castArray(result).forEach((r) => {
+    for (let r of result) {
       try {
-        if (!_.has(r, "if") || r.if) {
-          if (_.has(r, "action")) {
-            this.#perform(r.action, r.args);
-          } else if (_.has(r, "event")) {
-            this.applyEvent({
-              ...r,
-              meta: {
-                id: crypto.randomUUID(),
-                ts: Date.now(),
-              },
-            });
-          } else {
-            console.log(`Invalid result of action ${name}: ${JSON.stringify(r)}`);
-          }
+        if (_.has(r, "action")) {
+          this.#perform(r.action, r.args);
+        } else if (_.has(r, "event")) {
+          this.applyEvent({
+            ...r,
+            meta: {
+              id: crypto.randomUUID(),
+              ts: Date.now(),
+            },
+          });
+        } else {
+          console.log(`Invalid result of action ${name}: ${JSON.stringify(r)}`);
         }
       } catch (e) {
         console.log(`Failed to process result of action ${name}`, e);
       }
-    });
+    }
   }
 
   applyEvent({ event, ...args }) {

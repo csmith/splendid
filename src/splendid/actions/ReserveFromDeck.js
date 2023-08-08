@@ -1,7 +1,3 @@
-import { findPlayer } from "../../common/state.js";
-import { addObjects, replaceNth, subtractObjects } from "../../common/util.js";
-import _ from "lodash";
-
 export default {
   name: "reserve-card-from-deck",
 
@@ -9,7 +5,7 @@ export default {
     return player.id === state.turn && state.players[player.id].reserved.length < 3;
   },
 
-  perform: function (state, { player, level }) {
+  perform: function* (state, { level }) {
     if (level < 1 || level > 3) {
       throw new Error("Invalid level");
     }
@@ -21,27 +17,29 @@ export default {
     const card = state.decks[level - 1][0];
     const getsGold = state.tokens.gold > 0;
 
-    return [
-      {
-        event: "remove-card-from-deck",
-        playerId: state.turn,
-        reason: "reserve",
-        level,
-      },
-      {
-        event: "reserve-card",
-        playerId: state.turn,
-        card,
-      },
-      {
-        if: getsGold,
+    yield {
+      event: "remove-card-from-deck",
+      playerId: state.turn,
+      reason: "reserve",
+      level,
+    };
+
+    yield {
+      event: "reserve-card",
+      playerId: state.turn,
+      card,
+    };
+
+    if (getsGold) {
+      yield {
         event: "take-tokens",
         playerId: state.turn,
         tokens: { gold: 1 },
-      },
-      {
-        action: "end-turn",
-      },
-    ];
+      };
+    }
+
+    yield {
+      action: "end-turn",
+    };
   },
 };

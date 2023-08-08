@@ -19,41 +19,42 @@ export default {
     return isPlayer && count >= 2 && count <= 4;
   },
 
-  perform: function (state) {
+  perform: function* (state) {
     const players = countPlayers(state);
     const tokensToRemove = tokensToRemovePerPlayerCount[players];
     const cardsWithIds = cards.map((i) => ({ ...i, id: crypto.randomUUID() }));
     const decks = _.times(3, (level) => _.filter(cardsWithIds, (c) => c.level === level + 1));
     const turnOrder = _.shuffle(Object.keys(state.players));
 
-    return _.concat(
-      {
-        event: "setup",
-        tokens: {
-          emerald: 7 - tokensToRemove,
-          diamond: 7 - tokensToRemove,
-          sapphire: 7 - tokensToRemove,
-          onyx: 7 - tokensToRemove,
-          ruby: 7 - tokensToRemove,
-          gold: 5,
-        },
-        nobles: _.take(_.shuffle(nobles), players + 1),
-        decks: decks.map((d) => _.shuffle(d)),
+    yield {
+      event: "setup",
+      tokens: {
+        emerald: 7 - tokensToRemove,
+        diamond: 7 - tokensToRemove,
+        sapphire: 7 - tokensToRemove,
+        onyx: 7 - tokensToRemove,
+        ruby: 7 - tokensToRemove,
+        gold: 5,
       },
-      {
-        event: "set-player-order",
-        order: turnOrder,
-      },
-      _.flatMap(decks, (d, i) =>
-        _.times(4, () => ({
-          action: "deal",
-          args: { level: i + 1 },
-        })),
-      ),
-      {
-        event: "change-phase",
-        phase: "play",
-      },
+      nobles: _.take(_.shuffle(nobles), players + 1),
+      decks: decks.map((d) => _.shuffle(d)),
+    };
+
+    yield {
+      event: "set-player-order",
+      order: turnOrder,
+    };
+
+    yield* _.flatMap(decks, (d, i) =>
+      _.times(4, () => ({
+        action: "deal",
+        args: { level: i + 1 },
+      })),
     );
+
+    yield {
+      event: "change-phase",
+      phase: "play",
+    };
   },
 };

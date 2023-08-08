@@ -7,8 +7,8 @@ export default {
     return findPlayer(state, player) === undefined;
   },
 
-  perform: function (state, { player }) {
-    return {
+  perform: function* (state, { player }) {
+    yield {
       event: "add-player",
       details: player,
     };
