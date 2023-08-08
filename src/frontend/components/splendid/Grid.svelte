@@ -1,5 +1,5 @@
 <script>
-  import { canAffordCard } from "../../../splendid/util.js";
+  import { canAffordCard } from "../../../games/splendid/util.js";
   import { createEventDispatcher } from "svelte";
   import Gem from "./Gem.svelte";
   import Card from "./Card.svelte";
@@ -8,7 +8,7 @@
 
   const dispatch = createEventDispatcher();
 
-  /** @type {import('../../../splendid/state.js').default} */
+  /** @type {import('../../../games/splendid/state.js').default} */
   export let state;
 
   export let player;

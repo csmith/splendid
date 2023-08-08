@@ -1,4 +1,4 @@
-import { addObjects, subtractObjects } from "../../common/util.js";
+import { addObjects, subtractObjects } from "../../../common/util.js";
 
 export default {
   name: "take-tokens",

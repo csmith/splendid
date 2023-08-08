@@ -1,4 +1,4 @@
-import { findPlayer } from "../../common/state.js";
+import { findPlayer } from "../../../common/state.js";
 import _ from "lodash";
 
 const allowedTokens = ["emerald", "ruby", "diamond", "sapphire", "onyx", "gold"];

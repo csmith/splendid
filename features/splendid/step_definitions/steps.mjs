@@ -2,7 +2,7 @@ import Engine from "../../../src/common/engine.js";
 import { newPlayer } from "../../../src/common/player.js";
 import { findPlayerByName } from "../../../src/common/state.js";
 import { replaceNth } from "../../../src/common/util.js";
-import game from "../../../src/splendid/game.js";
+import game from "../../../src/games/splendid/game.js";
 import { Before, Given, Then, When } from "@cucumber/cucumber";
 import assert from "assert";
 import _ from "lodash";

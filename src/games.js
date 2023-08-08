@@ -1,4 +1,4 @@
-import Splendid from "./splendid/game.js";
+import Splendid from "./games/splendid/game.js";
 
 export default {
   Splendid,

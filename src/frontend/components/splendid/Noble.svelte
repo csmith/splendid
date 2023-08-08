@@ -1,5 +1,5 @@
 <script>
-  import { canReceiveNoble } from "../../../splendid/util.js";
+  import { canReceiveNoble } from "../../../games/splendid/util.js";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();

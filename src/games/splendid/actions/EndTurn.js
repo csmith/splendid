@@ -1,4 +1,4 @@
-import { isLastPlayer, nextPlayer } from "../../common/state.js";
+import { isLastPlayer, nextPlayer } from "../../../common/state.js";
 import { canReceiveNoble } from "../util.js";
 import _ from "lodash";
 

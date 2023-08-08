@@ -1,5 +1,5 @@
 <script>
-  import { canAffordCard } from "../../../splendid/util.js";
+  import { canAffordCard } from "../../../games/splendid/util.js";
   import Gem from "./Gem.svelte";
   import { createEventDispatcher } from "svelte";
 

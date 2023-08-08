@@ -1,13 +1,13 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { canReceiveNoble } from "../../../splendid/util.js";
+  import { canReceiveNoble } from "../../../games/splendid/util.js";
   import Noble from "./Noble.svelte";
 
   const dispatch = createEventDispatcher();
 
   export let player;
 
-  /** @type {import('../../../splendid/state.js').default} */
+  /** @type {import('../../../games/splendid/state.js').default} */
   export let state;
 
   export let canSelect;

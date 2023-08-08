@@ -1,5 +1,5 @@
-import { findPlayer } from "../../common/state.js";
-import { subtractObjects } from "../../common/util.js";
+import { findPlayer } from "../../../common/state.js";
+import { subtractObjects } from "../../../common/util.js";
 import { canAffordCard, costForCard } from "../util.js";
 import _ from "lodash";
 

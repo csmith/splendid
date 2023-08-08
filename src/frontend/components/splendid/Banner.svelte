@@ -1,5 +1,5 @@
 <script>
-  import { calculateWinners } from "../../../splendid/util.js";
+  import { calculateWinners } from "../../../games/splendid/util.js";
 
   export let state;
 

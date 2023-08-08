@@ -6,7 +6,7 @@
 
   const dispatch = createEventDispatcher();
 
-  /** @type {import('../../../splendid/state.js').default} */
+  /** @type {import('../../../games/splendid/state.js').default} */
   export let state;
 
   export let canTake;

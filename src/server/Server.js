@@ -1,7 +1,7 @@
 import { verify } from "../common/crypto.js";
 import Engine from "../common/engine.js";
 import { generateId } from "../common/util.js";
-import Splendid from "../splendid/game.js";
+import Splendid from "../games/splendid/game.js";
 import Connection from "./Connection.js";
 import fs from "fs";
 import path from "path";

@@ -1,5 +1,5 @@
 // TODO: Maybe add a ready check for everyone.
-import { countPlayers, findPlayer } from "../../common/state.js";
+import { countPlayers, findPlayer } from "../../../common/state.js";
 import cards from "../data/cards.js";
 import nobles from "../data/nobles.js";
 import _ from "lodash";

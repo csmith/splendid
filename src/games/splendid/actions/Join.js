@@ -1,4 +1,4 @@
-import { findPlayer } from "../../common/state.js";
+import { findPlayer } from "../../../common/state.js";
 
 export default {
   name: "join",
