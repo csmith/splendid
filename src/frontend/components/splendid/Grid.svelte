@@ -104,8 +104,12 @@
 
     td, th {
         border: 1px solid black;
-        padding: 2px;
+        padding: 2px 10px;
         text-align: center;
+    }
+
+    th.header {
+        width: 40px;
     }
 
     th {
@@ -163,7 +167,7 @@
                 <tr>
                     <th>Gem</th>
                     {#each Object.keys(selectedCard.cost) as key}
-                        <th class="header {key}">{key}</th>
+                        <th class="header {key}"><Gem type={key}/></th>
                     {/each}
                 </tr>
                 <tr>
