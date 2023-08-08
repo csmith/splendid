@@ -10,6 +10,7 @@
   --text-alt: #ffffff;
   --disabled: #666666;
   --text-disabled: #999999;
+  --link: #072d4b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,6 +23,7 @@
     --border: #ffffff;
     --text: #ffffff;
     --disabled: #666666;
+    --link: #52778f;
   }
 }
 
@@ -36,4 +38,9 @@ hr {
   color: var(--accent);
   border-color: var(--accent);
   border-style: solid;
+}
+
+a,
+a:visited {
+  color: var(--link);
 }

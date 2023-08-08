@@ -10,7 +10,7 @@ export default class {
 
   constructor(game) {
     this.#game = game;
-    this.#state = _.cloneDeep(game.state);
+    this.#state = _.cloneDeep(game?.state);
   }
 
   onAction(handler) {

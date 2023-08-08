@@ -18,21 +18,12 @@
 
   export let data;
   let displayName = "";
-  let joinGameId = "";
 
   onMount(() => {
     client.game = data.code;
     client.on("error", (message) => alert(message));
     client.connect();
   });
-
-  const startNewGame = () => {
-    client.startGame("Splendid");
-  };
-
-  const joinExistingGame = () => {
-    client.joinGame(joinGameId);
-  };
 
   const selectDisplayName = () => {
     client.createPlayer(displayName);
@@ -59,15 +50,8 @@
     <input type="text" bind:value={displayName} placeholder="Display name" />
     <input type="submit" value="Set display name" />
   </form>
-{:else if !$isConnected}
+{:else if !$isConnected || !$isInGame}
   Connecting...
-{:else if !$isInGame}
-  <button on:click={startNewGame}>Start new game</button>
-  or
-  <form on:submit|preventDefault={joinExistingGame}>
-    <input type="text" bind:value={joinGameId} placeholder="Game ID" />
-    <input type="submit" value="Join existing game" />
-  </form>
 {:else}
   <h2>Game ID: {$gameId}</h2>
   <hr />

@@ -1,21 +1,20 @@
 import { createAttestation, getPublicKey, newPrivateKey } from "../common/crypto.js";
 import Engine from "../common/engine.js";
 import { newPlayer } from "../common/player.js";
-import game from "../splendid/game.js";
+import games from "../games.js";
 import { Manager } from "socket.io-client";
 import { derived, get, writable } from "svelte/store";
 
 export default class {
   #storage;
 
-  // TODO: Don't just use the splendid game :D
-  #engine = new Engine(game);
+  #engine;
 
   #connected = writable(false);
   #player = writable(null);
   #gameType = writable(null);
   #gameId = writable(null);
-  #gameState = writable(this.#engine.state);
+  #gameState = writable({});
   #gameEvents = writable([]);
 
   #pendingEvents = [];
@@ -55,7 +54,7 @@ export default class {
   }
 
   get isInGame() {
-    return derived(this.#gameId, ($game) => $game !== null);
+    return derived(this.#gameType, ($game) => $game !== null);
   }
 
   get isConnected() {
@@ -74,7 +73,7 @@ export default class {
     return derived(this.#gameState, () => {
       const player = get(this.#player);
       if (player) {
-        return this.#engine.actions(player).map((a) => a.name);
+        return this.#engine?.actions(player)?.map((a) => a.name);
       } else {
         return [];
       }
@@ -162,6 +161,8 @@ export default class {
   }
 
   #onGameJoined({ type, id, events }) {
+    this.#engine = new Engine(games[type]);
+    this.#gameState.set(this.#engine.state);
     this.#gameId.set(id);
     this.#gameType.set(type);
     events.forEach((e) => this.#processEvent(e));
