@@ -1,7 +1,7 @@
 export default {
-    name: 'change-player',
+  name: "change-player",
 
-    perform: function(state, {playerId}) {
-        state.turn = playerId;
-    }
-}
+  perform: function (state, { playerId }) {
+    state.turn = playerId;
+  },
+};

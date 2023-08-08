@@ -1,7 +1,7 @@
 export default {
-    name: 'final-round',
+  name: "final-round",
 
-    perform: function(state) {
-        state.finalRound = true;
-    }
-}
+  perform: function (state) {
+    state.finalRound = true;
+  },
+};

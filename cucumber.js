@@ -1,6 +1,6 @@
 export default {
-    "formatOptions": {
-        "snippetInterface": "synchronous"
-    },
-    "publishQuiet": true,
-}
+  formatOptions: {
+    snippetInterface: "synchronous",
+  },
+  publishQuiet: true,
+};

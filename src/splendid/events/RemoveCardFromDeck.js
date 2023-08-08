@@ -1,7 +1,7 @@
 export default {
-    name: 'remove-card-from-deck',
+  name: "remove-card-from-deck",
 
-    perform: (state, {level}) => {
-        state.decks[level - 1].shift();
-    },
-}
+  perform: (state, { level }) => {
+    state.decks[level - 1].shift();
+  },
+};

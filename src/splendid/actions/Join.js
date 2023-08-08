@@ -1,16 +1,16 @@
-import {findPlayer} from "../../common/state.js";
+import { findPlayer } from "../../common/state.js";
 
 export default {
-    name: 'join',
+  name: "join",
 
-    available: function (state, {player}) {
-        return findPlayer(state, player) === undefined;
-    },
+  available: function (state, { player }) {
+    return findPlayer(state, player) === undefined;
+  },
 
-    perform: function (state, {player}) {
-        return {
-            event: 'add-player',
-            details: player,
-        }
-    }
-}
+  perform: function (state, { player }) {
+    return {
+      event: "add-player",
+      details: player,
+    };
+  },
+};

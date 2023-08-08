@@ -1,24 +1,24 @@
 export default {
-    name: 'deal',
+  name: "deal",
 
-    available: () => false,
+  available: () => false,
 
-    perform: function (state, {level}) {
-        if (state.decks[level-1].length === 0) {
-            return [];
-        }
-
-        const card = state.decks[level-1][0];
-        return [
-            {
-                event: 'remove-card-from-deck',
-                reason: 'deal',
-                level,
-            },
-            {
-                event: 'place-card',
-                card,
-            }
-        ];
+  perform: function (state, { level }) {
+    if (state.decks[level - 1].length === 0) {
+      return [];
     }
-}
+
+    const card = state.decks[level - 1][0];
+    return [
+      {
+        event: "remove-card-from-deck",
+        reason: "deal",
+        level,
+      },
+      {
+        event: "place-card",
+        card,
+      },
+    ];
+  },
+};

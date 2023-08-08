@@ -1,7 +1,7 @@
 export default {
-    name: 'add-bonus',
+  name: "add-bonus",
 
-    perform: (state, {playerId, type}) => {
-        state.players[playerId].bonuses[type]++;
-    }
-}
+  perform: (state, { playerId, type }) => {
+    state.players[playerId].bonuses[type]++;
+  },
+};

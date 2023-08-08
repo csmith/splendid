@@ -1,7 +1,7 @@
 export default {
-    name: 'change-phase',
+  name: "change-phase",
 
-    perform: function(state, {phase}) {
-        state.phase = phase;
-    }
-}
+  perform: function (state, { phase }) {
+    state.phase = phase;
+  },
+};

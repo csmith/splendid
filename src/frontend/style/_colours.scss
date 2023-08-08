@@ -12,19 +12,20 @@
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        --background: #333333;
-        --background-contrast: #444444;
-        --highlight: pink;
-        --accent: #3c658d;
-        --accent-hover: #3c658db3;
-        --border: #ffffff;
-        --text: #ffffff;
-        --disabled: #666666;
-    }
+  :root {
+    --background: #333333;
+    --background-contrast: #444444;
+    --highlight: pink;
+    --accent: #3c658d;
+    --accent-hover: #3c658db3;
+    --border: #ffffff;
+    --text: #ffffff;
+    --disabled: #666666;
+  }
 }
 
-body, dialog {
+body,
+dialog {
   background-color: var(--background);
   color: var(--text);
 }

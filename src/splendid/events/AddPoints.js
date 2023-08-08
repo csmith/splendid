@@ -1,7 +1,7 @@
 export default {
-    name: 'add-points',
+  name: "add-points",
 
-    perform: (state, {playerId, points}) => {
-        state.players[playerId].points += points;
-    }
-}
+  perform: (state, { playerId, points }) => {
+    state.players[playerId].points += points;
+  },
+};

@@ -1,97 +1,98 @@
 <script>
-    import {onMount} from "svelte";
-    import Client from '../../../../client/Client.js';
-    import Splendid from "../../../components/Splendid.svelte";
+  import { onMount } from "svelte";
+  import Client from "../../../../client/Client.js";
+  import Splendid from "../../../components/Splendid.svelte";
 
-    const client = new Client();
+  const client = new Client();
 
-    const hasPlayer = client.hasPlayer;
-    const isConnected = client.isConnected;
-    const isInGame = client.isInGame;
-    const actions = client.actions;
-    const gameId = client.gameId;
-    const gameType = client.gameType;
-    const state = client.gameState;
-    const events = client.gameEvents;
-    const playerId = client.playerId;
-    const nextEvent = client.nextEvent;
+  const hasPlayer = client.hasPlayer;
+  const isConnected = client.isConnected;
+  const isInGame = client.isInGame;
+  const actions = client.actions;
+  const gameId = client.gameId;
+  const gameType = client.gameType;
+  const state = client.gameState;
+  const events = client.gameEvents;
+  const playerId = client.playerId;
+  const nextEvent = client.nextEvent;
 
-    export let data;
-    let displayName = '';
-    let joinGameId = '';
+  export let data;
+  let displayName = "";
+  let joinGameId = "";
 
-    onMount(() => {
-        client.game = data.code;
-        client.on('error', (message) => alert(message))
-        client.connect();
-    })
+  onMount(() => {
+    client.game = data.code;
+    client.on("error", (message) => alert(message));
+    client.connect();
+  });
 
-    const startNewGame = () => {
-        client.startGame('Splendid');
-    };
+  const startNewGame = () => {
+    client.startGame("Splendid");
+  };
 
-    const joinExistingGame = () => {
-        client.joinGame(joinGameId);
-    }
+  const joinExistingGame = () => {
+    client.joinGame(joinGameId);
+  };
 
-    const selectDisplayName = () => {
-        client.createPlayer(displayName);
-    }
+  const selectDisplayName = () => {
+    client.createPlayer(displayName);
+  };
 
-    const onGameAction = ({detail: {name, args}}) => {
-        client.perform(name, args);
-    }
+  const onGameAction = ({ detail: { name, args } }) => {
+    client.perform(name, args);
+  };
 
-    const onEventProcessed = () => {
-        client.advanceEvents();
-    }
+  const onEventProcessed = () => {
+    client.advanceEvents();
+  };
 </script>
 
 {#if !$hasPlayer}
-    <form on:submit|preventDefault={selectDisplayName}>
-        <input type="text" bind:value={displayName} placeholder="Display name">
-        <input type="submit" value="Set display name">
-    </form>
+  <form on:submit|preventDefault={selectDisplayName}>
+    <input type="text" bind:value={displayName} placeholder="Display name" />
+    <input type="submit" value="Set display name" />
+  </form>
 {:else if !$isConnected}
-    Connecting...
+  Connecting...
 {:else if !$isInGame}
-    <button on:click={startNewGame}>Start new game</button>
-    or
-    <form on:submit|preventDefault={joinExistingGame}>
-        <input type="text" bind:value={joinGameId} placeholder="Game ID">
-        <input type="submit" value="Join existing game">
-    </form>
+  <button on:click={startNewGame}>Start new game</button>
+  or
+  <form on:submit|preventDefault={joinExistingGame}>
+    <input type="text" bind:value={joinGameId} placeholder="Game ID" />
+    <input type="submit" value="Join existing game" />
+  </form>
 {:else}
-    <h2>Game ID: {$gameId}</h2>
-    <hr>
-    {#if $gameType === 'Splendid'}
-        <Splendid
-                actions={$actions}
-                state={$state}
-                playerId={$playerId}
-                events={$events}
-                nextEvent={$nextEvent}
-                on:action={onGameAction}
-                on:eventProcessed={onEventProcessed}/>
-    {/if}
+  <h2>Game ID: {$gameId}</h2>
+  <hr />
+  {#if $gameType === "Splendid"}
+    <Splendid
+      actions={$actions}
+      state={$state}
+      playerId={$playerId}
+      events={$events}
+      nextEvent={$nextEvent}
+      on:action={onGameAction}
+      on:eventProcessed={onEventProcessed}
+    />
+  {/if}
 
-    <hr>
+  <hr />
+
+  <details>
+    <summary>Debugging information</summary>
+    <details>
+      <summary>Available actions</summary>
+      <pre>{JSON.stringify($actions)}</pre>
+    </details>
 
     <details>
-        <summary>Debugging information</summary>
-        <details>
-            <summary>Available actions</summary>
-            <pre>{JSON.stringify($actions)}</pre>
-        </details>
-
-        <details>
-            <summary>Current state</summary>
-            <pre>{JSON.stringify($state, null, 4)}</pre>
-        </details>
-
-        <details>
-            <summary>Events</summary>
-            <pre>{JSON.stringify($events, null, 4)}</pre>
-        </details>
+      <summary>Current state</summary>
+      <pre>{JSON.stringify($state, null, 4)}</pre>
     </details>
+
+    <details>
+      <summary>Events</summary>
+      <pre>{JSON.stringify($events, null, 4)}</pre>
+    </details>
+  </details>
 {/if}

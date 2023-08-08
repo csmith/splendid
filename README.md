@@ -14,7 +14,7 @@ Actions resolve into **events**, which mutate the game state.
 For example, in a game of Poker you might have a phase called `betting`, during
 which players have actions available to `call`, `raise`, or `fold`.
 If a player chooses to `call`, the action would ensure the player has enough
-chips, then resolve into a `deduct-chips` event targeting the player, 
+chips, then resolve into a `deduct-chips` event targeting the player,
 an `add-chips-to-pot` event, and call the `end-turn` action.
 The `end-turn` action could then, in turn, work out that all the players have
 placed a bet and produce a `next-phase` event to change phase to (e.g.) `river`.
@@ -25,21 +25,21 @@ sequenceDiagram
     participant E as Game Engine
     participant CA as Call action
     participant EA as End turn action
-    C->>E: perform action: call
+    C ->> E: perform action: call
     activate E
-    E->>CA: available?
+    E ->> CA: available?
     activate CA
-    CA-->>E: true
+    CA -->> E: true
     deactivate CA
-    E->>CA: perform
+    E ->> CA: perform
     activate CA
-    CA-->>E: [deduct-chips, add-chips-to-pot, end-turn]
+    CA -->> E: [deduct-chips, add-chips-to-pot, end-turn]
     deactivate CA
-    E->>EA: perform
+    E ->> EA: perform
     activate EA
-    EA-->>E: [next-phase]
+    EA -->> E: [next-phase]
     deactivate EA
-    E-->>C: events: [deduct-chips, ...]
+    E -->> C: events: [deduct-chips, ...]
     deactivate E
 ```
 
@@ -99,4 +99,3 @@ If a client tries to join a game where a player with the same ID is already
 playing, the server will validate that they have access to the same private key.
 This is achieved by having clients sign a payload consisting of their socket ID,
 game code and current time.
- 

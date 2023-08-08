@@ -1,16 +1,17 @@
 <script>
-    import '../style/global.scss';
+  import "../style/global.scss";
 </script>
 
 <svelte:head>
-    <title>Game engine</title>
+  <title>Game engine</title>
 </svelte:head>
+
 <header id="site-header">
-    <h1><img src="/splendid.png" alt="A splendid looking meeple"> Splendid!</h1>
+  <h1><img src="/splendid.png" alt="A splendid looking meeple" /> Splendid!</h1>
 </header>
+
 <main>
-    <slot/>
+  <slot />
 </main>
-<footer id="site-footer">
-    Look at me, I'm a footer!
-</footer>
+
+<footer id="site-footer">Look at me, I'm a footer!</footer>

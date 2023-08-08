@@ -1,9 +1,9 @@
-import _ from 'lodash';
+import _ from "lodash";
 
 export default {
-    name: 'discard-card',
+  name: "discard-card",
 
-    perform: (state, {card}) => {
-        state.cards = state.cards.map(row => row.map((c) => c.id === card.id ? undefined : c));
-    }
-}
+  perform: (state, { card }) => {
+    state.cards = state.cards.map((row) => row.map((c) => (c.id === card.id ? undefined : c)));
+  },
+};
