@@ -1,7 +1,13 @@
+import Engine from "../../src/common/engine.js";
 import { newPlayer } from "../../src/common/player.js";
+import games from "../../src/games.js";
 import { Given, Then } from "@cucumber/cucumber";
 import assert from "assert";
 import _ from "lodash";
+
+Given(/^the game being played was (.*?)$/, function (gameName) {
+  this.engine = new Engine(games[gameName]);
+});
 
 Given(/^the following players joined the game:$/, function (dataTable) {
   dataTable.rows().forEach((row) => {

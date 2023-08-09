@@ -1,7 +1,8 @@
 Feature: players can receive nobles
 
   Background:
-    Given the following players joined the game:
+    Given the game being played was Splendid
+    And the following players joined the game:
       | name  |
       | Alice |
       | Bob   |

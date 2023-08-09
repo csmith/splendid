@@ -1,5 +1,8 @@
 Feature: the game is set up properly
 
+  Background:
+    Given the game being played was Splendid
+
   Scenario: A game is started with one player
     Given the following players joined the game:
       | name  |

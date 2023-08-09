@@ -1,10 +1,6 @@
-import Engine from "../../../src/common/engine.js";
-import game from "../../../src/games/splendid/game.js";
 import { Before } from "@cucumber/cucumber";
 
 Before(function () {
-  this.engine = new Engine(game);
-
   this.parseCosts = function (str) {
     return Object.fromEntries(
       ["emerald", "sapphire", "ruby", "diamond", "onyx"].map((type, index) => [type, parseInt(str[index])]),
