@@ -7,6 +7,8 @@ import _ from "lodash";
 
 Given(/^the game being played was (.*?)$/, function (gameName) {
   this.engine = new Engine(games[gameName]);
+  this.events = [];
+  this.engine.onEvent((e) => this.events.push(e));
 });
 
 Given(/^the following players joined the game:$/, function (dataTable) {
@@ -85,4 +87,22 @@ Then(/^(.*?) will have (\d+) points?$/, function (playerName, score) {
 
 Then(/^this will be the final round$/, function () {
   assert.ok(this.engine.state.finalRound);
+});
+
+Then(/^(.*?) will be eliminated$/, function (playerName) {
+  const playerState = this.playerState(playerName);
+  assert.ok(playerState.eliminated);
+});
+
+Then(/^(.*?) will not be eliminated$/, function (playerName) {
+  const playerState = this.playerState(playerName);
+  assert.ok(!playerState.eliminated);
+});
+
+Then(/^an? "(.*?)" event will be raised$/, function (eventName) {
+  assert.ok(this.events.some((e) => e.event === eventName));
+});
+
+Then(/^an? "(.*?)" event will be not raised$/, function (eventName) {
+  assert.ok(this.events.every((e) => e.event !== eventName));
 });

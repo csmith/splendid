@@ -1,7 +1,7 @@
+import state from "../shared/state.js";
+
 export default {
-  phase: "setup",
-  turn: undefined,
-  players: {},
+  ...state,
   finalRound: false,
   tokens: {
     emerald: 7,

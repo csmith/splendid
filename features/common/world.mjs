@@ -22,4 +22,6 @@ Before(function () {
       this.error = e;
     }
   };
+
+  this.error = null;
 });

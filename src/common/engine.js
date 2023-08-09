@@ -86,7 +86,7 @@ export default class {
   applyEvent({ event, ...args }) {
     const e = this.#game.events.find((e) => e.name === event);
     if (!e) {
-      throw new Error(`Event ${name} not found`);
+      throw new Error(`Event ${event} not found`);
     }
     e.perform(this.#state, _.cloneDeep(args));
     this.#events.push({ ...args, event });

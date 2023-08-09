@@ -1,7 +1,7 @@
 import { verify } from "../common/crypto.js";
 import Engine from "../common/engine.js";
 import { generateId } from "../common/util.js";
-import Splendid from "../games/splendid/game.js";
+import games from "../games.js";
 import Connection from "./Connection.js";
 import fs from "fs";
 import path from "path";
@@ -12,8 +12,6 @@ export default class {
 
   #io;
   #games = {};
-
-  #availableGames = [Splendid];
 
   #sockets = {};
 
@@ -32,7 +30,7 @@ export default class {
   }
 
   startGame(name) {
-    const game = this.#availableGames.find((game) => game.name === name);
+    const game = Object.values(games).find((g) => g.name === name);
     if (!game) {
       throw new Error(`Game ${name} not found`);
     }
@@ -65,7 +63,7 @@ export default class {
         throw new Error(`Invalid saved state version ${version}`);
       }
 
-      const engine = new Engine(this.#availableGames.find((g) => g.name === game));
+      const engine = new Engine(Object.values(games).find((g) => g.name === game));
       events.forEach((event) => engine.applyEvent(event));
 
       this.#games[id] = engine;
@@ -113,7 +111,7 @@ export default class {
       }
     }
 
-    const game = this.#availableGames.find((game) => game.name === engine.type);
+    const game = Object.values(games).find((g) => g.name === engine.type);
     return { id, engine, masker: game.masker };
   }
 }

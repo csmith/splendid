@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import Client from "../../../../client/Client.js";
   import Splendid from "../../../components/Splendid.svelte";
+  import LoveNote from "../../../components/LoveNote.svelte";
 
   const client = new Client();
 
@@ -36,6 +37,11 @@
   const onEventProcessed = () => {
     client.advanceEvents();
   };
+
+  const components = {
+    Splendid: Splendid,
+    "Love note": LoveNote,
+  };
 </script>
 
 <svelte:head>
@@ -55,17 +61,17 @@
 {:else}
   <h2>Game ID: {$gameId}</h2>
   <hr />
-  {#if $gameType === "Splendid"}
-    <Splendid
-      actions={$actions}
-      state={$state}
-      playerId={$playerId}
-      events={$events}
-      nextEvent={$nextEvent}
-      on:action={onGameAction}
-      on:eventProcessed={onEventProcessed}
-    />
-  {/if}
+
+  <svelte:component
+    this={components[$gameType]}
+    actions={$actions}
+    state={$state}
+    playerId={$playerId}
+    events={$events}
+    nextEvent={$nextEvent}
+    on:action={onGameAction}
+    on:eventProcessed={onEventProcessed}
+  />
 
   <hr />
 
