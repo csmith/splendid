@@ -37,18 +37,14 @@ export default {
     if (otherPlayer.hand[0].closeness > playerData.hand[0].closeness) {
       yield {
         action: "eliminate-player",
-        args: {
-          playerId: playerData.details.id,
-          reason: `${playerData.details.name} deployed a Baron against ${otherPlayer.details.name} and lost the comparison`,
-        },
+        playerId: playerData.details.id,
+        reason: `${playerData.details.name} deployed a Baron against ${otherPlayer.details.name} and lost the comparison`,
       };
     } else if (otherPlayer.hand[0].closeness < playerData.hand[0].closeness) {
       yield {
         action: "eliminate-player",
-        args: {
-          playerId: otherPlayer.details.id,
-          reason: `${playerData.details.name} deployed a Baron and won the comparison`,
-        },
+        playerId: otherPlayer.details.id,
+        reason: `${playerData.details.name} deployed a Baron and won the comparison`,
       };
     }
   },

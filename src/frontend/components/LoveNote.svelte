@@ -40,7 +40,7 @@
         selectedCard = card;
         selectTarget = true;
       } else {
-        dispatch("action", { name: "play-card", args: { cardId: card.id } });
+        dispatch("action", { name: "play-card", cardId: card.id });
       }
     }
   };
@@ -51,7 +51,7 @@
         selectedTarget = player;
         selectTypeDialog.showModal();
       } else {
-        dispatch("action", { name: "play-card", args: { cardId: selectedCard.id, targetPlayerId: player.details.id } });
+        dispatch("action", { name: "play-card", cardId: selectedCard.id, targetPlayerId: player.details.id });
         selectedCard = undefined;
         selectTarget = false;
       }
@@ -64,7 +64,9 @@
   const handleTypeClick = (type) => {
     dispatch("action", {
       name: "play-card",
-      args: { cardId: selectedCard.id, targetPlayerId: selectedTarget.details.id, guessedType: type },
+      cardId: selectedCard.id,
+      targetPlayerId: selectedTarget.details.id,
+      guessedType: type,
     });
 
     selectedCard = undefined;

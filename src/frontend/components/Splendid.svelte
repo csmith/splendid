@@ -29,19 +29,18 @@
   const handleSelectedGems = ({ detail: selection }) =>
     dispatch("action", {
       name: "take-tokens",
-      args: { tokens: selection },
+      tokens: selection,
     });
-  const handleBuyCard = ({ detail }) => dispatch("action", { name: "buy-card", args: { card: detail } });
-  const handleReserveCard = ({ detail }) => dispatch("action", { name: "reserve-card", args: { card: detail } });
+  const handleBuyCard = ({ detail }) => dispatch("action", { name: "buy-card", card: detail });
+  const handleReserveCard = ({ detail }) => dispatch("action", { name: "reserve-card", card: detail });
   const handleReserveFromDeck = ({ detail: level }) =>
     dispatch("action", {
       name: "reserve-card-from-deck",
-      args: { level },
+      level,
     });
 
-  const handleReceiveNoble = ({ detail }) => dispatch("action", { name: "receive-noble", args: { noble: detail } });
-  const handleTokensDiscarded = ({ detail }) =>
-    dispatch("action", { name: "discard-tokens", args: { tokens: detail } });
+  const handleReceiveNoble = ({ detail }) => dispatch("action", { name: "receive-noble", noble: detail });
+  const handleTokensDiscarded = ({ detail }) => dispatch("action", { name: "discard-tokens", tokens: detail });
 </script>
 
 <style>

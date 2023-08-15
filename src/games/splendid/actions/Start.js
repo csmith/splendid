@@ -48,7 +48,7 @@ export default {
     yield* _.flatMap(decks, (d, i) =>
       _.times(4, () => ({
         action: "deal",
-        args: { level: i + 1 },
+        level: i + 1,
       })),
     );
 

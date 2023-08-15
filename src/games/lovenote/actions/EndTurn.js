@@ -11,9 +11,7 @@ export default {
     if (players.length === 1) {
       yield {
         action: "end-round",
-        args: {
-          winningPlayerId: players[0].details.id,
-        },
+        winningPlayerId: players[0].details.id,
       };
       return;
     }
@@ -44,9 +42,7 @@ export default {
 
       yield {
         action: "end-round",
-        args: {
-          winningPlayerId: winners[0],
-        },
+        winningPlayerId: winners[0],
       };
       return;
     }

@@ -31,20 +31,16 @@ export default {
 
     yield {
       action: "discard-card",
-      args: {
-        playerId: player.id,
-        card,
-      },
+      playerId: player.id,
+      card,
     };
 
     yield {
       action: `play-card-${card.type.toLowerCase()}`,
-      args: {
-        playerData,
-        card,
-        targetPlayerId,
-        guessedType,
-      },
+      playerData,
+      card,
+      targetPlayerId,
+      guessedType,
     };
 
     yield {

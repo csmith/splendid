@@ -12,10 +12,8 @@ export default {
 
     yield {
       action: "discard-card",
-      args: {
-        playerId: targetPlayerId,
-        card: state.players[targetPlayerId].hand[0],
-      },
+      playerId: targetPlayerId,
+      card: state.players[targetPlayerId].hand[0],
     };
 
     yield {

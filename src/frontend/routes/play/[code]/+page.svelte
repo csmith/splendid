@@ -30,7 +30,7 @@
     client.createPlayer(displayName);
   };
 
-  const onGameAction = ({ detail: { name, args } }) => {
+  const onGameAction = ({ detail: { name, ...args } }) => {
     client.perform(name, args);
   };
 

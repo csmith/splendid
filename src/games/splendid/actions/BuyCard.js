@@ -72,9 +72,7 @@ export default {
     if (index !== -1) {
       yield {
         action: "deal",
-        args: {
-          level: card.level,
-        },
+        level: card.level,
       };
     }
 

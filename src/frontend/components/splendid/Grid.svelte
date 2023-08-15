@@ -67,10 +67,6 @@
     grid-gap: 10px;
   }
 
-  .placeholder {
-    border: 1px solid black;
-  }
-
   .header {
     color: white;
   }

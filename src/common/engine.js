@@ -65,7 +65,7 @@ export default class {
     for (let r of result) {
       try {
         if (_.has(r, "action")) {
-          this.#perform(r.action, r.args);
+          this.#perform(r.action, r);
         } else if (_.has(r, "event")) {
           this.applyEvent({
             ...r,

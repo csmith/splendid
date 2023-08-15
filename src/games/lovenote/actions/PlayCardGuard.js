@@ -23,10 +23,8 @@ export default {
     if (otherPlayer.hand.find((c) => c.type === guessedType)) {
       yield {
         action: "eliminate-player",
-        args: {
-          playerId: otherPlayer.details.id,
-          reason: `${playerData.details.name} deployed a Guard and correctly guessed they held a ${guessedType}`,
-        },
+        playerId: otherPlayer.details.id,
+        reason: `${playerData.details.name} deployed a Guard and correctly guessed they held a ${guessedType}`,
       };
     } else {
       yield {

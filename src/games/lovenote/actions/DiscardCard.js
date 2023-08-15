@@ -13,10 +13,8 @@ export default {
     if (card.type === "Princess" && !state.players[playerId].eliminated) {
       yield {
         action: "eliminate-player",
-        args: {
-          playerId,
-          reason: `Discarded the Princess`,
-        },
+        playerId,
+        reason: `Discarded the Princess`,
       };
     }
   },

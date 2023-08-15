@@ -40,9 +40,7 @@ export default {
     yield* [
       {
         action: "deal",
-        args: {
-          level: card.level,
-        },
+        level: card.level,
       },
       {
         action: "end-turn",
