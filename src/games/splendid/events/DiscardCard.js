@@ -1,5 +1,3 @@
-import _ from "lodash";
-
 export default {
   name: "discard-card",
 

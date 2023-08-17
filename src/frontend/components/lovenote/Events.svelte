@@ -1,4 +1,8 @@
 <script>
+  import ChangePhase from "../../../games/shared/events/ChangePhase.js";
+  import ChangePlayer from "../../../games/shared/events/ChangePlayer.js";
+  import SetPlayerOrder from "../../../games/shared/events/SetPlayerOrder.js";
+
   export let state;
   export let events = [];
 
@@ -13,13 +17,13 @@
         return `${e.details.name} joins the game`;
       case "add-points":
         return `${player} gains ${e.points} points`;
-      case "change-player":
+      case ChangePlayer.name:
         if (player) {
           return `It is now ${player}'s turn`;
         } else {
           return `It is no-one's turn`;
         }
-      case "change-phase":
+      case ChangePhase.name:
         return `The game is now in the "${e.phase}" phase`;
       case "deal-card":
         return `${player} is dealt a card: ${e.card.type || "?"}`;
@@ -33,7 +37,7 @@
         return `${player} is eliminated from the round: ${e.reason}`;
       case "round-over":
         return `Round over! ${state.players[e.winningPlayerId].details.name} wins and gets one token of affection.`;
-      case "set-player-order":
+      case SetPlayerOrder.name:
         return `The turn order will be ${e.order.map((o) => state.players[o].details.name).join(", ")}`;
       case "setup":
         return `The game has been configured for ${Object.values(state.players).length} players`;
@@ -60,7 +64,7 @@
       <li>
         {pretty(event)}
       </li>
-      {#if event.event === "change-player" && event.playerId}
+      {#if event.event === ChangePlayer.name && event.playerId}
         <hr class="turn-end" />
       {/if}
     {/each}

@@ -1,4 +1,5 @@
 import { nextPlayer, remainingPlayers } from "../../../common/state.js";
+import ChangePlayer from "../../shared/events/ChangePlayer.js";
 
 export default {
   name: "end-turn",
@@ -49,10 +50,7 @@ export default {
 
     const next = nextPlayer(state);
 
-    yield {
-      event: "change-player",
-      playerId: next,
-    };
+    yield ChangePlayer.create(next);
 
     if (state.players[next].protected) {
       yield {

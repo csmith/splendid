@@ -1,5 +1,7 @@
 // TODO: Maybe add a ready check for everyone.
 import { countPlayers, findPlayer } from "../../../common/state.js";
+import ChangePhase from "../../shared/events/ChangePhase.js";
+import SetPlayerOrder from "../../shared/events/SetPlayerOrder.js";
 import cards from "../data/cards.js";
 import nobles from "../data/nobles.js";
 import _ from "lodash";
@@ -40,10 +42,7 @@ export default {
       decks: decks.map((d) => _.shuffle(d)),
     };
 
-    yield {
-      event: "set-player-order",
-      order: turnOrder,
-    };
+    yield SetPlayerOrder.create(turnOrder);
 
     yield* _.flatMap(decks, (d, i) =>
       _.times(4, () => ({
@@ -52,9 +51,6 @@ export default {
       })),
     );
 
-    yield {
-      event: "change-phase",
-      phase: "play",
-    };
+    yield ChangePhase.create("play");
   },
 };

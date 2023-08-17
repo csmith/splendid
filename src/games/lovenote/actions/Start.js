@@ -1,4 +1,6 @@
 import { countPlayers, findPlayer } from "../../../common/state.js";
+import ChangePhase from "../../shared/events/ChangePhase.js";
+import SetPlayerOrder from "../../shared/events/SetPlayerOrder.js";
 import cards from "../data/cards.js";
 import _ from "lodash";
 
@@ -14,15 +16,8 @@ export default {
   perform: function* (state) {
     const turnOrder = _.shuffle(Object.keys(state.players));
 
-    yield {
-      event: "set-player-order",
-      order: turnOrder,
-    };
-
-    yield {
-      event: "change-phase",
-      phase: "play",
-    };
+    yield SetPlayerOrder.create(turnOrder);
+    yield ChangePhase.create("play");
 
     yield {
       action: "start-round",

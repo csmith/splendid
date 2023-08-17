@@ -1,3 +1,6 @@
+import ChangePhase from "../../shared/events/ChangePhase.js";
+import ChangePlayer from "../../shared/events/ChangePlayer.js";
+
 export default {
   name: "end-round",
 
@@ -15,17 +18,11 @@ export default {
         winningPlayerId,
       };
 
-      yield {
-        event: "change-phase",
-        phase: "end",
-      };
+      yield ChangePhase.create("end");
       return;
     }
 
-    yield {
-      event: "change-player",
-      playerId: winningPlayerId,
-    };
+    yield ChangePlayer.create(winningPlayerId);
 
     yield {
       action: "start-round",

@@ -1,4 +1,6 @@
 import { isLastPlayer, nextPlayer } from "../../../common/state.js";
+import ChangePhase from "../../shared/events/ChangePhase.js";
+import ChangePlayer from "../../shared/events/ChangePlayer.js";
 import { canReceiveNoble } from "../util.js";
 import _ from "lodash";
 
@@ -19,48 +21,28 @@ export default {
 
     // First, if there are any nobles that can be received, the player must receive one
     if (state.phase === "play" && state.nobles.some((n) => canReceiveNoble(currentPlayer, n))) {
-      yield {
-        event: "change-phase",
-        phase: "noble",
-      };
+      yield ChangePhase.create("noble");
       return;
     }
 
     // If this is the final round and this is the last player, the game is over
     if (finalRound && isLastPlayer(state, currentPlayer.details)) {
-      yield* [
-        {
-          event: "change-phase",
-          phase: "end",
-        },
-        {
-          event: "change-player",
-          playerId: undefined,
-        },
-      ];
+      yield ChangePhase.create("end");
+      yield ChangePlayer.create(undefined);
       return;
     }
 
     // If we're not finishing immediately, and the current player is over their token limit, they must discard
     if (_.sum(Object.values(currentPlayer.tokens)) > 10) {
-      yield {
-        event: "change-phase",
-        phase: "discard",
-      };
+      yield ChangePhase.create("discard");
       return;
     }
 
     // Otherwise, the next player plays
     if (state.phase !== "play") {
-      yield {
-        event: "change-phase",
-        phase: "play",
-      };
+      yield ChangePhase.create("play");
     }
 
-    yield {
-      event: "change-player",
-      playerId: nextPlayer(state),
-    };
+    yield ChangePlayer.create(nextPlayer(state));
   },
 };
