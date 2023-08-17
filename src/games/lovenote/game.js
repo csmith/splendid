@@ -1,5 +1,4 @@
 import events from "./events.js";
-import masker from "./masker.js";
 import phases from "./phases.js";
 import state from "./state.js";
 
@@ -15,6 +14,5 @@ export default {
   description: "Use your connections to beat out the competition and get your note delivered to the Princess.",
   phases,
   state,
-  masker,
   events,
 };

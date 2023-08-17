@@ -14,7 +14,6 @@ import ReserveCard from "./events/ReserveCard.js";
 import ReturnTokens from "./events/ReturnTokens.js";
 import Setup from "./events/Setup.js";
 import TakeTokens from "./events/TakeTokens.js";
-import masker from "./masker.js";
 import phases from "./phases.js";
 import state from "./state.js";
 
@@ -33,7 +32,6 @@ export default {
     "sooner?",
   phases,
   state,
-  masker,
   events: [
     AddBonus,
     AddPlayer,

@@ -15,6 +15,21 @@ export default {
     };
   },
 
+  mask: function (playerId, data) {
+    // The person reserving the card gets to see it...
+    if (playerId === data.playerId) {
+      return data;
+    }
+
+    return {
+      ...data,
+      card: {
+        level: data.card.level,
+        id: data.card.id,
+      },
+    };
+  },
+
   perform: (state, { playerId, card }) => {
     state.players[playerId].reserved = _.concat(state.players[playerId].reserved, card);
   },

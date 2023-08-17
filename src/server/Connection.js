@@ -13,7 +13,7 @@ export default class {
   /** @type {import('../common/engine.js').default} */
   #engine;
 
-  #masker;
+  #game;
 
   constructor(server, socket) {
     this.#server = server;
@@ -68,16 +68,16 @@ export default class {
     }
   }
 
-  #setGame({ id, engine, masker }) {
+  #setGame({ id, engine, game }) {
     this.#gameId = id;
+    this.#game = game;
     this.#engine = engine;
-    this.#masker = masker;
     this.#engine.onAction((a) => this.#onEngineAction(a));
     this.#engine.onEvent((a) => this.#onEngineEvent(a));
     this.#socket.emit("game-joined", {
       id,
       type: engine.type,
-      events: engine.events.map((e) => masker(e, this.#player.id)),
+      events: engine.events.map((e) => this.#mask(e, this.#player.id)),
     });
   }
 
@@ -125,6 +125,15 @@ export default class {
   }
 
   #onEngineEvent(args) {
-    this.#socket.emit("game-event", this.#masker(args, this.#player.id));
+    this.#socket.emit("game-event", this.#mask(args, this.#player.id));
+  }
+
+  #mask(event, playerId) {
+    const e = this.#game.events.find((e) => e.name === event.event);
+    if (e.mask) {
+      return e.mask(playerId, event);
+    } else {
+      return event;
+    }
   }
 }

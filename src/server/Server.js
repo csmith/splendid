@@ -45,7 +45,7 @@ export default class {
 
     this.#games[id] = engine;
 
-    return { id, engine, masker: game.masker };
+    return { id, engine, game };
   }
 
   #loadGame(id) {
@@ -112,6 +112,6 @@ export default class {
     }
 
     const game = Object.values(games).find((g) => g.name === engine.type);
-    return { id, engine, masker: game.masker };
+    return { id, engine, game };
   }
 }

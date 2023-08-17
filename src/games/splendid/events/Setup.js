@@ -16,6 +16,18 @@ export default {
     };
   },
 
+  mask: function (playerId, data) {
+    return {
+      ...data,
+      decks: data.decks.map((deck) =>
+        deck.map((card) => ({
+          id: card.id,
+          level: card.level,
+        })),
+      ),
+    };
+  },
+
   perform: (state, { tokens, nobles, decks }) => {
     state.tokens = tokens;
     state.nobles = nobles;
