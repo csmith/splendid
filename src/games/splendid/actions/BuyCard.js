@@ -1,5 +1,10 @@
 import { findPlayer } from "../../../common/state.js";
 import { subtractObjects } from "../../../common/util.js";
+import AddBonus from "../events/AddBonus.js";
+import AddPoints from "../events/AddPoints.js";
+import DiscardCard from "../events/DiscardCard.js";
+import DiscardReserve from "../events/DiscardReserve.js";
+import ReturnTokens from "../events/ReturnTokens.js";
 import { canAffordCard, costForCard } from "../util.js";
 import _ from "lodash";
 
@@ -31,43 +36,22 @@ export default {
     const deductions = { ...subtractObjects(cost, missing), gold: missingCount };
 
     if (_.sum(Object.values(deductions)) > 0) {
-      yield {
-        event: "return-tokens",
-        playerId: state.turn,
-        tokens: deductions,
-      };
+      yield ReturnTokens.create(state.turn, deductions);
     }
 
     if (reserveIndex !== -1) {
-      yield {
-        event: "discard-reserve",
-        playerId: state.turn,
-        card,
-      };
+      yield DiscardReserve.create(state.turn, card);
     }
 
     if (index !== -1) {
-      yield {
-        event: "discard-card",
-        reason: "buy",
-        playerId: state.turn,
-        card,
-      };
+      yield DiscardCard.create(card, state.turn, "buy");
     }
 
     if (card.points > 0) {
-      yield {
-        event: "add-points",
-        playerId: state.turn,
-        points: card.points,
-      };
+      yield AddPoints.create(state.turn, card.points);
     }
 
-    yield {
-      event: "add-bonus",
-      playerId: state.turn,
-      type: card.bonus,
-    };
+    yield AddBonus.create(state.turn, card.bonus);
 
     if (index !== -1) {
       yield {

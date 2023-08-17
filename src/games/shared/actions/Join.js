@@ -8,6 +8,7 @@ export default {
   },
 
   perform: function* (state, { player }) {
+    // TODO: This is a game-specific event...
     yield {
       event: "add-player",
       details: player,

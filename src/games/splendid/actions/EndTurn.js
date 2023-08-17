@@ -1,6 +1,7 @@
 import { isLastPlayer, nextPlayer } from "../../../common/state.js";
 import ChangePhase from "../../shared/events/ChangePhase.js";
 import ChangePlayer from "../../shared/events/ChangePlayer.js";
+import FinalRound from "../events/FinalRound.js";
 import { canReceiveNoble } from "../util.js";
 import _ from "lodash";
 
@@ -14,9 +15,7 @@ export default {
     const finalRound = state.finalRound || Object.values(state.players).some((p) => p.points >= 15);
 
     if (finalRound && !state.finalRound) {
-      yield {
-        event: "final-round",
-      };
+      yield FinalRound.create();
     }
 
     // First, if there are any nobles that can be received, the player must receive one

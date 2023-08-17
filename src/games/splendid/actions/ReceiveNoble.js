@@ -1,3 +1,5 @@
+import AddPoints from "../events/AddPoints.js";
+import ReceiveNoble from "../events/ReceiveNoble.js";
 import { canReceiveNoble } from "../util.js";
 import _ from "lodash";
 
@@ -19,16 +21,8 @@ export default {
     }
 
     yield* [
-      {
-        event: "receive-noble",
-        playerId: state.turn,
-        noble,
-      },
-      {
-        event: "add-points",
-        playerId: state.turn,
-        points: 3,
-      },
+      ReceiveNoble.create(state.turn, noble),
+      AddPoints.create(state.turn, 3),
       {
         action: "end-turn",
       },

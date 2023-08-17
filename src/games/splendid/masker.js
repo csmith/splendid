@@ -1,5 +1,8 @@
+import ReserveCard from "./events/ReserveCard.js";
+import Setup from "./events/Setup.js";
+
 export default function ({ event, ...args }, playerId) {
-  if (event === "setup") {
+  if (event === Setup.name) {
     return {
       event,
       ...args,
@@ -10,7 +13,7 @@ export default function ({ event, ...args }, playerId) {
         })),
       ),
     };
-  } else if (event === "reserve-card" && args.playerId !== playerId) {
+  } else if (event === ReserveCard.name && args.playerId !== playerId) {
     return {
       event,
       ...args,

@@ -1,3 +1,4 @@
+import TakeTokens from "../events/TakeTokens.js";
 import _ from "lodash";
 
 const allowedTokens = ["emerald", "ruby", "diamond", "sapphire", "onyx"];
@@ -38,11 +39,7 @@ export default {
     }
 
     yield* [
-      {
-        event: "take-tokens",
-        playerId: state.turn,
-        tokens: filteredTokens,
-      },
+      TakeTokens.create(state.turn, filteredTokens),
       {
         action: "end-turn",
       },

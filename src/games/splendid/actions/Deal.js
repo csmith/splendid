@@ -1,3 +1,6 @@
+import PlaceCard from "../events/PlaceCard.js";
+import RemoveCardFromDeck from "../events/RemoveCardFromDeck.js";
+
 export default {
   name: "deal",
 
@@ -9,16 +12,7 @@ export default {
     }
 
     const card = state.decks[level - 1][0];
-    yield* [
-      {
-        event: "remove-card-from-deck",
-        reason: "deal",
-        level,
-      },
-      {
-        event: "place-card",
-        card,
-      },
-    ];
+    yield RemoveCardFromDeck.create(level, undefined, "deal");
+    yield PlaceCard.create(card);
   },
 };

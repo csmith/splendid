@@ -4,6 +4,7 @@ import ChangePhase from "../../shared/events/ChangePhase.js";
 import SetPlayerOrder from "../../shared/events/SetPlayerOrder.js";
 import cards from "../data/cards.js";
 import nobles from "../data/nobles.js";
+import Setup from "../events/Setup.js";
 import _ from "lodash";
 
 const tokensToRemovePerPlayerCount = {
@@ -28,9 +29,8 @@ export default {
     const decks = _.times(3, (level) => _.filter(cardsWithIds, (c) => c.level === level + 1));
     const turnOrder = _.shuffle(Object.keys(state.players));
 
-    yield {
-      event: "setup",
-      tokens: {
+    yield Setup.create(
+      {
         emerald: 7 - tokensToRemove,
         diamond: 7 - tokensToRemove,
         sapphire: 7 - tokensToRemove,
@@ -38,9 +38,9 @@ export default {
         ruby: 7 - tokensToRemove,
         gold: 5,
       },
-      nobles: _.take(_.shuffle(nobles), players + 1),
-      decks: decks.map((d) => _.shuffle(d)),
-    };
+      _.take(_.shuffle(nobles), players + 1),
+      decks.map((d) => _.shuffle(d)),
+    );
 
     yield SetPlayerOrder.create(turnOrder);
 

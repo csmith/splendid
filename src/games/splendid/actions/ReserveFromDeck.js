@@ -1,3 +1,7 @@
+import RemoveCardFromDeck from "../events/RemoveCardFromDeck.js";
+import ReserveCard from "../events/ReserveCard.js";
+import TakeTokens from "../events/TakeTokens.js";
+
 export default {
   name: "reserve-card-from-deck",
 
@@ -15,27 +19,11 @@ export default {
     }
 
     const card = state.decks[level - 1][0];
-    const getsGold = state.tokens.gold > 0;
+    yield RemoveCardFromDeck.create(level, state.turn, "reserve");
+    yield ReserveCard.create(state.turn, card);
 
-    yield {
-      event: "remove-card-from-deck",
-      playerId: state.turn,
-      reason: "reserve",
-      level,
-    };
-
-    yield {
-      event: "reserve-card",
-      playerId: state.turn,
-      card,
-    };
-
-    if (getsGold) {
-      yield {
-        event: "take-tokens",
-        playerId: state.turn,
-        tokens: { gold: 1 },
-      };
+    if (state.tokens.gold > 0) {
+      yield TakeTokens.create(state.turn, { gold: 1 });
     }
 
     yield {

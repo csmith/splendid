@@ -1,6 +1,15 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import anime from "animejs";
+  import AddBonus from "../../../games/splendid/events/AddBonus.js";
+  import AddPoints from "../../../games/splendid/events/AddPoints.js";
+  import DiscardCard from "../../../games/splendid/events/DiscardCard.js";
+  import DiscardReserve from "../../../games/splendid/events/DiscardReserve.js";
+  import PlaceCard from "../../../games/splendid/events/PlaceCard.js";
+  import ReceiveNoble from "../../../games/splendid/events/ReceiveNoble.js";
+  import RemoveCardFromDeck from "../../../games/splendid/events/RemoveCardFromDeck.js";
+  import ReturnTokens from "../../../games/splendid/events/ReturnTokens.js";
+  import TakeTokens from "../../../games/splendid/events/TakeTokens.js";
 
   export let state;
   export let playerId;
@@ -133,29 +142,29 @@
   const process = async (e) => {
     console.log("Processing animation for ", e);
     switch (e.event) {
-      case "take-tokens":
+      case TakeTokens.name:
         await animateTokens("#token-supply", `#player-${e.playerId}`, e.tokens);
         break;
-      case "return-tokens":
+      case ReturnTokens.name:
         await animateTokens(`#player-${e.playerId}`, "#token-supply", e.tokens);
         break;
-      case "discard-card":
+      case DiscardCard.name:
         if (e.reason === "reserve" && e.playerId === playerId) {
           await animateCard(e.card, `#reserve-${state.players[e.playerId].reserved.length}`);
         } else {
           await animateCard(e.card, `#player-${e.playerId}`);
         }
         break;
-      case "add-bonus":
+      case AddBonus.name:
         await animateDiscount(e.playerId, e.type);
         break;
-      case "add-points":
+      case AddPoints.name:
         await animatePoints(e.playerId, e.points);
         break;
-      case "remove-card-from-deck":
+      case RemoveCardFromDeck.name:
         await animateDeal(e);
         break;
-      case "discard-reserve":
+      case DiscardReserve.name:
         if (e.playerId === playerId) {
           await copyAndMoveElement(
             document.querySelector(`#card-${e.card.id}`),
@@ -164,14 +173,14 @@
           );
         }
         break;
-      case "receive-noble":
+      case ReceiveNoble.name:
         await copyAndMoveElement(
           document.querySelector(`#noble-${e.noble.id}`),
           document.querySelector(`#player-${e.playerId}`),
           { hideSource: true },
         );
         break;
-      case "place-card":
+      case PlaceCard.name:
         // Do nothing – we've already animated the deal
         break;
       default:
