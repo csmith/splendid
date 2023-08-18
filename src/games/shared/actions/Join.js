@@ -1,4 +1,5 @@
 import { findPlayer } from "../../../common/state.js";
+import AddPlayer from "../events/AddPlayer.js";
 
 export default {
   name: "join",
@@ -8,10 +9,6 @@ export default {
   },
 
   perform: function* (state, { player }) {
-    // TODO: This is a game-specific event...
-    yield {
-      event: "add-player",
-      details: player,
-    };
+    yield AddPlayer.create(player);
   },
 };

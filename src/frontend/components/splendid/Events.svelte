@@ -5,7 +5,6 @@
   import ChangePlayer from "../../../games/shared/events/ChangePlayer.js";
   import SetPlayerOrder from "../../../games/shared/events/SetPlayerOrder.js";
   import AddBonus from "../../../games/splendid/events/AddBonus.js";
-  import AddPlayer from "../../../games/splendid/events/AddPlayer.js";
   import AddPoints from "../../../games/splendid/events/AddPoints.js";
   import DiscardCard from "../../../games/splendid/events/DiscardCard.js";
   import DiscardReserve from "../../../games/splendid/events/DiscardReserve.js";
@@ -17,6 +16,7 @@
   import ReturnTokens from "../../../games/splendid/events/ReturnTokens.js";
   import Setup from "../../../games/splendid/events/Setup.js";
   import TakeTokens from "../../../games/splendid/events/TakeTokens.js";
+  import AddPlayer from "../../../games/shared/events/AddPlayer.js";
 
   export let state;
   export let events = [];

@@ -2,13 +2,13 @@
   import ChangePhase from "../../../games/shared/events/ChangePhase.js";
   import ChangePlayer from "../../../games/shared/events/ChangePlayer.js";
   import SetPlayerOrder from "../../../games/shared/events/SetPlayerOrder.js";
-  import AddPlayer from "../../../games/splendid/events/AddPlayer.js";
   import AddPoints from "../../../games/splendid/events/AddPoints.js";
   import DealCard from "../../../games/lovenote/events/DealCard.js";
   import EliminatePlayer from "../../../games/lovenote/events/EliminatePlayer.js";
   import DiscardCard from "../../../games/lovenote/events/DiscardCard.js";
   import HandRevealed from "../../../games/lovenote/events/HandRevealed.js";
   import RoundOver from "../../../games/lovenote/events/RoundOver.js";
+  import AddPlayer from "../../../games/shared/events/AddPlayer.js";
 
   export let state;
   export let events = [];
