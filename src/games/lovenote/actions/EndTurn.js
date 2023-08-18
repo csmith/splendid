@@ -1,5 +1,7 @@
 import { nextPlayer, remainingPlayers } from "../../../common/state.js";
 import ChangePlayer from "../../shared/events/ChangePlayer.js";
+import DealCard from "../events/DealCard.js";
+import SetProtection from "../events/SetProtection.js";
 
 export default {
   name: "end-turn",
@@ -53,17 +55,9 @@ export default {
     yield ChangePlayer.create(next);
 
     if (state.players[next].protected) {
-      yield {
-        event: "set-protection",
-        playerId: next,
-        isProtected: false,
-      };
+      SetProtection.create(next, false);
     }
 
-    yield {
-      event: "deal-card",
-      playerId: next,
-      card: state.deck[0],
-    };
+    yield DealCard.create(next, state.deck[0]);
   },
 };

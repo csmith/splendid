@@ -1,6 +1,23 @@
 export default {
   name: "swap-hands",
 
+  /**
+   * @typedef HandToSwap
+   * @type {object}
+   * @property {string} id The ID of the player who will receive the hand.
+   * @property {Object[]} hand The hand that will be received.
+   */
+
+  /**
+   * @param players {HandToSwap[]} The details of the hands to swap.
+   */
+  create: function (players) {
+    return {
+      event: this.name,
+      players,
+    };
+  },
+
   mask: function (playerId, data) {
     return {
       ...data,

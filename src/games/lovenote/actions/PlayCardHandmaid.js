@@ -1,13 +1,11 @@
+import SetProtection from "../events/SetProtection.js";
+
 export default {
   name: "play-card-handmaid",
 
   available: () => false,
 
   perform: function* (state, { playerData }) {
-    yield {
-      event: "set-protection",
-      playerId: playerData.details.id,
-      isProtected: true,
-    };
+    yield SetProtection.create(playerData.details.id, true);
   },
 };

@@ -1,5 +1,8 @@
 import { countPlayers } from "../../../common/state.js";
 import cards from "../data/cards.js";
+import DealCard from "../events/DealCard.js";
+import ResetHands from "../events/ResetHands.js";
+import Setup from "../events/Setup.js";
 import _ from "lodash";
 
 const tokensToWin = {
@@ -25,33 +28,16 @@ export default {
     }
 
     if (Object.values(state.players).some((p) => p.hand.length > 0 || p.discards.length > 0)) {
-      yield {
-        event: "reset-hands",
-      };
+      yield ResetHands.create();
     }
 
-    yield {
-      event: "setup",
-      deck,
-      unused,
-      spare,
-      tokensToWin: tokensToWin[players],
-    };
+    yield Setup.create(deck, unused, spare, tokensToWin[players]);
 
     let turnOrder = _.map(_.sortBy(Object.values(state.players), "order"), "details.id");
     const start = turnOrder.indexOf(state.turn);
     turnOrder = turnOrder.slice(start).concat(turnOrder.slice(0, start));
 
-    yield* turnOrder.map((player) => ({
-      event: "deal-card",
-      playerId: player,
-      card: deck.shift(),
-    }));
-
-    yield {
-      event: "deal-card",
-      playerId: state.turn,
-      card: deck.shift(),
-    };
+    yield* turnOrder.map((player) => DealCard.create(player, deck.shift()));
+    yield DealCard.create(state.turn, deck.shift());
   },
 };

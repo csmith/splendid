@@ -1,3 +1,5 @@
+import CardNoOp from "../events/CardNoOp.js";
+import HandRevealed from "../events/HandRevealed.js";
 import { areAllProtected } from "../util.js";
 
 export default {
@@ -8,10 +10,7 @@ export default {
   perform: function* (state, { playerData, targetPlayerId }) {
     // If all other players are protected, it does nothing
     if (areAllProtected(state, playerData.details.id)) {
-      yield {
-        event: "card-no-op",
-        playerId: playerData.details.id,
-      };
+      yield CardNoOp.create(playerData.details.id);
       return;
     }
 
@@ -20,19 +19,8 @@ export default {
       throw new Error(`Player ${targetPlayerId} not found`);
     }
 
-    yield {
-      event: "hand-revealed",
-      hand: otherPlayer.hand,
-      handPlayerId: otherPlayer.details.id,
-      playerId: playerData.details.id,
-    };
-
-    yield {
-      event: "hand-revealed",
-      hand: playerData.hand,
-      handPlayerId: playerData.details.id,
-      playerId: otherPlayer.details.id,
-    };
+    yield HandRevealed.create(playerData.details.id, otherPlayer.details.id, otherPlayer.hand);
+    yield HandRevealed.create(otherPlayer.details.id, playerData.details.id, playerData.hand);
 
     if (otherPlayer.hand[0].closeness > playerData.hand[0].closeness) {
       yield {

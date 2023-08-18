@@ -4,6 +4,11 @@
   import SetPlayerOrder from "../../../games/shared/events/SetPlayerOrder.js";
   import AddPlayer from "../../../games/splendid/events/AddPlayer.js";
   import AddPoints from "../../../games/splendid/events/AddPoints.js";
+  import DealCard from "../../../games/lovenote/events/DealCard.js";
+  import EliminatePlayer from "../../../games/lovenote/events/EliminatePlayer.js";
+  import DiscardCard from "../../../games/lovenote/events/DiscardCard.js";
+  import HandRevealed from "../../../games/lovenote/events/HandRevealed.js";
+  import RoundOver from "../../../games/lovenote/events/RoundOver.js";
 
   export let state;
   export let events = [];
@@ -27,17 +32,17 @@
         }
       case ChangePhase.name:
         return `The game is now in the "${e.phase}" phase`;
-      case "deal-card":
+      case DealCard.name:
         return `${player} is dealt a card: ${e.card.type || "?"}`;
-      case "discard-card":
+      case DiscardCard.name:
         return `${player} discards a card: ${e.card.type}`;
-      case "hand-revealed":
+      case HandRevealed.name:
         return `${player} gets to see ${state.players[e.handPlayerId].details.name}'s hand: ${e.hand
           .map((c) => c.type || "?")
           .join(", ")}`;
-      case "eliminate-player":
+      case EliminatePlayer.name:
         return `${player} is eliminated from the round: ${e.reason}`;
-      case "round-over":
+      case RoundOver.name:
         return `Round over! ${state.players[e.winningPlayerId].details.name} wins and gets one token of affection.`;
       case SetPlayerOrder.name:
         return `The turn order will be ${e.order.map((o) => state.players[o].details.name).join(", ")}`;
@@ -60,7 +65,7 @@
   <h3>Event history</h3>
   <ul>
     {#each events.slice().reverse() as event}
-      {#if event.event === "round-over"}
+      {#if event.event === RoundOver.name}
         <hr class="round-end" />
       {/if}
       <li>

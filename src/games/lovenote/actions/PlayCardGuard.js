@@ -1,3 +1,5 @@
+import CardNoOp from "../events/CardNoOp.js";
+import GuardFailed from "../events/GuardFailed.js";
 import { areAllProtected } from "../util.js";
 
 export default {
@@ -8,10 +10,7 @@ export default {
   perform: function* (state, { playerData, targetPlayerId, guessedType }) {
     // If all other players are protected, it does nothing
     if (areAllProtected(state, playerData.details.id)) {
-      yield {
-        event: "card-no-op",
-        playerId: playerData.details.id,
-      };
+      yield CardNoOp.create(playerData.details.id);
       return;
     }
 
@@ -27,10 +26,7 @@ export default {
         reason: `${playerData.details.name} deployed a Guard and correctly guessed they held a ${guessedType}`,
       };
     } else {
-      yield {
-        event: "guard-failed",
-        playerId: playerData.details.id,
-      };
+      yield GuardFailed.create(playerData.details.id);
     }
   },
 };

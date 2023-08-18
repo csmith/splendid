@@ -1,6 +1,12 @@
 export default {
   name: "reset-hands",
 
+  create: function () {
+    return {
+      event: this.name,
+    };
+  },
+
   perform: (state) => {
     Object.keys(state.players).forEach((p) => {
       state.players[p].hand = [];

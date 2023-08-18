@@ -1,3 +1,5 @@
+import DealCard from "../events/DealCard.js";
+
 export default {
   name: "play-card-prince",
 
@@ -16,10 +18,6 @@ export default {
       card: state.players[targetPlayerId].hand[0],
     };
 
-    yield {
-      event: "deal-card",
-      playerId: targetPlayerId,
-      card: state.deck[0],
-    };
+    yield DealCard.create(targetPlayerId, state.deck[0]);
   },
 };
