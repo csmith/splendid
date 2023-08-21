@@ -1,4 +1,5 @@
 import Server from "./src/server/Server.js";
+import Store from "./src/server/Store.js";
 import { sveltekit } from "@sveltejs/kit/vite";
 
 let server;
@@ -6,7 +7,7 @@ let server;
 const websocketPlugin = {
   name: "webSocketServer",
   configureServer(v) {
-    server = new Server("./data/");
+    server = new Server(new Store());
     server.bind(v.httpServer);
   },
   closeBundle: () => server?.saveGames(),

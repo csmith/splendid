@@ -1,5 +1,6 @@
 import { handler } from "../build/handler.js";
 import Server from "./server/Server.js";
+import Store from "./server/Store.js";
 import express from "express";
 import { createServer } from "http";
 
@@ -7,7 +8,7 @@ const port = 3000;
 const app = express();
 const httpServer = createServer(app);
 
-const server = new Server("./data");
+const server = new Server(new Store());
 
 function exitHandler(code) {
   server.saveGames();
