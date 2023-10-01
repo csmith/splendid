@@ -24,7 +24,7 @@
     "vite": "^4.4.9"
   },
   "devDependencies": {
-    "@cucumber/cucumber": "^9.4.0",
+    "@cucumber/cucumber": "^9.5.1",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "c8": "^8.0.1",
     "prettier": "^3.0.3",
