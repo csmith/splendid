@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@cucumber/cucumber": "^9.5.1",
-    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "c8": "^8.0.1",
     "prettier": "^3.0.3",
     "prettier-plugin-svelte": "^3.0.3",
