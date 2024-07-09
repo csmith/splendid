@@ -30,6 +30,6 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-// include(":server")
+include(":server")
 include(":shared")
 include(":games:klondike")

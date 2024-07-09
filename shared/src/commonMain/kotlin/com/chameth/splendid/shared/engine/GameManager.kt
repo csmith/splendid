@@ -17,6 +17,7 @@ class GameManager(val types: List<GameType<*>>) {
         .let { Game(it, generateAca()) }
         .also { games[it.id] = it }
         .also {
+            // TODO: This should be scoped to the game and cancelled at some point
             GlobalScope.launch {
                 it.eventFlow.debounce(1.seconds).collect { _ ->
                     save(it)

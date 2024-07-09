@@ -2,9 +2,10 @@ package com.chameth.splendid.games.klondike
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.chameth.splendid.games.klondike.actions.KlondikeActions
+import com.chameth.splendid.games.klondike.actions.*
 import com.chameth.splendid.games.klondike.events.*
 import com.chameth.splendid.games.klondike.ui.Board
+import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.engine.Event
 import com.chameth.splendid.shared.engine.Game
 import com.chameth.splendid.shared.engine.GameType
@@ -41,6 +42,19 @@ data object Klondike : GameType<State> {
                 subclass(RevealCardInTableau::class)
                 subclass(SetPhase::class)
                 subclass(SetVariant::class)
+            }
+
+            polymorphic(Action::class) {
+                subclass(AutoSolve::class)
+                subclass(DrawFromStock::class)
+                subclass(MoveFoundationToTableau::class)
+                subclass(MoveTableauToFoundation::class)
+                subclass(MoveTableauToTableau::class)
+                subclass(MoveWasteToFoundation::class)
+                subclass(MoveWasteToTableau::class)
+                subclass(NewGame::class)
+                subclass(ResetStock::class)
+                subclass(StartGame::class)
             }
         }
 }
