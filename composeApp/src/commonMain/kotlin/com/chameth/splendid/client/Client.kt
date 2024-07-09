@@ -2,7 +2,6 @@ package com.chameth.splendid.client
 
 import com.chameth.splendid.shared.transport.Message
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
@@ -19,7 +18,7 @@ class Client(private val json: Json) {
     private val receiveQueue = MutableSharedFlow<Message.Server>(extraBufferCapacity = Int.MAX_VALUE)
     private val sendQueue = MutableSharedFlow<Message.Client>()
 
-    private val client = HttpClient(CIO) {
+    private val client = HttpClient() {
         install(WebSockets)
     }
 

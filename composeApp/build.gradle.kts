@@ -68,15 +68,18 @@ kotlin {
             implementation(projects.games.klondike)
             implementation(projects.shared)
 
-            implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.core)
-
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation(libs.kotlin.serialisation)
+            implementation(libs.kotlin.datetime)
         }
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(libs.ktor.client.cio)
+        }
+
+        wasmJsMain.dependencies {
+            implementation(libs.ktor.client.js)
         }
     }
 }

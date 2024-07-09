@@ -48,9 +48,9 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-            implementation("dev.chrisbanes.haze:haze:0.7.2")
-            implementation("dev.chrisbanes.haze:haze-materials:0.7.2")
+            implementation(libs.kotlin.serialisation)
+            implementation(libs.haze)
+            implementation(libs.haze.materials)
         }
     }
 }

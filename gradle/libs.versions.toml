@@ -13,13 +13,17 @@ androidx-test-junit = "1.2.0"
 compose-plugin = "1.6.11"
 junit = "4.13.2"
 kotlin = "2.0.0"
-ktor = "2.3.12"
-logback = "1.5.6"
+ktor-server = "2.3.12"
+ktor-client = "3.0.0-beta-2-eap-972"
+haze = "0.7.3"
 
 [libraries]
+# Testing stuff
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+# Compose
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
@@ -27,14 +31,25 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
-ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
-ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
-ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
-ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
+
+# Other UI
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
+
+# Network
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor-client" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor-client" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor-client" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor-client" }
+ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor-server" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor-server" }
+ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor-server" }
+ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor-server" }
+
+# Misc
+logback = { module = "ch.qos.logback:logback-classic", version = "1.5.6" }
+kotlin-serialisation = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.1" }
+kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.0" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -42,6 +57,6 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor-server" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
