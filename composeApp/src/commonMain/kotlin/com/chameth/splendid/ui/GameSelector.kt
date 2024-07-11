@@ -11,12 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.chameth.splendid.shared.engine.Game
-import com.chameth.splendid.shared.engine.GameManager
 import com.chameth.splendid.shared.engine.GameType
 import kotlinx.coroutines.launch
 
 @Composable
-fun GameSelector(manager: GameManager, modifier: Modifier = Modifier) {
+fun GameSelector(
+    types: List<GameType<*>>,
+    createGame: (GameType<*>) -> Game<*>,
+    modifier: Modifier = Modifier,
+) {
     var selectedType by remember { mutableStateOf<GameType<*>?>(null) }
     var game by remember { mutableStateOf<Game<*>?>(null) }
 
@@ -38,11 +41,11 @@ fun GameSelector(manager: GameManager, modifier: Modifier = Modifier) {
                 )
 
                 val scope = rememberCoroutineScope()
-                manager.types.forEach {
+                types.forEach {
                     Button(onClick = {
                         selectedType = it
                         scope.launch {
-                            game = manager.createGame(it.name)
+                            game = createGame(it)
                         }
                     }) {
                         Text(text = it.name)

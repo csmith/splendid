@@ -6,7 +6,8 @@ import io.ktor.server.netty.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
-import io.ktor.websocket.*
+
+val server = GameServer()
 
 fun main() {
     embeddedServer(
@@ -26,13 +27,6 @@ fun Application.module() {
             call.respondText("Test")
         }
 
-        webSocket("/client") {
-            send("Hello")
-
-            for (frame in incoming) {
-                // TODO: Do something useful
-                println(frame)
-            }
-        }
+        webSocket("/client") { server.adoptWebSocket(this) }
     }
 }

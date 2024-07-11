@@ -10,7 +10,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class Game<S : State>(
-    private val type: GameType<S>,
+    val type: GameType<S>,
     val id: String
 ) {
 
@@ -27,13 +27,14 @@ class Game<S : State>(
 
     private var state: S = type.stateFactory()
 
-    suspend fun invoke(action: Action<S>) {
+    suspend fun invoke(action: Action<*>) {
         if (action !in actions) {
             println("Illegal action attempted: $action")
             return
         }
 
-        action.resolve(state).forEach { event ->
+        @Suppress("UNCHECKED_CAST")
+        (action as Action<S>).resolve(state).forEach { event ->
             emit(event)
             delay(50)
         }
