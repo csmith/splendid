@@ -11,7 +11,7 @@ import com.chameth.splendid.shared.engine.Game
 import com.chameth.splendid.shared.playingcards.Card
 import kotlinx.coroutines.launch
 
-class Presenter(private val game: Game<State>) {
+class Presenter(private val game: Game<State>, private val localActor: String) {
 
     @Composable
     fun present(): UiState {
@@ -39,13 +39,13 @@ class Presenter(private val game: Game<State>) {
             tableau = state.tableau.map { it.toSelectable(selected) },
             eventSink = { event ->
                 selected = when (event) {
-                    UiEvent.StockClicked -> stockClicked(state, selected, ::invoke)
-                    UiEvent.WasteClicked -> wasteClicked(state, selected, ::invoke)
-                    UiEvent.RestartClicked -> restartClicked(state, selected, ::invoke)
-                    UiEvent.AutoSolveClicked -> autoSolveClicked(state, selected, ::invoke)
-                    is UiEvent.TableauClicked -> tableauClicked(state, selected, event.tableau, event.card, ::invoke)
-                    is UiEvent.FoundationClicked -> foundationClicked(state, selected, event.foundation, ::invoke)
-                    is UiEvent.StartGameClicked -> startClicked(state, selected, event.variant, ::invoke)
+                    UiEvent.StockClicked -> stockClicked(state, localActor, selected, ::invoke)
+                    UiEvent.WasteClicked -> wasteClicked(state, localActor, selected, ::invoke)
+                    UiEvent.RestartClicked -> restartClicked(state, localActor, selected, ::invoke)
+                    UiEvent.AutoSolveClicked -> autoSolveClicked(state, localActor, selected, ::invoke)
+                    is UiEvent.TableauClicked -> tableauClicked(state, localActor, selected, event.tableau, event.card, ::invoke)
+                    is UiEvent.FoundationClicked -> foundationClicked(state, localActor, selected, event.foundation, ::invoke)
+                    is UiEvent.StartGameClicked -> startClicked(state, localActor, selected, event.variant, ::invoke)
                 }
             }
         )

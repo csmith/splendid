@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.ui.components.*
+import com.chameth.splendid.shared.SystemActor
 import com.chameth.splendid.shared.engine.Game
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
@@ -17,7 +18,7 @@ fun Board(
     game: Game<State>,
     modifier: Modifier = Modifier
 ) {
-    val presenter = remember { Presenter(game) }
+    val presenter = remember { Presenter(game, SystemActor) } // TODO: Provide the local player ID
     val state = presenter.present()
     val hazeState = remember { HazeState() }
 

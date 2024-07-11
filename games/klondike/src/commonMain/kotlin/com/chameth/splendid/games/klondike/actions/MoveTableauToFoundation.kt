@@ -1,6 +1,5 @@
 package com.chameth.splendid.games.klondike.actions
 
-import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.games.klondike.Phase
 import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.events.BuildFoundationFromTableau
@@ -8,8 +7,10 @@ import com.chameth.splendid.games.klondike.events.RevealCardInTableau
 import com.chameth.splendid.games.klondike.events.SetPhase
 import com.chameth.splendid.games.klondike.rules.canBuildFoundationWithCard
 import com.chameth.splendid.games.klondike.rules.willWin
+import com.chameth.splendid.shared.engine.Action
 
 data class MoveTableauToFoundation(
+    override val actor: String,
     val tableau: Int,
 ) : Action<State> {
 
@@ -39,7 +40,11 @@ data class MoveTableauToFoundation(
                         .mapIndexed { i, tableau -> i to tableau.lastOrNull() }
                         .mapNotNull { (i, topCard) -> topCard?.let { i to it } }
                         .filter { (_, topCard) -> state.canBuildFoundationWithCard(topCard) }
-                        .map { (i, _) -> MoveTableauToFoundation(tableau = i) }
+                        .flatMap { (i, _) ->
+                            state.players.map {
+                                MoveTableauToFoundation(actor = it, tableau = i)
+                            }
+                        }
                 )
             }
         }

@@ -10,7 +10,7 @@ import com.chameth.splendid.games.klondike.events.SetVariant
 import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.playingcards.Decks
 
-data class StartGame(val variant: Variant) : Action<State> {
+data class StartGame(override val actor: String, val variant: Variant) : Action<State> {
 
     override fun resolve(state: State) = buildList {
         val stock = Decks.noJokers.shuffled().map { it.copy(visible = false) }
@@ -32,8 +32,10 @@ data class StartGame(val variant: Variant) : Action<State> {
     companion object {
         fun generate(state: State) = buildList {
             if (state.phase == Phase.Unstarted) {
-                Variant.entries.forEach {
-                    add(StartGame(it))
+                Variant.entries.forEach { variant ->
+                    state.players.forEach { actor ->
+                        add(StartGame(actor, variant))
+                    }
                 }
             }
         }

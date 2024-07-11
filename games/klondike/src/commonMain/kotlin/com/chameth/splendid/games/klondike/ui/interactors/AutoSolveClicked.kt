@@ -7,9 +7,10 @@ import com.chameth.splendid.shared.engine.Action
 
 fun autoSolveClicked(
     state: State,
+    actor: String,
     selection: Selection?,
     invoke: (Action<State>) -> Unit
 ): Selection? {
-    invoke(AutoSolve)
+    invoke(AutoSolve(actor))
     return null
 }

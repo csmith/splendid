@@ -7,12 +7,13 @@ import com.chameth.splendid.shared.engine.Action
 
 fun wasteClicked(
     state: State,
+    actor: String,
     selection: Selection?,
     invoke: (Action<State>) -> Unit
 ): Selection? {
     when {
         selection?.source == Selection.SelectionSource.Waste -> {
-            invoke(MoveWasteToFoundation)
+            invoke(MoveWasteToFoundation(actor))
             return null
         }
 

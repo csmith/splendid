@@ -7,9 +7,10 @@ import com.chameth.splendid.shared.engine.Action
 
 fun restartClicked(
     state: State,
+    actor: String,
     selection: Selection?,
     invoke: (Action<State>) -> Unit
 ): Selection? {
-    invoke(NewGame)
+    invoke(NewGame(actor))
     return null
 }

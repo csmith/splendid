@@ -1,12 +1,13 @@
 package com.chameth.splendid.games.klondike.actions
 
-import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.games.klondike.Phase
 import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.events.BuildTableauFromFoundation
 import com.chameth.splendid.games.klondike.rules.canAddCardToTableau
+import com.chameth.splendid.shared.engine.Action
 
 data class MoveFoundationToTableau(
+    override val actor: String,
     val foundation: Int,
     val tableau: Int
 ) : Action<State> {
@@ -25,7 +26,9 @@ data class MoveFoundationToTableau(
                     if (fCards.isNotEmpty()) {
                         state.tableau.forEachIndexed { tableau, _ ->
                             if (state.canAddCardToTableau(fCards.last(), tableau)) {
-                                add(MoveFoundationToTableau(foundation, tableau))
+                                state.players.forEach {
+                                    add(MoveFoundationToTableau(it, foundation, tableau))
+                                }
                             }
                         }
                     }

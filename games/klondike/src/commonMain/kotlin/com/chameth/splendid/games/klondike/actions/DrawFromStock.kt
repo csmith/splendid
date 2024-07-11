@@ -1,14 +1,14 @@
 package com.chameth.splendid.games.klondike.actions
 
-import com.chameth.splendid.shared.engine.Action
-import com.chameth.splendid.shared.engine.Event
 import com.chameth.splendid.games.klondike.Phase
 import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.Variant
 import com.chameth.splendid.games.klondike.events.DealToWaste
+import com.chameth.splendid.shared.engine.Action
+import com.chameth.splendid.shared.engine.Event
 import kotlin.math.min
 
-data object DrawFromStock : Action<State> {
+data class DrawFromStock(override val actor: String) : Action<State> {
 
     override fun resolve(state: State): List<Event<State>> {
         val cards = min(
@@ -23,9 +23,13 @@ data object DrawFromStock : Action<State> {
         )
     }
 
-    fun generate(state: State) = buildList {
-        if (state.phase == Phase.WaitingForMove && state.stock.isNotEmpty()) {
-            add(DrawFromStock)
+    companion object {
+        fun generate(state: State) = buildList {
+            if (state.phase == Phase.WaitingForMove && state.stock.isNotEmpty()) {
+                state.players.forEach {
+                    add(DrawFromStock(it))
+                }
+            }
         }
     }
 

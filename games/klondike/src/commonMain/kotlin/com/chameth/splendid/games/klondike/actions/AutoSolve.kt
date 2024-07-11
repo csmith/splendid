@@ -8,7 +8,7 @@ import com.chameth.splendid.games.klondike.rules.canAutoSolve
 import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.playingcards.Rank
 
-data object AutoSolve : Action<State> {
+data class AutoSolve(override val actor: String) : Action<State> {
 
     override fun resolve(state: State) = buildList {
         Rank.entries.forEach { rank ->
@@ -22,9 +22,13 @@ data object AutoSolve : Action<State> {
         add(SetPhase(phase = Phase.Finished))
     }
 
-    fun generate(state: State) = buildList {
-        if (state.canAutoSolve()) {
-            add(AutoSolve)
+    companion object {
+        fun generate(state: State) = buildList {
+            if (state.canAutoSolve()) {
+                state.players.forEach { player ->
+                    add(AutoSolve(player))
+                }
+            }
         }
     }
 

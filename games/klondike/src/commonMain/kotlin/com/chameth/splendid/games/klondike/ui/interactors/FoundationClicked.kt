@@ -1,13 +1,14 @@
 package com.chameth.splendid.games.klondike.ui.interactors
 
-import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.actions.MoveTableauToFoundation
 import com.chameth.splendid.games.klondike.actions.MoveWasteToFoundation
 import com.chameth.splendid.games.klondike.ui.model.Selection
+import com.chameth.splendid.shared.engine.Action
 
 fun foundationClicked(
     state: State,
+    actor: String,
     selection: Selection?,
     foundation: Int,
     invoke: (Action<State>) -> Unit
@@ -20,12 +21,12 @@ fun foundationClicked(
             )
 
         selection?.source == Selection.SelectionSource.Waste ->  {
-            invoke(MoveWasteToFoundation)
+            invoke(MoveWasteToFoundation(actor))
             return null
         }
 
         selection?.source == Selection.SelectionSource.Tableau -> {
-            invoke(MoveTableauToFoundation(selection.tableau))
+            invoke(MoveTableauToFoundation(actor, selection.tableau))
             return null
         }
 
