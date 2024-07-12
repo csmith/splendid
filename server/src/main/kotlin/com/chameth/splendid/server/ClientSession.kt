@@ -1,5 +1,7 @@
 package com.chameth.splendid.server
 
+import com.chameth.splendid.shared.engine.GameType
+import com.chameth.splendid.shared.engine.State
 import com.chameth.splendid.shared.transport.Message
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
@@ -52,31 +54,15 @@ class ClientSession(
         // TODO: Split this out into sensible chunks
         when (message) {
             is Message.Client.CreateGame -> {
-                val newGame = gameManager.createGame(message.gameType)
-                game = newGame
+                attachGame(gameManager.createGame(message.gameType))
                 send(Message.Server.MessageAcknowledged(message))
-                send(Message.Server.GameJoined(newGame.id, newGame.type.name))
-
-                webSocketSession.launch {
-                    newGame.eventFlow.collect {
-                        send(Message.Server.EventOccurred(it.event))
-                    }
-                }
             }
 
             is Message.Client.JoinGame -> {
                 val newGame = gameManager.getGame(message.gameId)
                 if (newGame != null) {
-                    // TODO: Dedupe
-                    game = newGame
+                    attachGame(newGame)
                     send(Message.Server.MessageAcknowledged(message))
-                    send(Message.Server.GameJoined(newGame.id, newGame.type.name))
-
-                    webSocketSession.launch {
-                        newGame.eventFlow.collect {
-                            send(Message.Server.EventOccurred(it.event))
-                        }
-                    }
                 } else {
                     send(Message.Server.MessageRejected(message, "Game not found"))
                 }
@@ -87,7 +73,7 @@ class ClientSession(
             is Message.Client.PerformAction -> {
                 val localGame = game
                 if (localGame != null) {
-                    // TODO: Check if action was allowed
+                    // TODO: Check if action was by the right player
                     localGame.invoke(message.action)
                     send(Message.Server.MessageAcknowledged(message))
                 } else {
@@ -97,6 +83,20 @@ class ClientSession(
 
             is Message.Client.SetId -> TODO()
             is Message.Client.SetName -> TODO()
+        }
+    }
+
+    private suspend fun attachGame(newGame: Game<*>) {
+        game = newGame
+        send(Message.Server.GameJoined(newGame.id, newGame.type.name))
+
+        webSocketSession.launch {
+            newGame.eventFlow.collect {
+                @Suppress("UNCHECKED_CAST")
+                send(Message.Server.EventOccurred(
+                    (newGame.type as GameType<State>).mask(it.state, it.event, id)
+                ))
+            }
         }
     }
 }

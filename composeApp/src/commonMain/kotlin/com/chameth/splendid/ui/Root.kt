@@ -23,10 +23,9 @@ fun Root() {
                 state = state,
             )
 
-            is UiState.InGame -> state.gameType.root(
+            is UiState.InGame -> Game(
                 modifier = Modifier.fillMaxSize(),
-                state = state.state,
-                actionSink = state.actionSink
+                state = state
             )
         }
     }

@@ -8,6 +8,9 @@ import com.chameth.splendid.games.klondike.ui.Board
 import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.engine.Event
 import com.chameth.splendid.shared.engine.GameType
+import com.chameth.splendid.shared.playingcards.Card
+import com.chameth.splendid.shared.playingcards.Rank
+import com.chameth.splendid.shared.playingcards.Suit
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -56,4 +59,22 @@ data object Klondike : GameType<State> {
                 subclass(StartGame::class)
             }
         }
+
+    override fun mask(state: State, event: Event<*>, actor: String): Event<*> {
+        return when (event) {
+            is ResetState -> event.copy(
+                stock = event.stock.map { Card(suit = Suit.Hearts, rank = Rank.Ace, visible = false) }
+            )
+
+            is DealToTableau -> event.copy(
+                card = if (event.card.visible) event.card else Card(
+                    suit = Suit.Hearts,
+                    rank = Rank.Ace,
+                    visible = false
+                )
+            )
+
+            else -> event
+        }
+    }
 }

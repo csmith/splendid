@@ -18,6 +18,8 @@ interface GameType<S : State> {
 
     val name: String
 
+    fun mask(state: S, event: Event<*>, actor: String): Event<*>
+
     @Composable
     fun root(
         state: State,

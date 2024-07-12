@@ -19,7 +19,7 @@ class Client {
     private var gameType: GameType<*>? = null
     private var gameState: State? = null
 
-    private val stateFlow = MutableStateFlow(ClientState(false, null, null))
+    private val stateFlow = MutableStateFlow(ClientState(false, null, null, null))
 
     val state: StateFlow<ClientState>
         get() = stateFlow
@@ -36,7 +36,7 @@ class Client {
             println("Connecting")
             socket.connect(host, port, path)
             println("Done connecting")
-            stateFlow.emit(stateFlow.value.copy(connected = false, gameType = null, state = null))
+            stateFlow.emit(stateFlow.value.copy(connected = false, gameType = null, state = null, gameId = null))
         }
 
         coroutineScope.launch {
@@ -69,7 +69,11 @@ class Client {
                 gameState = it.stateFactory()
             }
             println("Game joined. Type = $gameType, State = $gameState")
-            stateFlow.emit(stateFlow.value.copy(gameType = gameType, state = gameState))
+            stateFlow.emit(stateFlow.value.copy(
+                gameType = gameType,
+                gameId = message.gameId,
+                state = gameState
+            ))
         }
 
         is Message.Server.MessageAcknowledged -> {}

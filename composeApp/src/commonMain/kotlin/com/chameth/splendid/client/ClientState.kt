@@ -7,4 +7,5 @@ data class ClientState(
     val connected: Boolean,
     val gameType: GameType<*>?,
     val state: State?,
+    val gameId: String?
 )
