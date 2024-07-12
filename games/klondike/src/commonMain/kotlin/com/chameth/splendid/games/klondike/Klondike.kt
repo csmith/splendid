@@ -7,16 +7,15 @@ import com.chameth.splendid.games.klondike.events.*
 import com.chameth.splendid.games.klondike.ui.Board
 import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.engine.Event
-import com.chameth.splendid.shared.engine.Game
 import com.chameth.splendid.shared.engine.GameType
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
 data object Klondike : GameType<State> {
-    @Suppress("UNCHECKED_CAST")
-    override val uiRoot: @Composable (Game<*>, Modifier) -> Unit = { game, modifier ->
-        Board(game = game as Game<State>, modifier = modifier)
+
+    override val uiRoot: @Composable (State, (Action<State>) -> Unit, Modifier) -> Unit = { state, action, modifier ->
+        Board(gameState = state, action = action, modifier = modifier)
     }
 
     override val stateFactory = { State() }

@@ -5,7 +5,9 @@ import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.events.BuildTableauFromFoundation
 import com.chameth.splendid.games.klondike.rules.canAddCardToTableau
 import com.chameth.splendid.shared.engine.Action
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class MoveFoundationToTableau(
     override val actor: String,
     val foundation: Int,

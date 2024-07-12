@@ -6,8 +6,10 @@ import com.chameth.splendid.games.klondike.Variant
 import com.chameth.splendid.games.klondike.events.DealToWaste
 import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.engine.Event
+import kotlinx.serialization.Serializable
 import kotlin.math.min
 
+@Serializable
 data class DrawFromStock(override val actor: String) : Action<State> {
 
     override fun resolve(state: State): List<Event<State>> {

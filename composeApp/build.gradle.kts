@@ -65,7 +65,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(projects.games.klondike)
+            implementation(projects.games.all)
             implementation(projects.shared)
 
             implementation(libs.ktor.client.core)

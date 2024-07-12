@@ -1,6 +1,7 @@
-package com.chameth.splendid.shared.engine
+package com.chameth.splendid.server
 
 import com.chameth.splendid.shared.SystemActor
+import com.chameth.splendid.shared.engine.*
 import com.chameth.splendid.shared.util.now
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -40,12 +41,14 @@ class Game<S : State>(
         }
     }
 
-    fun save() = json.encodeToString(Save(
+    fun save() = json.encodeToString(
+        Save(
         version = type.version,
         game = type.name,
         gameId = id,
         events = events
-    ))
+    )
+    )
 
     suspend fun load(data: String) {
         val save = json.decodeFromString<Save>(data)
@@ -58,6 +61,9 @@ class Game<S : State>(
             emit(it as Event<S>)
         }
     }
+
+    @Suppress("UNCHECKED_CAST")
+    suspend fun applyRemoteEvent(event: Event<*>) = emit(event as Event<S>)
 
     private suspend fun emit(event: Event<S>) {
         events += event

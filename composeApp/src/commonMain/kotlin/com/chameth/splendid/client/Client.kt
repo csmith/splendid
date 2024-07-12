@@ -1,48 +1,78 @@
 package com.chameth.splendid.client
 
+import com.chameth.splendid.games.all.Games
+import com.chameth.splendid.shared.engine.Action
+import com.chameth.splendid.shared.engine.Event
+import com.chameth.splendid.shared.engine.GameType
+import com.chameth.splendid.shared.engine.State
 import com.chameth.splendid.shared.transport.Message
-import io.ktor.client.*
-import io.ktor.client.plugins.websocket.*
-import io.ktor.http.*
-import io.ktor.websocket.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
-class Client(private val json: Json) {
+class Client {
 
-    private val receiveQueue = MutableSharedFlow<Message.Server>(extraBufferCapacity = Int.MAX_VALUE)
-    private val sendQueue = MutableSharedFlow<Message.Client>()
+    private val socket = ClientSocket(Games.serializer)
 
-    private val client = HttpClient() {
-        install(WebSockets)
-    }
+    private var gameType: GameType<*>? = null
+    private var gameState: State? = null
 
-    suspend fun connect(host: String, port: Int, path: String) {
-        client.webSocket(method = HttpMethod.Get, host = host, port = port, path = path) {
-            send("Hello!")
+    private val stateFlow = MutableStateFlow(ClientState(false, null, null))
 
-            launch {
-                sendQueue
-                    .map(json::encodeToString)
-                    .collect(::send)
+    val state: StateFlow<ClientState>
+        get() = stateFlow
+
+    // TODO: Client should have its own coroutine scope, this is horrid
+    fun connect(coroutineScope: CoroutineScope, host: String, port: Int, path: String) {
+        GlobalScope.launch {
+            socket.incoming.collect {
+                handleMessage(it)
             }
+        }
 
-            launch {
-                incoming.consumeAsFlow()
-                    .filterIsInstance<Frame.Text>()
-                    .map { json.decodeFromString<Message.Server>(it.readText()) }
-                    .collect(receiveQueue::tryEmit)
-            }
+        GlobalScope.launch {
+            println("Connecting")
+            socket.connect(host, port, path)
+            println("Done connecting")
+            stateFlow.emit(stateFlow.value.copy(connected = false, gameType = null, state = null))
+        }
+
+        coroutineScope.launch {
+            stateFlow.emit(stateFlow.value.copy(connected = true))
         }
     }
 
-    suspend fun send(message: Message.Client) {
-        sendQueue.emit(message)
-        // TODO: block and wait for a response?
+    suspend fun createGame(type: String) {
+        socket.send(Message.Client.CreateGame(type))
+    }
+
+    suspend fun joinGame(id: String) {
+        socket.send(Message.Client.JoinGame(id))
+    }
+
+    suspend fun performAction(action: Action<*>) {
+        socket.send(Message.Client.PerformAction(action))
+    }
+
+    private suspend fun handleMessage(message: Message.Server) = when (message) {
+        is Message.Server.EventOccurred -> {
+            @Suppress("UNCHECKED_CAST")
+            gameState = (message.event as Event<State>).resolve(gameState!!)
+            stateFlow.emit(stateFlow.value.copy(state = gameState))
+        }
+
+        is Message.Server.GameJoined -> {
+            gameType = Games.available.firstOrNull { it.name == message.gameType }
+            gameType?.let {
+                gameState = it.stateFactory()
+            }
+            println("Game joined. Type = $gameType, State = $gameState")
+            stateFlow.emit(stateFlow.value.copy(gameType = gameType, state = gameState))
+        }
+
+        is Message.Server.MessageAcknowledged -> {}
+        is Message.Server.MessageRejected -> {}
     }
 }

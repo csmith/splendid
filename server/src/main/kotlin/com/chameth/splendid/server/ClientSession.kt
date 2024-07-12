@@ -1,13 +1,9 @@
 package com.chameth.splendid.server
 
-import com.chameth.splendid.shared.engine.Game
 import com.chameth.splendid.shared.transport.Message
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -33,19 +29,21 @@ class ClientSession(
 
     private var game: Game<*>? = null
 
-    fun start() {
+    suspend fun start() {
         webSocketSession.launch {
             sendQueue
                 .map(json::encodeToString)
+                .onEach { println("Sending: $it") }
                 .collect(webSocketSession::send)
         }
 
-        webSocketSession.launch {
-            webSocketSession.incoming.consumeAsFlow()
-                .filterIsInstance<Frame.Text>()
-                .map { json.decodeFromString<Message.Client>(it.readText()) }
-                .collect(::processMessage)
-        }
+        webSocketSession.incoming.consumeAsFlow()
+            .filterIsInstance<Frame.Text>()
+            .onEach { println("Sending: $it") }
+            .map { json.decodeFromString<Message.Client>(it.readText()) }
+            .collect(::processMessage)
+
+        println("Finished session!")
     }
 
     private suspend fun send(message: Message.Server) = sendQueue.emit(message)
@@ -54,7 +52,7 @@ class ClientSession(
         // TODO: Split this out into sensible chunks
         when (message) {
             is Message.Client.CreateGame -> {
-                val newGame = gameManager.createGame(message.type)
+                val newGame = gameManager.createGame(message.gameType)
                 game = newGame
                 send(Message.Server.MessageAcknowledged(message))
                 send(Message.Server.GameJoined(newGame.id, newGame.type.name))
@@ -66,7 +64,24 @@ class ClientSession(
                 }
             }
 
-            is Message.Client.JoinGame -> TODO()
+            is Message.Client.JoinGame -> {
+                val newGame = gameManager.getGame(message.gameId)
+                if (newGame != null) {
+                    // TODO: Dedupe
+                    game = newGame
+                    send(Message.Server.MessageAcknowledged(message))
+                    send(Message.Server.GameJoined(newGame.id, newGame.type.name))
+
+                    webSocketSession.launch {
+                        newGame.eventFlow.collect {
+                            send(Message.Server.EventOccurred(it.event))
+                        }
+                    }
+                } else {
+                    send(Message.Server.MessageRejected(message, "Game not found"))
+                }
+            }
+
             Message.Client.LeaveGame -> TODO()
 
             is Message.Client.PerformAction -> {

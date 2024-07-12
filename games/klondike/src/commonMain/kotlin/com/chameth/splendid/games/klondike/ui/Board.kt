@@ -2,6 +2,7 @@ package com.chameth.splendid.games.klondike.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -9,18 +10,23 @@ import androidx.compose.ui.unit.dp
 import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.ui.components.*
 import com.chameth.splendid.shared.SystemActor
-import com.chameth.splendid.shared.engine.Game
+import com.chameth.splendid.shared.engine.Action
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 
 @Composable
 fun Board(
-    game: Game<State>,
+    gameState: State,
+    action: (Action<State>) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val presenter = remember { Presenter(game, SystemActor) } // TODO: Provide the local player ID
+    val presenter = remember { Presenter(action, SystemActor) } // TODO: Provide the local player ID
     val state = presenter.present()
     val hazeState = remember { HazeState() }
+
+    LaunchedEffect(gameState) {
+        presenter.updateState(gameState)
+    }
 
     Box {
         GameBoard(

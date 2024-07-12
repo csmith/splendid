@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GameSelector(
-    state: UiState.NoGame,
+fun Connect(
+    state: UiState.NotConnected,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
@@ -29,33 +29,30 @@ fun GameSelector(
             )
 
             Text(
-                text = "Start a new game",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            state.availableTypes.forEach {
-                Button(onClick = {
-                    state.eventSink(UiEvent.NoGame.CreateGameTapped(it))
-                }) {
-                    Text(text = it)
-                }
-            }
-
-            Text(
-                text = "Or join an existing game",
+                text = "Connect to a server to play",
                 style = MaterialTheme.typography.bodyMedium
             )
 
             TextField(
-                value = state.gameId.toString(),
-                onValueChange = { state.eventSink(UiEvent.NoGame.SetGameId(it)) },
-                label = { Text("Game ID") }
+                value = state.host,
+                onValueChange = { state.eventSink(UiEvent.NotConnected.SetHost(it)) },
+                label = { Text("Host") }
             )
 
-            Button(onClick = {
-                state.eventSink(UiEvent.NoGame.JoinGameTapped)
-            }) {
-                Text(text = "Join")
+            TextField(
+                value = state.port.toString(),
+                onValueChange = { state.eventSink(UiEvent.NotConnected.SetPort(it)) },
+                label = { Text("Port") }
+            )
+
+            TextField(
+                value = state.path,
+                onValueChange = { state.eventSink(UiEvent.NotConnected.SetPath(it)) },
+                label = { Text("Path") }
+            )
+
+            Button(onClick = { state.eventSink(UiEvent.NotConnected.ConnectTapped)}) {
+                Text(text = "Connect")
             }
         }
     }

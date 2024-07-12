@@ -20,7 +20,7 @@ sealed interface Message {
         data class JoinGame(val gameId: String) : Client
 
         @Serializable
-        data class CreateGame(val type: String) : Client
+        data class CreateGame(val gameType: String) : Client
 
         @Serializable
         data class PerformAction(val action: Action<*>) : Client
@@ -40,7 +40,7 @@ sealed interface Message {
         data class MessageRejected(val original: Client, val error: String) : Server
 
         @Serializable
-        data class GameJoined(val gameId: String, val type: String) : Server
+        data class GameJoined(val gameId: String, val gameType: String) : Server
 
         @Serializable
         data class EventOccurred(val event: Event<*>) : Server

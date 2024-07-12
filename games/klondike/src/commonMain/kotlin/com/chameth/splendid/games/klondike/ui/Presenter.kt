@@ -7,26 +7,28 @@ import com.chameth.splendid.games.klondike.rules.canAutoSolve
 import com.chameth.splendid.games.klondike.ui.interactors.*
 import com.chameth.splendid.games.klondike.ui.model.Selection
 import com.chameth.splendid.shared.engine.Action
-import com.chameth.splendid.shared.engine.Game
 import com.chameth.splendid.shared.playingcards.Card
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
 
-class Presenter(private val game: Game<State>, private val localActor: String) {
+class Presenter(
+    private val actionHandler: (Action<State>) -> Unit,
+    private val localActor: String
+) {
+
+    private val gameState = MutableStateFlow(State())
+
+    suspend fun updateState(state: State) {
+        gameState.emit(state)
+    }
 
     @Composable
     fun present(): UiState {
-        val eventState by game.eventFlow.collectAsState(null)
-        val state = eventState?.state ?: State()
-        val coroutineScope = rememberCoroutineScope()
+        val state by gameState.collectAsState()
 
         var selected by remember { mutableStateOf<Selection?>(null) }
 
         LaunchedEffect(state) {
             selected = null
-        }
-
-        fun invoke(action: Action<State>) = coroutineScope.launch {
-            game.invoke(action)
         }
 
         return UiState(
@@ -39,13 +41,13 @@ class Presenter(private val game: Game<State>, private val localActor: String) {
             tableau = state.tableau.map { it.toSelectable(selected) },
             eventSink = { event ->
                 selected = when (event) {
-                    UiEvent.StockClicked -> stockClicked(state, localActor, selected, ::invoke)
-                    UiEvent.WasteClicked -> wasteClicked(state, localActor, selected, ::invoke)
-                    UiEvent.RestartClicked -> restartClicked(state, localActor, selected, ::invoke)
-                    UiEvent.AutoSolveClicked -> autoSolveClicked(state, localActor, selected, ::invoke)
-                    is UiEvent.TableauClicked -> tableauClicked(state, localActor, selected, event.tableau, event.card, ::invoke)
-                    is UiEvent.FoundationClicked -> foundationClicked(state, localActor, selected, event.foundation, ::invoke)
-                    is UiEvent.StartGameClicked -> startClicked(state, localActor, selected, event.variant, ::invoke)
+                    UiEvent.StockClicked -> stockClicked(state, localActor, selected, actionHandler)
+                    UiEvent.WasteClicked -> wasteClicked(state, localActor, selected, actionHandler)
+                    UiEvent.RestartClicked -> restartClicked(state, localActor, selected, actionHandler)
+                    UiEvent.AutoSolveClicked -> autoSolveClicked(state, localActor, selected, actionHandler)
+                    is UiEvent.TableauClicked -> tableauClicked(state, localActor, selected, event.tableau, event.card, actionHandler)
+                    is UiEvent.FoundationClicked -> foundationClicked(state, localActor, selected, event.foundation, actionHandler)
+                    is UiEvent.StartGameClicked -> startClicked(state, localActor, selected, event.variant, actionHandler)
                 }
             }
         )

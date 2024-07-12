@@ -14,10 +14,12 @@ application {
 
 dependencies {
     implementation(projects.shared)
+    implementation(projects.games.all)
     implementation(libs.logback)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.websockets)
+    implementation(libs.kotlin.datetime)
     implementation(libs.kotlin.serialisation)
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)

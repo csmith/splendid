@@ -14,8 +14,8 @@ class GameServer(private val gameManager: GameManager) {
             webSocketSession = session,
             id = id
         )
-        client.start()
         clients[id] = client
+        client.start()
     }
 
 }

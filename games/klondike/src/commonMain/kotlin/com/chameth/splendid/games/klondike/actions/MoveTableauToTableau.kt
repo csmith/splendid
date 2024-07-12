@@ -6,7 +6,9 @@ import com.chameth.splendid.games.klondike.events.MoveCardsWithinTableau
 import com.chameth.splendid.games.klondike.events.RevealCardInTableau
 import com.chameth.splendid.games.klondike.rules.canAddCardToTableau
 import com.chameth.splendid.shared.engine.Action
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class MoveTableauToTableau(
     override val actor: String,
     val from: Int,

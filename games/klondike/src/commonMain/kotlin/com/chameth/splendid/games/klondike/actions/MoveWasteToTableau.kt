@@ -5,7 +5,9 @@ import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.events.BuildTableauFromWaste
 import com.chameth.splendid.games.klondike.rules.canAddCardToTableau
 import com.chameth.splendid.shared.engine.Action
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class MoveWasteToTableau(override val actor: String, val tableau: Int) : Action<State> {
 
     override fun resolve(state: State) = listOf(

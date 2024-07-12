@@ -10,12 +10,26 @@ interface GameType<S : State> {
 
     val actionsGenerator: (S) -> List<Action<S>>
 
-    val uiRoot: @Composable (Game<*>, Modifier) -> Unit
+    val uiRoot: @Composable (S, (Action<S>) -> Unit, Modifier) -> Unit
 
     val version: Int
 
     val serializersModule: SerializersModule
 
     val name: String
+
+    @Composable
+    fun root(
+        state: State,
+        actionSink: (Action<State>) -> Unit,
+        modifier: Modifier
+    ) {
+        @Suppress("UNCHECKED_CAST")
+        uiRoot(
+            state as S,
+            { actionSink(it as Action<State>) },
+            modifier
+        )
+    }
 
 }

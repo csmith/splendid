@@ -1,7 +1,6 @@
 package com.chameth.splendid.server
 
 import com.chameth.splendid.server.util.generateAca
-import com.chameth.splendid.shared.engine.Game
 import com.chameth.splendid.shared.engine.GameType
 import com.chameth.splendid.shared.engine.State
 import kotlinx.coroutines.FlowPreview
@@ -27,6 +26,8 @@ class GameManager(val types: List<GameType<*>>) {
                 }
             }
         }
+
+    fun getGame(id: String) = games[id]
 
     private fun save(game: Game<out State>) {
         println("Would save ${game.id}")

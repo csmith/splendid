@@ -1,5 +1,6 @@
 package com.chameth.splendid.server
 
+import com.chameth.splendid.games.all.Games
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -7,7 +8,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 
-val server = GameServer()
+val server = GameServer(GameManager(Games.available))
 
 fun main() {
     embeddedServer(
@@ -27,6 +28,9 @@ fun Application.module() {
             call.respondText("Test")
         }
 
-        webSocket("/client") { server.adoptWebSocket(this) }
+        webSocket("/client") {
+            server.adoptWebSocket(this)
+            println("Lost websocket")
+        }
     }
 }

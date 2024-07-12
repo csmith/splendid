@@ -9,7 +9,9 @@ import com.chameth.splendid.games.klondike.events.SetPhase
 import com.chameth.splendid.games.klondike.events.SetVariant
 import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.playingcards.Decks
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class StartGame(override val actor: String, val variant: Variant) : Action<State> {
 
     override fun resolve(state: State) = buildList {

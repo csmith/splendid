@@ -35,4 +35,5 @@ dependencyResolutionManagement {
 include(":composeApp")
 include(":server")
 include(":shared")
+include(":games:all")
 include(":games:klondike")

@@ -8,7 +8,9 @@ import com.chameth.splendid.games.klondike.events.SetPhase
 import com.chameth.splendid.games.klondike.rules.canBuildFoundationWithCard
 import com.chameth.splendid.games.klondike.rules.willWin
 import com.chameth.splendid.shared.engine.Action
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class MoveTableauToFoundation(
     override val actor: String,
     val tableau: Int,
