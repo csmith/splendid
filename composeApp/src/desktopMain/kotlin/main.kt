@@ -3,6 +3,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import com.chameth.splendid.client.ConnectionSettings
 import com.chameth.splendid.ui.Root
 
 fun main() = application {
@@ -23,6 +24,12 @@ fun main() = application {
         title = "Splendid!",
         state = state
     ) {
-        Root()
+        Root(ConnectionSettings(
+            defaultProtocol = "ws",
+            defaultHost = "127.0.0.1",
+            defaultPort = 8080,
+            defaultPath = "/client",
+            autoConnect = false
+        ))
     }
 }

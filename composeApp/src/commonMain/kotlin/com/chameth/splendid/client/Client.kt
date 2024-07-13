@@ -26,7 +26,7 @@ class Client {
         get() = stateFlow
 
     // TODO: Client should have its own coroutine scope, this is horrid
-    fun connect(coroutineScope: CoroutineScope, host: String, port: Int, path: String) {
+    fun connect(coroutineScope: CoroutineScope, secure: Boolean, host: String, port: Int, path: String) {
         GlobalScope.launch {
             socket.incoming.collect {
                 handleMessage(it)
@@ -35,7 +35,7 @@ class Client {
 
         GlobalScope.launch {
             println("Connecting")
-            socket.connect(host, port, path)
+            socket.connect(secure, host, port, path)
             println("Done connecting")
             stateFlow.emit(stateFlow.value.copy(connected = false, gameType = null, state = null, gameId = null))
         }

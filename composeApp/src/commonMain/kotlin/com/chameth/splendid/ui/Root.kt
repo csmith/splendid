@@ -6,11 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.chameth.splendid.client.Client
+import com.chameth.splendid.client.ConnectionSettings
 
 @Composable
-fun Root() {
+fun Root(connectionSettings: ConnectionSettings) {
     MaterialTheme {
-        val presenter = remember { Presenter(Client()) }
+        val presenter = remember { Presenter(Client(), connectionSettings) }
 
         when (val state = presenter.present()) {
             is UiState.NotConnected -> Connect(

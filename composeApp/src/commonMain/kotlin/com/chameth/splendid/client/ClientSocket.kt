@@ -3,6 +3,7 @@ package com.chameth.splendid.client
 import com.chameth.splendid.shared.transport.Message
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.flow.*
@@ -22,9 +23,13 @@ class ClientSocket(private val json: Json) {
         install(WebSockets)
     }
 
-    suspend fun connect(host: String, port: Int, path: String) {
-        println("Connecting to ws://$host:$port$path")
-        client.webSocket(method = HttpMethod.Get, host = host, port = port, path = path) {
+    suspend fun connect(secure: Boolean, host: String, port: Int, path: String) {
+        println("Connecting to ws${if (secure) "s" else ""}://$host:$port$path")
+
+        // TODO: Nicer way to do this?
+        val method : suspend (HttpMethod, String?, Int?, String?, HttpRequestBuilder.() -> Unit, suspend DefaultClientWebSocketSession.() -> Unit) -> Unit = if (secure) client::wss else client::ws
+
+        method(HttpMethod.Get, host, port, path, {}) {
             println("Socket session")
             launch {
                 sendQueue

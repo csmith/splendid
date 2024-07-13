@@ -6,6 +6,7 @@ import com.chameth.splendid.shared.engine.State
 
 sealed interface UiState {
     data class NotConnected(
+        val secure: Boolean,
         val host: String,
         val port: Int,
         val path: String,

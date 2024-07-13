@@ -47,7 +47,7 @@ fun GameSelector(
             )
 
             TextField(
-                value = state.gameId.toString(),
+                value = state.gameId,
                 onValueChange = { state.eventSink(UiEvent.NoGame.SetGameId(it)) },
                 label = { Text("Game ID") }
             )
