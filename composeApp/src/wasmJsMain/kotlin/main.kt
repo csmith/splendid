@@ -12,10 +12,10 @@ fun main() {
         Root(
             ConnectionSettings(
                 defaultProtocol = if (isSecure) "wss" else "ws",
-                defaultHost = document.location?.host.orEmpty(),
+                defaultHost = document.location?.hostname.orEmpty(),
                 defaultPort = document.location?.port?.toIntOrNull() ?: if (isSecure) 443 else 80,
                 defaultPath = "/client",
-                autoConnect = true
+                autoConnect = document.location?.hostname != "localhost"
             )
         )
     }

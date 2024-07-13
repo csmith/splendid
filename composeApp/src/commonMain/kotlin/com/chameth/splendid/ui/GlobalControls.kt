@@ -1,6 +1,7 @@
 package com.chameth.splendid.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -34,14 +37,19 @@ fun GlobalControls(
             style = MaterialTheme.typography.labelSmall
         )
 
+        val clipboardManager = LocalClipboardManager.current
+
         Text(
+            modifier = Modifier.clickable {
+                clipboardManager.setText(AnnotatedString(state.gameId))
+            },
             text = buildAnnotatedString {
                 append("Game ID: ")
                 withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
                     append(state.gameId)
                 }
             },
-            style = MaterialTheme.typography.labelSmall
+            style = MaterialTheme.typography.labelSmall,
         )
     }
 }
