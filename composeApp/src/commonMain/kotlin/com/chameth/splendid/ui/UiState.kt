@@ -20,7 +20,8 @@ sealed interface UiState {
 
     data class InGame(
         val gameType: GameType<*>,
-        val id: String,
+        val gameId: String,
+        val clientId: String?,
         val state: State,
         val actionSink: (Action<*>) -> Unit
     ) : UiState

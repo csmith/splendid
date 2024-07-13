@@ -18,8 +18,9 @@ class Client {
 
     private var gameType: GameType<*>? = null
     private var gameState: State? = null
+    private var clientId: String? = null
 
-    private val stateFlow = MutableStateFlow(ClientState(false, null, null, null))
+    private val stateFlow = MutableStateFlow(ClientState())
 
     val state: StateFlow<ClientState>
         get() = stateFlow
@@ -78,5 +79,9 @@ class Client {
 
         is Message.Server.MessageAcknowledged -> {}
         is Message.Server.MessageRejected -> {}
+        is Message.Server.YourId -> {
+            clientId = message.id
+            stateFlow.emit(stateFlow.value.copy(clientId = clientId))
+        }
     }
 }

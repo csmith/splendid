@@ -32,6 +32,7 @@ data object Klondike : GameType<State> {
     override val serializersModule: SerializersModule
         get() = SerializersModule {
             polymorphic(Event::class) {
+                subclass(AddPlayer::class)
                 subclass(BuildFoundationFromTableau::class)
                 subclass(BuildFoundationFromWaste::class)
                 subclass(BuildTableauFromFoundation::class)
@@ -76,5 +77,9 @@ data object Klondike : GameType<State> {
 
             else -> event
         }
+    }
+
+    override fun newAddPlayerEvent(playerId: String): Event<*> {
+        return AddPlayer(playerId)
     }
 }

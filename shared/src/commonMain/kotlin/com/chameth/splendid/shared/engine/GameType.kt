@@ -20,6 +20,8 @@ interface GameType<S : State> {
 
     fun mask(state: S, event: Event<*>, actor: String): Event<*>
 
+    fun newAddPlayerEvent(playerId: String): Event<*>
+
     @Composable
     fun root(
         state: State,

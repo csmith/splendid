@@ -38,7 +38,7 @@ fun GlobalControls(
             text = buildAnnotatedString {
                 append("Game ID: ")
                 withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
-                    append(state.id)
+                    append(state.gameId)
                 }
             },
             style = MaterialTheme.typography.labelSmall

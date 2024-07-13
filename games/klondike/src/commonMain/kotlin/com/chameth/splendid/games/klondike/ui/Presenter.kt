@@ -11,11 +11,11 @@ import com.chameth.splendid.shared.playingcards.Card
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class Presenter(
-    private val actionHandler: (Action<State>) -> Unit,
-    private val localActor: String
+    private val actionHandler: (Action<State>) -> Unit
 ) {
 
     private val gameState = MutableStateFlow(State())
+    private var clientId: String = ""
 
     suspend fun updateState(state: State) {
         gameState.emit(state)
@@ -41,13 +41,13 @@ class Presenter(
             tableau = state.tableau.map { it.toSelectable(selected) },
             eventSink = { event ->
                 selected = when (event) {
-                    UiEvent.StockClicked -> stockClicked(state, localActor, selected, actionHandler)
-                    UiEvent.WasteClicked -> wasteClicked(state, localActor, selected, actionHandler)
-                    UiEvent.RestartClicked -> restartClicked(state, localActor, selected, actionHandler)
-                    UiEvent.AutoSolveClicked -> autoSolveClicked(state, localActor, selected, actionHandler)
-                    is UiEvent.TableauClicked -> tableauClicked(state, localActor, selected, event.tableau, event.card, actionHandler)
-                    is UiEvent.FoundationClicked -> foundationClicked(state, localActor, selected, event.foundation, actionHandler)
-                    is UiEvent.StartGameClicked -> startClicked(state, localActor, selected, event.variant, actionHandler)
+                    UiEvent.StockClicked -> stockClicked(state, clientId, selected, actionHandler)
+                    UiEvent.WasteClicked -> wasteClicked(state, clientId, selected, actionHandler)
+                    UiEvent.RestartClicked -> restartClicked(state, clientId, selected, actionHandler)
+                    UiEvent.AutoSolveClicked -> autoSolveClicked(state, clientId, selected, actionHandler)
+                    is UiEvent.TableauClicked -> tableauClicked(state, clientId, selected, event.tableau, event.card, actionHandler)
+                    is UiEvent.FoundationClicked -> foundationClicked(state, clientId, selected, event.foundation, actionHandler)
+                    is UiEvent.StartGameClicked -> startClicked(state, clientId, selected, event.variant, actionHandler)
                 }
             }
         )
@@ -66,6 +66,10 @@ class Presenter(
             }
             add(SelectableCard(card, foundSelected))
         }
+    }
+
+    fun updateClientId(clientId: String) {
+        this.clientId = clientId
     }
 
 }

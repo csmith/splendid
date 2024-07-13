@@ -27,7 +27,10 @@ class ClientSession(
         }
     }
 
-    private val sendQueue = MutableSharedFlow<Message.Server>()
+    private val sendQueue = MutableSharedFlow<Message.Server>(
+        replay = Int.MAX_VALUE,
+        extraBufferCapacity = Int.MAX_VALUE
+    )
 
     private var game: Game<*>? = null
 
@@ -39,10 +42,15 @@ class ClientSession(
                 .collect(webSocketSession::send)
         }
 
+        webSocketSession.launch {
+            send(Message.Server.YourId(id))
+        }
+
         webSocketSession.incoming.consumeAsFlow()
             .filterIsInstance<Frame.Text>()
+            .map { it.readText() }
             .onEach { println("Sending: $it") }
-            .map { json.decodeFromString<Message.Client>(it.readText()) }
+            .map { json.decodeFromString<Message.Client>(it) }
             .collect(::processMessage)
 
         println("Finished session!")
@@ -73,9 +81,12 @@ class ClientSession(
             is Message.Client.PerformAction -> {
                 val localGame = game
                 if (localGame != null) {
-                    // TODO: Check if action was by the right player
-                    localGame.invoke(message.action)
-                    send(Message.Server.MessageAcknowledged(message))
+                    if (message.action.actor != id) {
+                        send(Message.Server.MessageRejected(message, "Invalid actor"))
+                    } else {
+                        localGame.invoke(message.action)
+                        send(Message.Server.MessageAcknowledged(message))
+                    }
                 } else {
                     send(Message.Server.MessageRejected(message, "Not joined to a game"))
                 }
@@ -90,12 +101,16 @@ class ClientSession(
         game = newGame
         send(Message.Server.GameJoined(newGame.id, newGame.type.name))
 
+        newGame.applyRemoteEvent(newGame.type.newAddPlayerEvent(id))
+
         webSocketSession.launch {
             newGame.eventFlow.collect {
                 @Suppress("UNCHECKED_CAST")
-                send(Message.Server.EventOccurred(
-                    (newGame.type as GameType<State>).mask(it.state, it.event, id)
-                ))
+                send(
+                    Message.Server.EventOccurred(
+                        (newGame.type as GameType<State>).mask(it.state, it.event, id)
+                    )
+                )
             }
         }
     }

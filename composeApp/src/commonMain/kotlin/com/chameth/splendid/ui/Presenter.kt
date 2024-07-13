@@ -64,7 +64,8 @@ class Presenter(private val client: Client) {
         return UiState.InGame(
             gameType = clientState.gameType!!,
             state = clientState.state!!,
-            id = clientState.gameId!!,
+            gameId = clientState.gameId!!,
+            clientId = clientState.clientId,
             actionSink = {
                 coroutineScope.launch {
                     client.performAction(it)

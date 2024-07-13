@@ -45,5 +45,8 @@ sealed interface Message {
         @Serializable
         data class EventOccurred(val event: Event<*>) : Server
 
+        @Serializable
+        data class YourId(val id: String): Server
+
     }
 }
