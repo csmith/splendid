@@ -24,3 +24,11 @@ dependencies {
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
 }
+
+tasks.withType<Tar> {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.withType<Zip> {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
