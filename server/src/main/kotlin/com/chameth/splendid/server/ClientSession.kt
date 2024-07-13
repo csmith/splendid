@@ -5,7 +5,10 @@ import com.chameth.splendid.shared.engine.State
 import com.chameth.splendid.shared.transport.Message
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -27,21 +30,9 @@ class ClientSession(
         }
     }
 
-    private val sendQueue = MutableSharedFlow<Message.Server>(
-        replay = Int.MAX_VALUE,
-        extraBufferCapacity = Int.MAX_VALUE
-    )
-
     private var game: Game<*>? = null
 
     suspend fun start() {
-        webSocketSession.launch {
-            sendQueue
-                .map(json::encodeToString)
-                .onEach { println("Sending: $it") }
-                .collect(webSocketSession::send)
-        }
-
         webSocketSession.launch {
             send(Message.Server.YourId(id))
         }
@@ -56,7 +47,8 @@ class ClientSession(
         println("Finished session!")
     }
 
-    private suspend fun send(message: Message.Server) = sendQueue.emit(message)
+    private suspend fun send(message: Message.Server) =
+        webSocketSession.send(json.encodeToString(message))
 
     private suspend fun processMessage(message: Message.Client) {
         // TODO: Split this out into sensible chunks
