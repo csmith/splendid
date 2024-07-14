@@ -19,7 +19,7 @@ data class Stop(override val actor: String) : Action<State> {
         add(RemoveBlackTokens)
 
         if (state.willWinIfStopping()) {
-            GameOver(state.currentPlayer!!)
+            add(GameOver(state.currentPlayer!!))
         } else {
             add(SetTurn(state.nextPlayer()))
         }
