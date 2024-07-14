@@ -37,6 +37,7 @@ class Presenter(private val actionHandler: (Action<State>) -> Unit) {
                 state.options()
             else
                 emptyList(),
+            winner = state.winner,
             eventSink = {
                 when (it) {
                     UiEvent.JoinGameClicked -> actionHandler(SitDown(clientId))

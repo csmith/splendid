@@ -14,5 +14,6 @@ data class UiState(
     val dice: List<Die> = emptyList(),
     val options: List<List<Int>> = emptyList(),
     val goBust: Boolean = false,
+    val winner: String? = null,
     val eventSink: (UiEvent) -> Unit = {}
 )
