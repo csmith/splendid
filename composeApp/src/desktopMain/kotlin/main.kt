@@ -29,7 +29,8 @@ fun main() = application {
             defaultHost = "127.0.0.1",
             defaultPort = 8080,
             defaultPath = "/client",
-            autoConnect = false
+            autoConnect = false,
+            autoJoin = ""
         ))
     }
 }

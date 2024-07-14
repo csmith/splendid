@@ -55,8 +55,14 @@ class Presenter(
 
     @Composable
     private fun presentNoGame(): UiState {
-        var gameId by remember { mutableStateOf("") }
+        var gameId by remember { mutableStateOf(connectionSettings.autoJoin) }
         val scope = rememberCoroutineScope()
+
+        LaunchedEffect(Unit) {
+            if (connectionSettings.autoJoin.isNotBlank()) {
+                client.joinGame(connectionSettings.autoJoin)
+            }
+        }
 
         return UiState.NoGame(
             gameId = gameId,

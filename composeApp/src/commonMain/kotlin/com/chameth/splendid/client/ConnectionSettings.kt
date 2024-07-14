@@ -5,5 +5,6 @@ data class ConnectionSettings(
     val defaultHost: String,
     val defaultPort: Int,
     val defaultPath: String,
-    val autoConnect: Boolean
+    val autoConnect: Boolean,
+    val autoJoin: String
 )

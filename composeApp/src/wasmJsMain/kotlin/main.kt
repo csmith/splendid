@@ -15,8 +15,11 @@ fun main() {
                 defaultHost = document.location?.hostname.orEmpty(),
                 defaultPort = document.location?.port?.toIntOrNull() ?: if (isSecure) 443 else 80,
                 defaultPath = "/client",
-                autoConnect = document.location?.hostname != "localhost"
+                autoConnect = document.location?.hostname != "localhost",
+                autoJoin = if (hashRegex.matches(document.location?.hash.orEmpty())) document.location?.hash.orEmpty().substring(1) else ""
             )
         )
     }
 }
+
+private val hashRegex = Regex("^#[a-z]+-[a-z]+-[a-z]+$")
