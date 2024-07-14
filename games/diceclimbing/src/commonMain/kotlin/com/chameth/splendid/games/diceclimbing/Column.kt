@@ -9,7 +9,7 @@ data class Column(
         get() = tokens.any { (type, pos) -> type != Token.Black && height == pos+1 }
 
     val owner: Token?
-        get() = tokens.keys.firstOrNull()
+        get() = tokens.filterValues { pos -> height == pos+1 }.map { it.key }.firstOrNull()
 
     val hasBlackToken: Boolean
         get() = Token.Black in tokens
