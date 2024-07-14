@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 class ClientSocket(private val json: Json) {
 
     private val receiveQueue = MutableSharedFlow<Message.Server>(extraBufferCapacity = Int.MAX_VALUE)
-    private val sendQueue = MutableSharedFlow<Message.Client>()
+    private val sendQueue = MutableSharedFlow<Message.Client>(replay = Int.MAX_VALUE, extraBufferCapacity = Int.MAX_VALUE)
 
     val incoming: SharedFlow<Message.Server>
         get() = receiveQueue

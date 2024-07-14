@@ -39,10 +39,6 @@ class Client {
             println("Done connecting")
             stateFlow.emit(stateFlow.value.copy(connected = false, gameType = null, state = null, gameId = null))
         }
-
-        coroutineScope.launch {
-            stateFlow.emit(stateFlow.value.copy(connected = true))
-        }
     }
 
     suspend fun createGame(type: String) {
@@ -81,7 +77,7 @@ class Client {
         is Message.Server.MessageRejected -> {}
         is Message.Server.YourId -> {
             clientId = message.id
-            stateFlow.emit(stateFlow.value.copy(clientId = clientId))
+            stateFlow.emit(stateFlow.value.copy(connected = true, clientId = clientId))
         }
     }
 }
