@@ -6,6 +6,8 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
 }
 
@@ -39,16 +41,22 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.games.diceclimbing)
-            implementation(projects.games.klondike)
             implementation(projects.shared)
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
             implementation(libs.kotlin.serialisation)
+            implementation(libs.haze)
+            implementation(libs.haze.materials)
         }
     }
 }
 
 android {
-    namespace = "com.chameth.splendid.games.all"
+    namespace = "com.chameth.splendid.games.diceclimbing"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

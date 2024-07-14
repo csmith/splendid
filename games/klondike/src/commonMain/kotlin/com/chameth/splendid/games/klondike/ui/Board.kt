@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import com.chameth.splendid.games.klondike.State
 import com.chameth.splendid.games.klondike.ui.components.*
 import com.chameth.splendid.shared.engine.Action
-import com.chameth.splendid.shared.ui.LocalClientId
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 
@@ -23,11 +22,6 @@ fun Board(
     val presenter = remember { Presenter(action) }
     val state = presenter.present()
     val hazeState = remember { HazeState() }
-
-    val clientId = LocalClientId.current
-    LaunchedEffect(clientId) {
-        presenter.updateClientId(clientId)
-    }
 
     LaunchedEffect(gameState) {
         presenter.updateState(gameState)

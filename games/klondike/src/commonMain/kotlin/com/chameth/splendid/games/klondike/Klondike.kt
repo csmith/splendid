@@ -23,43 +23,55 @@ data object Klondike : GameType<State> {
 
     override val stateFactory = { State() }
 
-    override val actionsGenerator = KlondikeActions::generate
+    override val actionsGenerator = { state: State ->
+        buildList {
+            addAll(AutoSolve.generate(state))
+            addAll(DrawFromStock.generate(state))
+            addAll(MoveFoundationToTableau.generate(state))
+            addAll(MoveTableauToFoundation.generate(state))
+            addAll(MoveTableauToTableau.generate(state))
+            addAll(MoveWasteToFoundation.generate(state))
+            addAll(MoveWasteToTableau.generate(state))
+            addAll(NewGame.generate(state))
+            addAll(ResetStock.generate(state))
+            addAll(StartGame.generate(state))
+        }
+    }
 
     override val version = 1
 
-    override val name = "klondike"
+    override val name = "Klondike"
 
-    override val serializersModule: SerializersModule
-        get() = SerializersModule {
-            polymorphic(Event::class) {
-                subclass(AddPlayer::class)
-                subclass(BuildFoundationFromTableau::class)
-                subclass(BuildFoundationFromWaste::class)
-                subclass(BuildTableauFromFoundation::class)
-                subclass(BuildTableauFromWaste::class)
-                subclass(DealToTableau::class)
-                subclass(DealToWaste::class)
-                subclass(MoveCardsWithinTableau::class)
-                subclass(MoveWasteToStock::class)
-                subclass(ResetState::class)
-                subclass(RevealCardInTableau::class)
-                subclass(SetPhase::class)
-                subclass(SetVariant::class)
-            }
-
-            polymorphic(Action::class) {
-                subclass(AutoSolve::class)
-                subclass(DrawFromStock::class)
-                subclass(MoveFoundationToTableau::class)
-                subclass(MoveTableauToFoundation::class)
-                subclass(MoveTableauToTableau::class)
-                subclass(MoveWasteToFoundation::class)
-                subclass(MoveWasteToTableau::class)
-                subclass(NewGame::class)
-                subclass(ResetStock::class)
-                subclass(StartGame::class)
-            }
+    override val serializersModule = SerializersModule {
+        polymorphic(Event::class) {
+            subclass(AddPlayer::class)
+            subclass(BuildFoundationFromTableau::class)
+            subclass(BuildFoundationFromWaste::class)
+            subclass(BuildTableauFromFoundation::class)
+            subclass(BuildTableauFromWaste::class)
+            subclass(DealToTableau::class)
+            subclass(DealToWaste::class)
+            subclass(MoveCardsWithinTableau::class)
+            subclass(MoveWasteToStock::class)
+            subclass(ResetState::class)
+            subclass(RevealCardInTableau::class)
+            subclass(SetPhase::class)
+            subclass(SetVariant::class)
         }
+
+        polymorphic(Action::class) {
+            subclass(AutoSolve::class)
+            subclass(DrawFromStock::class)
+            subclass(MoveFoundationToTableau::class)
+            subclass(MoveTableauToFoundation::class)
+            subclass(MoveTableauToTableau::class)
+            subclass(MoveWasteToFoundation::class)
+            subclass(MoveWasteToTableau::class)
+            subclass(NewGame::class)
+            subclass(ResetStock::class)
+            subclass(StartGame::class)
+        }
+    }
 
     override fun mask(state: State, event: Event<*>, actor: String): Event<*> {
         return when (event) {

@@ -30,7 +30,7 @@ class Game<S : State>(
 
     suspend fun invoke(action: Action<*>) {
         if (action !in actions) {
-            println("Illegal action attempted: $action")
+            println("Illegal action attempted: $action. Valid actions: $actions. State: $state")
             return
         }
 

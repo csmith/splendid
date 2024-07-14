@@ -8,6 +8,7 @@ import com.chameth.splendid.games.klondike.ui.interactors.*
 import com.chameth.splendid.games.klondike.ui.model.Selection
 import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.playingcards.Card
+import com.chameth.splendid.shared.ui.LocalClientId
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class Presenter(
@@ -15,11 +16,8 @@ class Presenter(
 ) {
 
     private val gameState = MutableStateFlow(State())
-    private var clientId: String = ""
 
-    suspend fun updateState(state: State) {
-        gameState.emit(state)
-    }
+    suspend fun updateState(state: State) = gameState.emit(state)
 
     @Composable
     fun present(): UiState {
@@ -30,6 +28,8 @@ class Presenter(
         LaunchedEffect(state) {
             selected = null
         }
+
+        val clientId = LocalClientId.current
 
         return UiState(
             notStarted = state.phase == Phase.Unstarted,
@@ -66,10 +66,6 @@ class Presenter(
             }
             add(SelectableCard(card, foundSelected))
         }
-    }
-
-    fun updateClientId(clientId: String) {
-        this.clientId = clientId
     }
 
 }
