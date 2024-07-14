@@ -40,7 +40,7 @@ class ClientSession(
         webSocketSession.incoming.consumeAsFlow()
             .filterIsInstance<Frame.Text>()
             .map { it.readText() }
-            .onEach { println("Sending: $it") }
+            .onEach { println("Receiving: $it") }
             .map { json.decodeFromString<Message.Client>(it) }
             .collect(::processMessage)
 
@@ -48,7 +48,7 @@ class ClientSession(
     }
 
     private suspend fun send(message: Message.Server) =
-        webSocketSession.send(json.encodeToString(message))
+        webSocketSession.send(json.encodeToString(message).also { println("Sending: $it") })
 
     private suspend fun processMessage(message: Message.Client) {
         // TODO: Split this out into sensible chunks
