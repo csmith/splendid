@@ -1,0 +1,9 @@
+name: build image
+on:
+  push:
+    branches:
+      - kotlin 
+jobs:
+  build:
+    uses: csmith/github-workflows/.github/workflows/build-image.yml@master
+    secrets: inherit
