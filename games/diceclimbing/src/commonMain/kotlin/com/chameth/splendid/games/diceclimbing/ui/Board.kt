@@ -1,14 +1,12 @@
 package com.chameth.splendid.games.diceclimbing.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.chameth.splendid.games.diceclimbing.State
 import com.chameth.splendid.games.diceclimbing.ui.components.Players
 import com.chameth.splendid.games.diceclimbing.ui.components.Rolls
@@ -31,13 +29,16 @@ fun Board(
     val uiState = presenter.present()
 
     Box(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
             Tableau(
-                modifier = Modifier.weight(1f),
                 columns = uiState.board
             )
 
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(32.dp)) {
                 Players(uiState)
                 Rolls(uiState)
             }

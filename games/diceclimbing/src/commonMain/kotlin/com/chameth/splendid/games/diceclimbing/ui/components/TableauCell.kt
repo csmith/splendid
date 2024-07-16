@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.chameth.splendid.games.diceclimbing.Token
 
@@ -22,15 +21,15 @@ fun TableauCell(
                 .shadow(4.dp, shape = CircleShape)
                 .fillMaxSize()
         ) {
-            drawCircle(Color.LightGray)
+            drawCircle(Colours.trackBackground)
         }
 
         Row(
             modifier = Modifier.align(Alignment.BottomEnd),
-            horizontalArrangement = Arrangement.spacedBy(-(24.dp))
+            horizontalArrangement = Arrangement.spacedBy(-(18.dp))
         ) {
             tokens.forEach {
-                Token(type = it, modifier = Modifier.size(32.dp))
+                Token(type = it, modifier = Modifier.size(24.dp))
             }
         }
     }

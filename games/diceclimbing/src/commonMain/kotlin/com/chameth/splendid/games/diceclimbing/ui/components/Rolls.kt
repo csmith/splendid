@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +18,13 @@ fun Rolls(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
+        if (uiState.dice.isNotEmpty()) {
+            Text(
+                text = "Current rolls",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
+
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             uiState.dice.forEach {
                 Die(it)
