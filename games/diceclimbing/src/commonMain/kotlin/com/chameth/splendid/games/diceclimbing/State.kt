@@ -10,7 +10,19 @@ data class State(
     val currentPlayer: String? = null,
     val turnOrder: List<String> = emptyList(),
     val currentRoll: List<Die> = emptyList(),
-    val board: List<Column> = emptyList(),
+    val board: List<Column> = listOf(
+        Column(2, 3),
+        Column(3, 5),
+        Column(4, 7),
+        Column(5, 9),
+        Column(6, 11),
+        Column(7, 13),
+        Column(8, 11),
+        Column(9, 9),
+        Column(10, 7),
+        Column(11, 5),
+        Column(12, 3),
+    ),
     val winner: String? = null
 ) : State {
 

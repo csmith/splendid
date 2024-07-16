@@ -40,7 +40,6 @@ object DiceClimbing : GameType<State> {
             subclass(AdvanceBlackTokens::class)
             subclass(GameOver::class)
             subclass(RemoveBlackTokens::class)
-            subclass(SetUpBoard::class)
             subclass(SaveBlackTokens::class)
             subclass(SetDice::class)
             subclass(SetTurn::class)

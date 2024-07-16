@@ -4,7 +4,6 @@ import com.chameth.splendid.games.diceclimbing.Phase
 import com.chameth.splendid.games.diceclimbing.State
 import com.chameth.splendid.games.diceclimbing.events.SetTurn
 import com.chameth.splendid.games.diceclimbing.events.SetTurnOrder
-import com.chameth.splendid.games.diceclimbing.events.SetUpBoard
 import com.chameth.splendid.games.diceclimbing.rules.canStartGame
 import com.chameth.splendid.shared.engine.Action
 import com.chameth.splendid.shared.engine.Event
@@ -18,7 +17,6 @@ data class StartGame(override val actor: String) : Action<State> {
 
         return listOf(
             SetTurnOrder(order),
-            SetUpBoard,
             SetTurn(order[0]),
         )
     }
