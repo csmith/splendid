@@ -12,7 +12,7 @@
     "@noble/hashes": "^1.4.0",
     "@noble/secp256k1": "^2.1.0",
     "@sveltejs/adapter-node": "^5.2.2",
-    "@sveltejs/kit": "^2.5.24",
+    "@sveltejs/kit": "^2.5.25",
     "animejs": "^3.2.2",
     "cors": "^2.8.5",
     "events": "^3.3.0",
