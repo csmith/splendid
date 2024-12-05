@@ -163,6 +163,7 @@
       <h2>Selected card</h2>
       <Card card={selectedCard} />
       <table>
+        <tbody>
         <tr>
           <th>Gem</th>
           {#each Object.keys(selectedCard.cost) as key}
@@ -197,6 +198,7 @@
             </td>
           {/each}
         </tr>
+        </tbody>
       </table>
       <nav>
         <button on:click={buyCard} disabled={!canSelect || !canAffordCard(player, selectedCard)}> Buy card </button>
