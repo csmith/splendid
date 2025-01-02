@@ -16,7 +16,7 @@
     "animejs": "^3.2.2",
     "cors": "^2.8.5",
     "events": "^3.3.0",
-    "express": "^4.19.2",
+    "express": "^4.21.2",
     "lodash": "^4.17.21",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.7.5",
