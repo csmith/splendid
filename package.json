@@ -9,7 +9,7 @@
     "run": "node src/index.js"
   },
   "dependencies": {
-    "@noble/hashes": "^1.4.0",
+    "@noble/hashes": "^1.7.1",
     "@noble/secp256k1": "^2.1.0",
     "@sveltejs/adapter-node": "^5.2.11",
     "@sveltejs/kit": "^2.15.1",
