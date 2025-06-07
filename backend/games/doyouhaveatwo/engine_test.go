@@ -139,7 +139,6 @@ func (s *EngineTestSuite) thenACardShouldBeRemovedFromTheGame() error {
 	return nil
 }
 
-
 func (s *EngineTestSuite) thenTheRemovedCardShouldNotBeVisibleToAnyPlayer() error {
 	for playerID := range s.engine.Game.RemovedCard.VisibleTo {
 		if s.engine.Game.RemovedCard.VisibleTo[playerID] {
@@ -360,6 +359,7 @@ func TestFeatures(t *testing.T) {
 	suite := godog.TestSuite{
 		ScenarioInitializer: InitializeScenario,
 		Options: &godog.Options{
+			Strict:   true,
 			Format:   "pretty",
 			Paths:    []string{"features"},
 			TestingT: t,

@@ -1,8 +1,4 @@
 Feature: Draw Card
-  As a player
-  I want to draw cards during my turn
-  So that I have two cards to choose from when playing
-
   Background:
     Given a game with 3 players
     And the game has phase "play"

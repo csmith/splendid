@@ -1,8 +1,4 @@
 Feature: Round Start
-  As a player
-  I want each round to start properly
-  So that the game can proceed with correct initial state
-
   Background:
     Given a game with 3 players
     And the game has phase "setup"
