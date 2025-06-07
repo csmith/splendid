@@ -1,6 +1,9 @@
 package doyouhaveatwo
 
-import "errors"
+import (
+	"errors"
+	"math/rand"
+)
 
 type Card interface {
 	Play(game *Game, player *Player, target *Player) error
@@ -217,4 +220,30 @@ func (p Princess) Description() string {
 
 func (p Princess) Quantity() int {
 	return 1
+}
+
+func CreateShuffledDeck() []Redactable[Card] {
+	var deck []Redactable[Card]
+
+	// Add cards according to their quantities
+	cardTypes := []Card{
+		Guard{}, Priest{}, Baron{}, Handmaid{},
+		Prince{}, King{}, Countess{}, Princess{},
+	}
+
+	for _, cardType := range cardTypes {
+		for i := 0; i < cardType.Quantity(); i++ {
+			deck = append(deck, Redactable[Card]{
+				Value:     cardType,
+				VisibleTo: make(map[PlayerID]bool),
+			})
+		}
+	}
+
+	// Shuffle the deck
+	rand.Shuffle(len(deck), func(i, j int) {
+		deck[i], deck[j] = deck[j], deck[i]
+	})
+
+	return deck
 }

@@ -15,6 +15,7 @@ type EngineTestSuite struct {
 	eventChan   chan Event
 	lastUpdate  GameUpdate
 	initialDeck []Redactable[Card]
+	lastError   error
 }
 
 func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
@@ -149,106 +150,98 @@ func (s *EngineTestSuite) thenTheRemovedCardShouldNotBeVisibleToAnyPlayer() erro
 }
 
 func (s *EngineTestSuite) thenPlayerShouldHaveExactlyCardInTheirHand(playerID string, cardCount int) error {
-	for _, player := range s.engine.Game.Players {
-		if string(player.ID) == playerID {
-			if len(player.Hand) != cardCount {
-				return fmt.Errorf("expected player %s to have %d cards in hand, but got %d", player.ID, cardCount, len(player.Hand))
-			}
-			return nil
-		}
+	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	if len(player.Hand) != cardCount {
+		return fmt.Errorf("expected player %s to have %d cards in hand, but got %d", player.ID, cardCount, len(player.Hand))
+	}
+	return nil
 }
 
 func (s *EngineTestSuite) thenPlayersCardsShouldOnlyBeVisibleToThemselves(playerID string) error {
-	for _, player := range s.engine.Game.Players {
-		if string(player.ID) == playerID {
-			for _, card := range player.Hand {
-				// Check that the card is visible to the player
-				if !card.VisibleTo[player.ID] {
-					return fmt.Errorf("expected player %s's card to be visible to themselves, but it is not", player.ID)
-				}
-				// Check that the card is not visible to other players
-				for otherPlayerID, visible := range card.VisibleTo {
-					if otherPlayerID != player.ID && visible {
-						return fmt.Errorf("expected player %s's card to only be visible to themselves, but it is visible to player %s", player.ID, otherPlayerID)
-					}
-				}
+	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
+	}
+	for _, card := range player.Hand {
+		// Check that the card is visible to the player
+		if !card.VisibleTo[player.ID] {
+			return fmt.Errorf("expected player %s's card to be visible to themselves, but it is not", player.ID)
+		}
+		// Check that the card is not visible to other players
+		for otherPlayerID, visible := range card.VisibleTo {
+			if otherPlayerID != player.ID && visible {
+				return fmt.Errorf("expected player %s's card to only be visible to themselves, but it is visible to player %s", player.ID, otherPlayerID)
 			}
-			return nil
 		}
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	return nil
 }
 
 func (s *EngineTestSuite) givenPlayerHasCardsInDiscardPile(playerID string, cardCount int) error {
-	for _, player := range s.engine.Game.Players {
-		if string(player.ID) == playerID {
-			cards := make([]Card, cardCount)
-			for i := 0; i < cardCount; i++ {
-				cards[i] = Guard{} // Use Guard as placeholder
-			}
-			player.DiscardPile = cards
-			return nil
-		}
+	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	cards := make([]Card, cardCount)
+	for i := 0; i < cardCount; i++ {
+		cards[i] = Guard{} // Use Guard as placeholder
+	}
+	player.DiscardPile = cards
+	return nil
 }
 
 func (s *EngineTestSuite) givenPlayerIsEliminated(playerID string) error {
-	for _, player := range s.engine.Game.Players {
-		if string(player.ID) == playerID {
-			player.IsOut = true
-			return nil
-		}
+	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	player.IsOut = true
+	return nil
 }
 
 func (s *EngineTestSuite) givenPlayerIsProtected(playerID string) error {
-	for _, player := range s.engine.Game.Players {
-		if string(player.ID) == playerID {
-			player.IsProtected = true
-			return nil
-		}
+	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	player.IsProtected = true
+	return nil
 }
 
 func (s *EngineTestSuite) thenPlayerShouldNotBeEliminated(playerID string) error {
-	for _, player := range s.engine.Game.Players {
-		if string(player.ID) == playerID {
-			if player.IsOut {
-				return fmt.Errorf("expected player %s to not be eliminated, but they are", player.ID)
-			}
-			return nil
-		}
+	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	if player.IsOut {
+		return fmt.Errorf("expected player %s to not be eliminated, but they are", player.ID)
+	}
+	return nil
 }
 
 func (s *EngineTestSuite) thenPlayerShouldNotBeProtected(playerID string) error {
-	for _, player := range s.engine.Game.Players {
-		if string(player.ID) == playerID {
-			if player.IsProtected {
-				return fmt.Errorf("expected player %s to not be protected, but they are", player.ID)
-			}
-			return nil
-		}
+	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	if player.IsProtected {
+		return fmt.Errorf("expected player %s to not be protected, but they are", player.ID)
+	}
+	return nil
 }
 
 func (s *EngineTestSuite) thenPlayerShouldHaveCardsInDiscardPile(playerID string, expectedCount int) error {
-	for _, player := range s.engine.Game.Players {
-		if string(player.ID) == playerID {
-			if len(player.DiscardPile) != expectedCount {
-				return fmt.Errorf("expected player %s to have %d cards in discard pile, but got %d", player.ID, expectedCount, len(player.DiscardPile))
-			}
-			return nil
-		}
+	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	if len(player.DiscardPile) != expectedCount {
+		return fmt.Errorf("expected player %s to have %d cards in discard pile, but got %d", player.ID, expectedCount, len(player.DiscardPile))
+	}
+	return nil
 }
 
 func (s *EngineTestSuite) thenTheGamePhaseShouldBe(phaseName string) error {
@@ -305,6 +298,30 @@ func (s *EngineTestSuite) thenTheDeckShouldHaveCardsRemaining(expectedCount int)
 	return nil
 }
 
+func (s *EngineTestSuite) whenPlayerDrawsACard(playerID string) error {
+	event := Event{
+		Type:     EventDrawCard,
+		PlayerID: (*PlayerID)(&playerID),
+	}
+	s.lastError = s.engine.applyEvent(event)
+	return nil // Don't propagate the error to godog, we'll check it in the Then step
+}
+
+func (s *EngineTestSuite) givenTheDeckIsEmpty() error {
+	s.engine.Game.Deck = []Redactable[Card]{}
+	return nil
+}
+
+func (s *EngineTestSuite) thenAnErrorIsReturned(expectedError string) error {
+	if s.lastError == nil {
+		return fmt.Errorf("expected error '%s' but no error was returned", expectedError)
+	}
+	if s.lastError.Error() != expectedError {
+		return fmt.Errorf("expected error '%s' but got '%s'", expectedError, s.lastError.Error())
+	}
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	suite := &EngineTestSuite{}
 
@@ -315,8 +332,10 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Given(`^player ([A-Z]) has (\d+) cards in discard pile$`, suite.givenPlayerHasCardsInDiscardPile)
 	ctx.Given(`^player ([A-Z]) is eliminated$`, suite.givenPlayerIsEliminated)
 	ctx.Given(`^player ([A-Z]) is protected$`, suite.givenPlayerIsProtected)
+	ctx.Given(`^the deck is empty$`, suite.givenTheDeckIsEmpty)
 
 	ctx.When(`^a round starts$`, suite.whenARoundStarts)
+	ctx.When(`^player ([A-Z]) draws a card$`, suite.whenPlayerDrawsACard)
 
 	ctx.Then(`^the round number should be (\d+)$`, suite.thenTheRoundNumberShouldBe)
 	ctx.Then(`^there are (\d+) ([A-Za-z]+) cards in the game$`, suite.thenThereAreCardCardsInTheGame)
@@ -334,6 +353,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Then(`^each player should receive one card$`, suite.thenEachPlayerShouldReceiveOneCard)
 	ctx.Then(`^all player states should be reset$`, suite.thenAllPlayerStatesShouldBeReset)
 	ctx.Then(`^the deck should have (\d+) cards remaining$`, suite.thenTheDeckShouldHaveCardsRemaining)
+	ctx.Then(`^an error is returned: "([^"]*)"$`, suite.thenAnErrorIsReturned)
 }
 
 func TestFeatures(t *testing.T) {

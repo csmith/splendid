@@ -37,6 +37,15 @@ type Game struct {
 	TokensToWin   int
 }
 
+func (g *Game) GetPlayer(playerID PlayerID) *Player {
+	for _, player := range g.Players {
+		if player.ID == playerID {
+			return player
+		}
+	}
+	return nil
+}
+
 type Action struct {
 	Type  string
 	Value interface{}
