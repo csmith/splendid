@@ -7,21 +7,21 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-type PlayGuardAction struct {
+type PlayCardGuardAction struct {
 	Player       model.PlayerID
 	TargetPlayer *model.PlayerID
 	GuessedRank  *int
 }
 
-func (a *PlayGuardAction) PlayerID() model.PlayerID {
+func (a *PlayCardGuardAction) PlayerID() model.PlayerID {
 	return a.Player
 }
 
-func (a *PlayGuardAction) IsComplete() bool {
+func (a *PlayCardGuardAction) IsComplete() bool {
 	return a.TargetPlayer != nil && a.GuessedRank != nil
 }
 
-func (a *PlayGuardAction) NextActions(g *model.Game) []model.Action {
+func (a *PlayCardGuardAction) NextActions(g *model.Game) []model.Action {
 	if a.TargetPlayer == nil {
 		return a.generateTargetActions(g)
 	}
@@ -31,7 +31,7 @@ func (a *PlayGuardAction) NextActions(g *model.Game) []model.Action {
 	return nil
 }
 
-func (a *PlayGuardAction) ToInput() model.Input {
+func (a *PlayCardGuardAction) ToInput() model.Input {
 	if !a.IsComplete() {
 		return nil
 	}
@@ -42,11 +42,11 @@ func (a *PlayGuardAction) ToInput() model.Input {
 	}
 }
 
-func (a *PlayGuardAction) Type() string {
+func (a *PlayCardGuardAction) Type() string {
 	return "play_guard"
 }
 
-func (a *PlayGuardAction) String() string {
+func (a *PlayCardGuardAction) String() string {
 	if a.TargetPlayer == nil && a.GuessedRank == nil {
 		return fmt.Sprintf("play_guard(player=%s)", a.Player)
 	} else if a.GuessedRank == nil {
@@ -56,7 +56,7 @@ func (a *PlayGuardAction) String() string {
 	}
 }
 
-func (a *PlayGuardAction) generateTargetActions(g *model.Game) []model.Action {
+func (a *PlayCardGuardAction) generateTargetActions(g *model.Game) []model.Action {
 	var actions []model.Action
 
 	// Generate actions for each valid target player
@@ -64,7 +64,7 @@ func (a *PlayGuardAction) generateTargetActions(g *model.Game) []model.Action {
 		// Can't target self, eliminated players, or protected players
 		if player.ID != a.Player && !player.IsOut && !player.IsProtected {
 			// Create a new action with this target selected
-			targetAction := &PlayGuardAction{
+			targetAction := &PlayCardGuardAction{
 				Player:       a.Player,
 				TargetPlayer: &player.ID,
 				GuessedRank:  a.GuessedRank,
@@ -76,7 +76,7 @@ func (a *PlayGuardAction) generateTargetActions(g *model.Game) []model.Action {
 	return actions
 }
 
-func (a *PlayGuardAction) generateGuessActions() []model.Action {
+func (a *PlayCardGuardAction) generateGuessActions() []model.Action {
 	var actions []model.Action
 
 	// Generate actions for each valid guess (all card ranks except Guard)
@@ -84,7 +84,7 @@ func (a *PlayGuardAction) generateGuessActions() []model.Action {
 
 	for _, rank := range validRanks {
 		// Create a new action with this guess selected
-		guessAction := &PlayGuardAction{
+		guessAction := &PlayCardGuardAction{
 			Player:       a.Player,
 			TargetPlayer: a.TargetPlayer,
 			GuessedRank:  &rank,

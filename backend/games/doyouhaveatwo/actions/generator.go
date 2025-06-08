@@ -58,10 +58,24 @@ func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *
 			if handCard.VisibleTo[player.ID] {
 				switch handCard.Value {
 				case model.CardGuard:
-					actions = append(actions, &PlayGuardAction{
+					actions = append(actions, &PlayCardGuardAction{
 						Player: player.ID,
 					})
-					// Add other card types as we implement them
+				case model.CardHandmaid, model.CardCountess, model.CardPrincess:
+					actions = append(actions, &PlayCardNoTargetAction{
+						Player: player.ID,
+						Card:   handCard.Value,
+					})
+				case model.CardBaron, model.CardPriest, model.CardKing:
+					actions = append(actions, &PlayCardTargetOthersAction{
+						Player: player.ID,
+						Card:   handCard.Value,
+					})
+				case model.CardPrince:
+					actions = append(actions, &PlayCardTargetAnyAction{
+						Player: player.ID,
+						Card:   handCard.Value,
+					})
 				}
 			}
 		}

@@ -384,7 +384,7 @@ func (s *EngineTestSuite) whenPlayerPerformsActionPlayGuardTargetingGuessing(pla
 	targetPlayerIDPtr := model.PlayerID(targetPlayerID)
 
 	// Step 1: Start the play_guard action
-	initialAction := &actions.PlayGuardAction{
+	initialAction := &actions.PlayCardGuardAction{
 		Player: playerIDTyped,
 	}
 	s.lastError = s.engine.ProcessAction(playerIDTyped, initialAction)
@@ -393,7 +393,7 @@ func (s *EngineTestSuite) whenPlayerPerformsActionPlayGuardTargetingGuessing(pla
 	}
 
 	// Step 2: Select target player
-	targetAction := &actions.PlayGuardAction{
+	targetAction := &actions.PlayCardGuardAction{
 		Player:       playerIDTyped,
 		TargetPlayer: &targetPlayerIDPtr,
 	}
@@ -403,7 +403,7 @@ func (s *EngineTestSuite) whenPlayerPerformsActionPlayGuardTargetingGuessing(pla
 	}
 
 	// Step 3: Select guessed rank
-	finalAction := &actions.PlayGuardAction{
+	finalAction := &actions.PlayCardGuardAction{
 		Player:       playerIDTyped,
 		TargetPlayer: &targetPlayerIDPtr,
 		GuessedRank:  &guessedRank,
