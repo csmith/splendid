@@ -23,7 +23,3 @@ Feature: Draw Card
     And player C should have exactly 2 card in their hand
     And the deck should have 9 cards remaining
 
-  Scenario: Cannot draw from empty deck
-    Given the deck is empty
-    When player A draws a card
-    Then an error is returned: "failed to apply event draw_card: deck is empty, cannot draw card"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	"github.com/cucumber/godog"
 )
@@ -15,6 +15,7 @@ type EngineTestSuite struct {
 	players     []*model.Player
 	updateChan  chan model.GameUpdate
 	eventChan   chan model.Event
+	inputChan   chan inputs.Input
 	lastUpdate  model.GameUpdate
 	initialDeck []model.Redactable[model.Card]
 	lastError   error
@@ -46,11 +47,13 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 
 	s.updateChan = make(chan model.GameUpdate, 100)
 	s.eventChan = make(chan model.Event, 100)
+	s.inputChan = make(chan inputs.Input, 100)
 
 	s.engine = &Engine{
-		Game:       *s.game,
-		updateChan: s.updateChan,
-		eventChan:  s.eventChan,
+		Game:         *s.game,
+		EventHistory: []model.Event{},
+		updateChan:   s.updateChan,
+		inputChan:    s.inputChan,
 	}
 
 	return nil
@@ -70,15 +73,24 @@ func (s *EngineTestSuite) whenARoundStarts() error {
 	s.initialDeck = make([]model.Redactable[model.Card], len(s.engine.Game.Deck))
 	copy(s.initialDeck, s.engine.Game.Deck)
 
-	event := &events.StartRoundEvent{}
-	s.engine.applyEvent(event)
+	input := &inputs.StartRoundInput{}
+	s.engine.processInput(input)
 
-	// Capture the game update
-	select {
-	case update := <-s.updateChan:
-		s.lastUpdate = update
-	default:
-		// No update received
+	// Capture the last game update
+	var lastUpdate model.GameUpdate
+	updateReceived := false
+	for {
+		select {
+		case update := <-s.updateChan:
+			lastUpdate = update
+			updateReceived = true
+		default:
+			goto done
+		}
+	}
+done:
+	if updateReceived {
+		s.lastUpdate = lastUpdate
 	}
 
 	return nil
@@ -299,10 +311,10 @@ func (s *EngineTestSuite) thenTheDeckShouldHaveCardsRemaining(expectedCount int)
 }
 
 func (s *EngineTestSuite) whenPlayerDrawsACard(playerID string) error {
-	event := &events.DrawCardEvent{
+	input := &inputs.DrawCardInput{
 		Player: model.PlayerID(playerID),
 	}
-	s.lastError = s.engine.applyEvent(event)
+	s.lastError = s.engine.processInput(input)
 	return nil // Don't propagate the error to godog, we'll check it in the Then step
 }
 
