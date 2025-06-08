@@ -372,6 +372,18 @@ func (s *EngineTestSuite) givenTheDeckIsEmpty() error {
 	return nil
 }
 
+func (s *EngineTestSuite) givenTheRemovedCardIsA(cardName string) error {
+	card, err := model.GetCardByName(cardName)
+	if err != nil {
+		return err
+	}
+	s.engine.Game.RemovedCard = &model.Redactable[model.Card]{
+		Value:     card,
+		VisibleTo: make(map[model.PlayerID]bool),
+	}
+	return nil
+}
+
 func (s *EngineTestSuite) thenAnErrorIsReturned(expectedError string) error {
 	if s.lastError == nil {
 		return fmt.Errorf("expected error '%s' but no error was returned", expectedError)
@@ -570,6 +582,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Given(`^player ([A-Z]) is eliminated$`, suite.givenPlayerIsEliminated)
 	ctx.Given(`^player ([A-Z]) is protected$`, suite.givenPlayerIsProtected)
 	ctx.Given(`^the deck is empty$`, suite.givenTheDeckIsEmpty)
+	ctx.Given(`^the removed card is a ([A-Za-z]+)$`, suite.givenTheRemovedCardIsA)
 	ctx.Given(`^player ([A-Z]) has the following cards in their hand:$`, suite.givenPlayerHasTheFollowingCardsInTheirHand)
 	ctx.Given(`^it is player ([A-Z])'s turn$`, suite.givenItIsPlayersTurn)
 	ctx.Given(`^player ([A-Z]) draws a card$`, suite.whenPlayerDrawsACard)

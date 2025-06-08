@@ -44,9 +44,16 @@ func (i *PlayPrinceInput) Apply(g *model.Game, apply func(model.Event)) error {
 			})
 		} else {
 			// Target player draws a new card
-			apply(&events.CardDealtEvent{
-				ToPlayer: i.TargetPlayer,
-			})
+			if len(g.Deck) > 0 {
+				apply(&events.CardDealtEvent{
+					ToPlayer: i.TargetPlayer,
+				})
+			} else if g.RemovedCard != nil {
+				// If deck is empty, give the removed card to the target player
+				apply(&events.RemovedCardDealtEvent{
+					ToPlayer: i.TargetPlayer,
+				})
+			}
 		}
 	}
 

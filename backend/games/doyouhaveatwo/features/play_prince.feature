@@ -43,10 +43,11 @@ Feature: Play Prince
   Scenario: Prince forces player to draw removed card when deck is empty
     Given it is player A's turn
     And the deck is empty
+    And the removed card is a Princess
     When player A sends action {"type": "play_card_target_any", "player": "A", "cardName": "Prince"}
     And player A sends action {"type": "play_card_target_any", "player": "A", "cardName": "Prince", "targetPlayer": "B"}
     Then no error occurs
-    And player B should draw the removed card
+    And player B should have card "Princess" in their hand
 
   Scenario: Player cannot perform action play_prince when it's not their turn
     Given it is player B's turn
