@@ -260,6 +260,40 @@ func (s *EngineTestSuite) thenPlayerShouldNotBeProtected(playerID string) error 
 	return nil
 }
 
+func (s *EngineTestSuite) thenPlayerShouldBeProtected(playerID string) error {
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
+	}
+	if !player.IsProtected {
+		return fmt.Errorf("expected player %s to be protected, but they are not", player.ID)
+	}
+	return nil
+}
+
+func (s *EngineTestSuite) thenTheFollowingEventOccurred(eventType string) error {
+	if len(s.engine.EventHistory) == 0 {
+		return fmt.Errorf("expected event %s to occur, but no events found", eventType)
+	}
+
+	// Check if any event in the history matches the expected type
+	for _, event := range s.engine.EventHistory {
+		if string(event.Type()) == eventType {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("expected event %s to occur, but it was not found in event history", eventType)
+}
+
+func (s *EngineTestSuite) thenItShouldBePlayersTurn(playerID string) error {
+	currentPlayer := s.engine.Game.Players[s.engine.Game.CurrentPlayer]
+	if currentPlayer.ID != model.PlayerID(playerID) {
+		return fmt.Errorf("expected it to be player %s's turn, but it's player %s's turn", playerID, currentPlayer.ID)
+	}
+	return nil
+}
+
 func (s *EngineTestSuite) thenPlayerShouldHaveCardsInDiscardPile(playerID string, expectedCount int) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
@@ -389,32 +423,10 @@ func (s *EngineTestSuite) thenPlayerShouldHaveName(playerID, expectedName string
 	return nil
 }
 
-func (s *EngineTestSuite) givenPlayerHasCardInTheirHand(playerID, cardName string) error {
+func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID string, cardTable *godog.Table) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
-	}
-
-	var card model.Card
-	switch cardName {
-	case "Guard":
-		card = model.CardGuard
-	case "Priest":
-		card = model.CardPriest
-	case "Baron":
-		card = model.CardBaron
-	case "Handmaid":
-		card = model.CardHandmaid
-	case "Prince":
-		card = model.CardPrince
-	case "King":
-		card = model.CardKing
-	case "Countess":
-		card = model.CardCountess
-	case "Princess":
-		card = model.CardPrincess
-	default:
-		return fmt.Errorf("unknown card type: %s", cardName)
 	}
 
 	visibleTo := make(map[model.PlayerID]bool)
@@ -422,12 +434,43 @@ func (s *EngineTestSuite) givenPlayerHasCardInTheirHand(playerID, cardName strin
 		visibleTo[p.ID] = p.ID == player.ID
 	}
 
-	// Replace the hand with just this card
-	player.Hand = []model.Redactable[model.Card]{{
-		Value:     card,
-		VisibleTo: visibleTo,
-	}}
+	// Clear existing hand
+	player.Hand = []model.Redactable[model.Card]{}
+
+	// Add each card from the table
+	for _, row := range cardTable.Rows {
+		if len(row.Cells) != 1 {
+			return fmt.Errorf("expected 1 column (card name), got %d", len(row.Cells))
+		}
+
+		cardName := row.Cells[0].Value
+		card, err := model.GetCardByName(cardName)
+		if err != nil {
+			return err
+		}
+
+		player.Hand = append(player.Hand, model.Redactable[model.Card]{
+			Value:     card,
+			VisibleTo: visibleTo,
+		})
+	}
+
 	return nil
+}
+
+func (s *EngineTestSuite) thenPlayerShouldHaveCardInTheirHand(playerID string, cardName string) error {
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
+	}
+
+	for _, handCard := range player.Hand {
+		if handCard.VisibleTo[player.ID] && handCard.Value.Name() == cardName {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("expected player %s to have card %s in their hand, but they don't", playerID, cardName)
 }
 
 func (s *EngineTestSuite) givenItIsPlayersTurn(playerID string) error {
@@ -527,7 +570,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Given(`^player ([A-Z]) is eliminated$`, suite.givenPlayerIsEliminated)
 	ctx.Given(`^player ([A-Z]) is protected$`, suite.givenPlayerIsProtected)
 	ctx.Given(`^the deck is empty$`, suite.givenTheDeckIsEmpty)
-	ctx.Given(`^player ([A-Z]) has card "([^"]*)" in their hand$`, suite.givenPlayerHasCardInTheirHand)
+	ctx.Given(`^player ([A-Z]) has the following cards in their hand:$`, suite.givenPlayerHasTheFollowingCardsInTheirHand)
 	ctx.Given(`^it is player ([A-Z])'s turn$`, suite.givenItIsPlayersTurn)
 	ctx.Given(`^player ([A-Z]) draws a card$`, suite.whenPlayerDrawsACard)
 
@@ -543,6 +586,10 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Then(`^player ([A-Z])'s cards should only be visible to themselves$`, suite.thenPlayersCardsShouldOnlyBeVisibleToThemselves)
 	ctx.Then(`^player ([A-Z]) should not be eliminated$`, suite.thenPlayerShouldNotBeEliminated)
 	ctx.Then(`^player ([A-Z]) should not be protected$`, suite.thenPlayerShouldNotBeProtected)
+	ctx.Then(`^player ([A-Z]) should be protected$`, suite.thenPlayerShouldBeProtected)
+	ctx.Then(`^the following event occurred: "([^"]*)"$`, suite.thenTheFollowingEventOccurred)
+	ctx.Then(`^it should be player ([A-Z])'s turn$`, suite.thenItShouldBePlayersTurn)
+	ctx.Then(`^player ([A-Z]) should have card "([^"]*)" in their hand$`, suite.thenPlayerShouldHaveCardInTheirHand)
 	ctx.Then(`^player ([A-Z]) should have (\d+) cards in discard pile$`, suite.thenPlayerShouldHaveCardsInDiscardPile)
 	ctx.Then(`^the game phase should be "([^"]*)"$`, suite.thenTheGamePhaseShouldBe)
 	ctx.Then(`^the round number should be incremented$`, suite.thenTheRoundNumberShouldBeIncremented)

@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
@@ -55,14 +56,14 @@ func (a *PlayCardTargetOthersAction) ToInput() model.Input {
 }
 
 func (a *PlayCardTargetOthersAction) Type() string {
-	return fmt.Sprintf("play_%s", a.CardName)
+	return fmt.Sprintf("play_%s", strings.ToLower(a.CardName))
 }
 
 func (a *PlayCardTargetOthersAction) String() string {
 	if a.TargetPlayer == nil {
-		return fmt.Sprintf("play_%s(player=%s)", a.CardName, a.Player)
+		return fmt.Sprintf("play_%s(player=%s)", strings.ToLower(a.CardName), a.Player)
 	}
-	return fmt.Sprintf("play_%s(player=%s, target=%s)", a.CardName, a.Player, *a.TargetPlayer)
+	return fmt.Sprintf("play_%s(player=%s, target=%s)", strings.ToLower(a.CardName), a.Player, *a.TargetPlayer)
 }
 
 func (a *PlayCardTargetOthersAction) generateTargetActions(g *model.Game) []model.Action {

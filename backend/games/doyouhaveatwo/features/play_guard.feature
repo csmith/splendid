@@ -3,9 +3,13 @@ Feature: Play Guard
   Background:
     Given a game with 3 players
     And a round starts
-    And player A has card "Guard" in their hand
-    And player B has card "Priest" in their hand
-    And player C has card "Baron" in their hand
+    And player A has the following cards in their hand:
+      | Guard |
+      | King  |
+    And player B has the following cards in their hand:
+      | Priest |
+    And player C has the following cards in their hand:
+      | Baron |
     And the game has phase "play"
 
   Scenario: Player is able to perform action play_guard when it's their turn and they have a Guard
@@ -78,6 +82,7 @@ Feature: Play Guard
     Then the available actions should be:
       | player | action               |
       | A      | play_guard(player=A) |
+      | A      | play_king(player=A)  |
 
   Scenario: Available actions when player starts playing Guard
     Given it is player A's turn
@@ -126,8 +131,9 @@ Feature: Play Guard
     And player B is eliminated
     And player C is protected
     Then the available actions should be:
-      | player | action                            |
+      | player | action                             |
       | A      | discard_card(player=A, card=Guard) |
+      | A      | discard_card(player=A, card=King)  |
 
   Scenario: Player can discard Guard when no valid targets
     Given it is player A's turn
