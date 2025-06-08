@@ -27,6 +27,12 @@ func Unmarshal(data []byte) (model.Action, error) {
 		action = &StartGameAction{}
 	case "play_guard":
 		action = &PlayCardGuardAction{}
+	case "play_priest", "play_baron", "play_king":
+		action = &PlayCardTargetOthersAction{}
+	case "play_prince":
+		action = &PlayCardTargetAnyAction{}
+	case "play_handmaid", "play_countess", "play_princess":
+		action = &PlayCardNoTargetAction{}
 	case "play_card_no_target":
 		action = &PlayCardNoTargetAction{}
 	case "play_card_target_any":

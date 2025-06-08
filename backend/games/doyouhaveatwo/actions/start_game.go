@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
@@ -33,4 +34,15 @@ func (a *StartGameAction) Type() string {
 
 func (a *StartGameAction) String() string {
 	return fmt.Sprintf("start_game(player=%s)", a.Player)
+}
+
+func (a *StartGameAction) MarshalJSON() ([]byte, error) {
+	type Alias StartGameAction
+	return json.Marshal(&struct {
+		Type string `json:"type"`
+		*Alias
+	}{
+		Type:  a.Type(),
+		Alias: (*Alias)(a),
+	})
 }

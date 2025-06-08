@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Do You Have A Two - Love Letter Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Do You Have A Two</h1>
+            <p>A Love Letter-inspired card game</p>
+        </header>
+
+        <!-- Session Management -->
+        <section id="session-section" class="session-section">
+            <h2>Game Session</h2>
+            <div class="session-controls">
+                <div class="join-game">
+                    <label for="session-id">Session ID:</label>
+                    <input type="text" id="session-id" placeholder="Enter session ID to join">
+                    <button id="join-btn" onclick="joinGame()">Join Game</button>
+                </div>
+                <div class="create-game">
+                    <button id="create-btn" onclick="createGame()">Create New Game</button>
+                </div>
+            </div>
+            <div id="connection-status" class="connection-status">
+                Not connected
+            </div>
+        </section>
+
+        <!-- Game Interface (hidden initially) -->
+        <section id="game-section" class="game-section" style="display: none;">
+            <!-- Game Status -->
+            <div class="game-status">
+                <div class="game-info">
+                    <span id="round-info">Round: -</span>
+                    <span id="phase-info">Phase: -</span>
+                    <span id="current-player-info">Current Player: -</span>
+                </div>
+                <div class="tokens-to-win">
+                    <span id="tokens-to-win-info">Tokens to win: -</span>
+                </div>
+            </div>
+
+            <!-- Players -->
+            <div class="players-section">
+                <h3>Players</h3>
+                <div id="players-list" class="players-list">
+                    <!-- Players will be populated here -->
+                </div>
+            </div>
+
+            <!-- Your Hand -->
+            <div class="hand-section">
+                <h3>Your Hand</h3>
+                <div id="your-hand" class="hand">
+                    <!-- Your cards will be displayed here -->
+                </div>
+            </div>
+
+            <!-- Available Actions -->
+            <div class="actions-section">
+                <h3>Available Actions</h3>
+                <div id="actions-list" class="actions-list">
+                    <!-- Action buttons will be populated here -->
+                </div>
+            </div>
+
+            <!-- Event Log -->
+            <div class="event-log-section">
+                <h3>Event Log</h3>
+                <div id="event-log" class="event-log">
+                    <!-- Events will be logged here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Error Messages -->
+        <div id="error-messages" class="error-messages">
+            <!-- Error messages will appear here -->
+        </div>
+    </div>
+
+    <!-- Card Info Modal -->
+    <div id="card-info-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeCardInfo()">&times;</span>
+            <h3 id="card-info-title">Card Name</h3>
+            <p id="card-info-description">Card description</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

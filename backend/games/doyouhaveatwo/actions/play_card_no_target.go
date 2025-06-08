@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -50,4 +51,15 @@ func (a *PlayCardNoTargetAction) Type() string {
 
 func (a *PlayCardNoTargetAction) String() string {
 	return fmt.Sprintf("play_%s(player=%s)", strings.ToLower(a.CardName), a.Player)
+}
+
+func (a *PlayCardNoTargetAction) MarshalJSON() ([]byte, error) {
+	type Alias PlayCardNoTargetAction
+	return json.Marshal(&struct {
+		Type string `json:"type"`
+		*Alias
+	}{
+		Type:  a.Type(),
+		Alias: (*Alias)(a),
+	})
 }

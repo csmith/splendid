@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type Card struct {
 	value       int
@@ -23,6 +26,10 @@ func (c *Card) Description() string {
 
 func (c *Card) Quantity() int {
 	return c.quantity
+}
+
+func (c *Card) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.name)
 }
 
 var (

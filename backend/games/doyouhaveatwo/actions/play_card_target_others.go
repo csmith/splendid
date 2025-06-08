@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -84,4 +85,15 @@ func (a *PlayCardTargetOthersAction) generateTargetActions(g *model.Game) []mode
 	}
 
 	return actions
+}
+
+func (a *PlayCardTargetOthersAction) MarshalJSON() ([]byte, error) {
+	type Alias PlayCardTargetOthersAction
+	return json.Marshal(&struct {
+		Type string `json:"type"`
+		*Alias
+	}{
+		Type:  a.Type(),
+		Alias: (*Alias)(a),
+	})
 }

@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
@@ -93,4 +94,15 @@ func (a *PlayCardGuardAction) generateGuessActions() []model.Action {
 	}
 
 	return actions
+}
+
+func (a *PlayCardGuardAction) MarshalJSON() ([]byte, error) {
+	type Alias PlayCardGuardAction
+	return json.Marshal(&struct {
+		Type string `json:"type"`
+		*Alias
+	}{
+		Type:  a.Type(),
+		Alias: (*Alias)(a),
+	})
 }

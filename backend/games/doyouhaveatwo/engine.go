@@ -15,6 +15,22 @@ type Engine struct {
 	actionGenerator actions.ActionGenerator
 }
 
+func NewEngine(updateChan chan<- model.GameUpdate) *Engine {
+	return &Engine{
+		Game: model.Game{
+			Players:       []*model.Player{},
+			Deck:          []model.Redactable[model.Card]{},
+			CurrentPlayer: 0,
+			Round:         0,
+			Phase:         model.PhaseSetup,
+			TokensToWin:   4,
+		},
+		EventHistory:    []model.Event{},
+		updateChan:      updateChan,
+		actionGenerator: &actions.DefaultActionGenerator{},
+	}
+}
+
 func (e *Engine) processInput(input model.Input) error {
 	var applyError error
 
@@ -145,5 +161,14 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 		}
 	}
 
+	return nil
+}
+
+func (e *Engine) ProcessServerAction(action model.Action) error {
+	// Execute the concrete input directly without validation or pending action handling
+	concreteInput := action.ToInput()
+	if concreteInput != nil {
+		return e.processInput(concreteInput)
+	}
 	return nil
 }
