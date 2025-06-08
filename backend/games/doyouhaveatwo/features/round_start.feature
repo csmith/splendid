@@ -54,12 +54,3 @@ Feature: Round Start
   Scenario: Game phase is set to draw
     When a round starts
     Then the game phase should be "draw"
-
-  Scenario: Full round start sequence
-    When a round starts
-    Then the round number should be incremented
-    And the deck should be created and shuffled
-    And the top card should be removed from deck
-    And each player should receive one card
-    And all player states should be reset
-    And the game phase should be "draw"

@@ -18,7 +18,6 @@ type EngineTestSuite struct {
 	players     []*model.Player
 	updateChan  chan model.GameUpdate
 	eventChan   chan model.Event
-	lastUpdate  model.GameUpdate
 	initialDeck []model.Redactable[model.Card]
 	lastError   error
 }
@@ -35,11 +34,8 @@ func (s *EngineTestSuite) dumpEvents() string {
 	return result
 }
 
-func (s *EngineTestSuite) wrapError(err error) error {
-	if err == nil {
-		return nil
-	}
-	return fmt.Errorf("%v\n%s", err, s.dumpEvents())
+func (s *EngineTestSuite) errorf(format string, args ...interface{}) error {
+	return fmt.Errorf("%s\n%s", fmt.Sprintf(format, args...), s.dumpEvents())
 }
 
 func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
@@ -96,29 +92,12 @@ func (s *EngineTestSuite) whenARoundStarts() error {
 	input := &inputs.StartRoundInput{}
 	s.engine.processInput(input)
 
-	// Capture the last game update
-	var lastUpdate model.GameUpdate
-	updateReceived := false
-	for {
-		select {
-		case update := <-s.updateChan:
-			lastUpdate = update
-			updateReceived = true
-		default:
-			goto done
-		}
-	}
-done:
-	if updateReceived {
-		s.lastUpdate = lastUpdate
-	}
-
 	return nil
 }
 
 func (s *EngineTestSuite) thenTheRoundNumberShouldBe(expectedRound int) error {
 	if s.engine.Game.Round != expectedRound {
-		return fmt.Errorf("expected round number to be %d, but got %d", expectedRound, s.engine.Game.Round)
+		return s.errorf("expected round number to be %d, but got %d", expectedRound, s.engine.Game.Round)
 	}
 	return nil
 }
@@ -157,25 +136,25 @@ func (s *EngineTestSuite) thenThereAreCardCardsInTheGame(expectedCount int, card
 	}
 
 	if count != expectedCount {
-		return fmt.Errorf("expected %d %s cards in the game, but got %d", expectedCount, cardType, count)
+		return s.errorf("expected %d %s cards in the game, but got %d", expectedCount, cardType, count)
 	}
 	return nil
 }
 
 func (s *EngineTestSuite) thenACardShouldBeRemovedFromTheGame() error {
 	if s.engine.Game.RemovedCard == nil {
-		return fmt.Errorf("expected a card to be removed from the game, but no card was removed")
+		return s.errorf("expected a card to be removed from the game, but no card was removed")
 	}
 	return nil
 }
 
 func (s *EngineTestSuite) thenTheRemovedCardShouldNotBeVisibleToAnyPlayer() error {
 	if s.engine.Game.RemovedCard == nil {
-		return fmt.Errorf("no card was removed")
+		return s.errorf("no card was removed")
 	}
 	for playerID := range s.engine.Game.RemovedCard.VisibleTo {
 		if s.engine.Game.RemovedCard.VisibleTo[playerID] {
-			return fmt.Errorf("expected removed card to not be visible to any player, but it is visible to player %s", playerID)
+			return s.errorf("expected removed card to not be visible to any player, but it is visible to player %s", playerID)
 		}
 	}
 	return nil
@@ -184,10 +163,10 @@ func (s *EngineTestSuite) thenTheRemovedCardShouldNotBeVisibleToAnyPlayer() erro
 func (s *EngineTestSuite) thenPlayerShouldHaveExactlyCardInTheirHand(playerID string, cardCount int) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 	if len(player.Hand) != cardCount {
-		return fmt.Errorf("expected player %s to have %d cards in hand, but got %d", player.ID, cardCount, len(player.Hand))
+		return s.errorf("expected player %s to have %d cards in hand, but got %d", player.ID, cardCount, len(player.Hand))
 	}
 	return nil
 }
@@ -195,17 +174,17 @@ func (s *EngineTestSuite) thenPlayerShouldHaveExactlyCardInTheirHand(playerID st
 func (s *EngineTestSuite) thenPlayersCardsShouldOnlyBeVisibleToThemselves(playerID string) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 	for _, card := range player.Hand {
 		// Check that the card is visible to the player
 		if !card.VisibleTo[player.ID] {
-			return fmt.Errorf("expected player %s's card to be visible to themselves, but it is not", player.ID)
+			return s.errorf("expected player %s's card to be visible to themselves, but it is not", player.ID)
 		}
 		// Check that the card is not visible to other players
 		for otherPlayerID, visible := range card.VisibleTo {
 			if otherPlayerID != player.ID && visible {
-				return fmt.Errorf("expected player %s's card to only be visible to themselves, but it is visible to player %s", player.ID, otherPlayerID)
+				return s.errorf("expected player %s's card to only be visible to themselves, but it is visible to player %s", player.ID, otherPlayerID)
 			}
 		}
 	}
@@ -215,7 +194,7 @@ func (s *EngineTestSuite) thenPlayersCardsShouldOnlyBeVisibleToThemselves(player
 func (s *EngineTestSuite) givenPlayerHasCardsInDiscardPile(playerID string, cardCount int) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 	discards := make([]model.Card, cardCount)
 	for i := 0; i < cardCount; i++ {
@@ -232,7 +211,7 @@ func (s *EngineTestSuite) givenPlayerIsEliminated(playerID string) error {
 func (s *EngineTestSuite) givenPlayerIsProtected(playerID string) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 	player.IsProtected = true
 	return nil
@@ -241,10 +220,10 @@ func (s *EngineTestSuite) givenPlayerIsProtected(playerID string) error {
 func (s *EngineTestSuite) thenPlayerShouldNotBeEliminated(playerID string) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 	if player.IsOut {
-		return fmt.Errorf("expected player %s to not be eliminated, but they are", player.ID)
+		return s.errorf("expected player %s to not be eliminated, but they are", player.ID)
 	}
 	return nil
 }
@@ -252,10 +231,10 @@ func (s *EngineTestSuite) thenPlayerShouldNotBeEliminated(playerID string) error
 func (s *EngineTestSuite) thenPlayerShouldNotBeProtected(playerID string) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 	if player.IsProtected {
-		return fmt.Errorf("expected player %s to not be protected, but they are", player.ID)
+		return s.errorf("expected player %s to not be protected, but they are", player.ID)
 	}
 	return nil
 }
@@ -263,17 +242,17 @@ func (s *EngineTestSuite) thenPlayerShouldNotBeProtected(playerID string) error 
 func (s *EngineTestSuite) thenPlayerShouldBeProtected(playerID string) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 	if !player.IsProtected {
-		return fmt.Errorf("expected player %s to be protected, but they are not", player.ID)
+		return s.errorf("expected player %s to be protected, but they are not", player.ID)
 	}
 	return nil
 }
 
 func (s *EngineTestSuite) thenTheFollowingEventOccurred(eventType string) error {
 	if len(s.engine.EventHistory) == 0 {
-		return fmt.Errorf("expected event %s to occur, but no events found", eventType)
+		return s.errorf("expected event %s to occur, but no events found", eventType)
 	}
 
 	// Check if any event in the history matches the expected type
@@ -283,13 +262,13 @@ func (s *EngineTestSuite) thenTheFollowingEventOccurred(eventType string) error 
 		}
 	}
 
-	return fmt.Errorf("expected event %s to occur, but it was not found in event history", eventType)
+	return s.errorf("expected event %s to occur, but it was not found in event history", eventType)
 }
 
 func (s *EngineTestSuite) thenItShouldBePlayersTurn(playerID string) error {
 	currentPlayer := s.engine.Game.Players[s.engine.Game.CurrentPlayer]
 	if currentPlayer.ID != model.PlayerID(playerID) {
-		return fmt.Errorf("expected it to be player %s's turn, but it's player %s's turn", playerID, currentPlayer.ID)
+		return s.errorf("expected it to be player %s's turn, but it's player %s's turn", playerID, currentPlayer.ID)
 	}
 	return nil
 }
@@ -297,56 +276,24 @@ func (s *EngineTestSuite) thenItShouldBePlayersTurn(playerID string) error {
 func (s *EngineTestSuite) thenPlayerShouldHaveCardsInDiscardPile(playerID string, expectedCount int) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return s.wrapError(fmt.Errorf("player %s not found", playerID))
+		return s.errorf("player %s not found", playerID)
 	}
 	if len(player.DiscardPile) != expectedCount {
-		return s.wrapError(fmt.Errorf("expected player %s to have %d cards in discard pile, but got %d", player.ID, expectedCount, len(player.DiscardPile)))
+		return s.errorf("expected player %s to have %d cards in discard pile, but got %d", player.ID, expectedCount, len(player.DiscardPile))
 	}
 	return nil
 }
 
 func (s *EngineTestSuite) thenTheGamePhaseShouldBe(phaseName string) error {
 	if string(s.engine.Game.Phase) != phaseName {
-		return fmt.Errorf("expected game phase to be %v, but got %v", phaseName, s.engine.Game.Phase)
+		return s.errorf("expected game phase to be %v, but got %v", phaseName, s.engine.Game.Phase)
 	}
 	return nil
 }
 
 func (s *EngineTestSuite) thenTheRoundNumberShouldBeIncremented() error {
 	if s.engine.Game.Round == 0 {
-		return fmt.Errorf("expected round number to be incremented from 0, but it is still 0")
-	}
-	return nil
-}
-
-func (s *EngineTestSuite) thenTheDeckShouldBeCreatedAndShuffled() error {
-	if len(s.engine.Game.Deck) == 0 {
-		return fmt.Errorf("expected deck to be created and have cards, but deck is empty")
-	}
-	return nil
-}
-
-func (s *EngineTestSuite) thenTheTopCardShouldBeRemovedFromDeck() error {
-	if s.engine.Game.RemovedCard == nil {
-		return fmt.Errorf("expected a card to be removed from deck, but removed card is nil")
-	}
-	return nil
-}
-
-func (s *EngineTestSuite) thenEachPlayerShouldReceiveOneCard() error {
-	for _, player := range s.engine.Game.Players {
-		if len(player.Hand) != 1 {
-			return fmt.Errorf("expected player %s to receive one card, but got %d cards", player.ID, len(player.Hand))
-		}
-	}
-	return nil
-}
-
-func (s *EngineTestSuite) thenAllPlayerStatesShouldBeReset() error {
-	for _, player := range s.engine.Game.Players {
-		if player.IsOut || player.IsProtected || len(player.DiscardPile) != 0 {
-			return fmt.Errorf("expected player %s states to be reset, but IsOut=%v, IsProtected=%v, DiscardPile=%d", player.ID, player.IsOut, player.IsProtected, len(player.DiscardPile))
-		}
+		return s.errorf("expected round number to be incremented from 0, but it is still 0")
 	}
 	return nil
 }
@@ -354,7 +301,7 @@ func (s *EngineTestSuite) thenAllPlayerStatesShouldBeReset() error {
 func (s *EngineTestSuite) thenTheDeckShouldHaveCardsRemaining(expectedCount int) error {
 	actualCount := len(s.engine.Game.Deck)
 	if actualCount != expectedCount {
-		return fmt.Errorf("expected deck to have %d cards remaining, but got %d", expectedCount, actualCount)
+		return s.errorf("expected deck to have %d cards remaining, but got %d", expectedCount, actualCount)
 	}
 	return nil
 }
@@ -386,24 +333,24 @@ func (s *EngineTestSuite) givenTheRemovedCardIsA(cardName string) error {
 
 func (s *EngineTestSuite) thenAnErrorIsReturned(expectedError string) error {
 	if s.lastError == nil {
-		return fmt.Errorf("expected error '%s' but no error was returned", expectedError)
+		return s.errorf("expected error '%s' but no error was returned", expectedError)
 	}
 	if s.lastError.Error() != expectedError {
-		return fmt.Errorf("expected error '%s' but got '%s'", expectedError, s.lastError.Error())
+		return s.errorf("expected error '%s' but got '%s'", expectedError, s.lastError.Error())
 	}
 	return nil
 }
 
 func (s *EngineTestSuite) thenAnErrorOccurs() error {
 	if s.lastError == nil {
-		return s.wrapError(fmt.Errorf("expected an error to occur but no error was returned"))
+		return s.errorf("expected an error to occur but no error was returned")
 	}
 	return nil
 }
 
 func (s *EngineTestSuite) thenNoErrorOccurs() error {
 	if s.lastError != nil {
-		return s.wrapError(fmt.Errorf("expected no error but got: %v", s.lastError))
+		return s.errorf("expected no error but got: %v", s.lastError)
 	}
 	return nil
 }
@@ -411,26 +358,7 @@ func (s *EngineTestSuite) thenNoErrorOccurs() error {
 func (s *EngineTestSuite) thenTheGameShouldHavePlayers(expectedCount int) error {
 	actualCount := len(s.engine.Game.Players)
 	if actualCount != expectedCount {
-		return fmt.Errorf("expected %d players, but got %d", expectedCount, actualCount)
-	}
-	return nil
-}
-
-func (s *EngineTestSuite) thenPlayerShouldExistInTheGame(playerID string) error {
-	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
-	if player == nil {
-		return fmt.Errorf("expected player %s to exist in game", playerID)
-	}
-	return nil
-}
-
-func (s *EngineTestSuite) thenPlayerShouldHaveName(playerID, expectedName string) error {
-	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
-	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
-	}
-	if player.Name != expectedName {
-		return fmt.Errorf("expected player %s to have name '%s', but got '%s'", playerID, expectedName, player.Name)
+		return s.errorf("expected %d players, but got %d", expectedCount, actualCount)
 	}
 	return nil
 }
@@ -438,7 +366,7 @@ func (s *EngineTestSuite) thenPlayerShouldHaveName(playerID, expectedName string
 func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID string, cardTable *godog.Table) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 
 	visibleTo := make(map[model.PlayerID]bool)
@@ -452,7 +380,7 @@ func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID st
 	// Add each card from the table
 	for _, row := range cardTable.Rows {
 		if len(row.Cells) != 1 {
-			return fmt.Errorf("expected 1 column (card name), got %d", len(row.Cells))
+			return s.errorf("expected 1 column (card name), got %d", len(row.Cells))
 		}
 
 		cardName := row.Cells[0].Value
@@ -473,7 +401,7 @@ func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID st
 func (s *EngineTestSuite) thenPlayerShouldHaveCardInTheirHand(playerID string, cardName string) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.errorf("player %s not found", playerID)
 	}
 
 	for _, handCard := range player.Hand {
@@ -482,7 +410,7 @@ func (s *EngineTestSuite) thenPlayerShouldHaveCardInTheirHand(playerID string, c
 		}
 	}
 
-	return fmt.Errorf("expected player %s to have card %s in their hand, but they don't", playerID, cardName)
+	return s.errorf("expected player %s to have card %s in their hand, but they don't", playerID, cardName)
 }
 
 func (s *EngineTestSuite) givenItIsPlayersTurn(playerID string) error {
@@ -492,16 +420,16 @@ func (s *EngineTestSuite) givenItIsPlayersTurn(playerID string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("player %s not found", playerID)
+	return s.errorf("player %s not found", playerID)
 }
 
 func (s *EngineTestSuite) thenPlayerShouldBeEliminated(playerID string) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return s.wrapError(fmt.Errorf("player %s not found", playerID))
+		return s.errorf("player %s not found", playerID)
 	}
 	if !player.IsOut {
-		return s.wrapError(fmt.Errorf("expected player %s to be eliminated, but they are not", player.ID))
+		return s.errorf("expected player %s to be eliminated, but they are not", player.ID)
 	}
 	return nil
 }
@@ -509,7 +437,7 @@ func (s *EngineTestSuite) thenPlayerShouldBeEliminated(playerID string) error {
 func (s *EngineTestSuite) whenPlayerSendsAction(playerID, actionJSON string) error {
 	action, err := actions.Unmarshal([]byte(actionJSON))
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal action JSON: %w", err)
+		return s.errorf("failed to unmarshal action JSON: %v", err)
 	}
 	s.lastError = s.engine.ProcessAction(model.PlayerID(playerID), action)
 	return nil
@@ -524,7 +452,7 @@ func (s *EngineTestSuite) thenTheAvailableActionsShouldBe(table *godog.Table) er
 			continue
 		}
 		if len(row.Cells) != 2 {
-			return fmt.Errorf("table row %d should have 2 columns (player, action), got %d", i, len(row.Cells))
+			return s.errorf("table row %d should have 2 columns (player, action), got %d", i, len(row.Cells))
 		}
 		playerID := model.PlayerID(row.Cells[0].Value)
 		actionJSON := row.Cells[1].Value
@@ -550,7 +478,7 @@ func (s *EngineTestSuite) thenTheAvailableActionsShouldBe(table *godog.Table) er
 
 		// Compare counts
 		if len(actualActions) != len(expectedForPlayer) {
-			return fmt.Errorf("player %s: expected %d actions, got %d\nExpected: %v\nActual: %v",
+			return s.errorf("player %s: expected %d actions, got %d\nExpected: %v\nActual: %v",
 				playerID, len(expectedForPlayer), len(actualActions), expectedForPlayer, actualActions)
 		}
 
@@ -562,7 +490,7 @@ func (s *EngineTestSuite) thenTheAvailableActionsShouldBe(table *godog.Table) er
 
 		for _, expectedAction := range expectedForPlayer {
 			if !actualSet[expectedAction] {
-				return fmt.Errorf("player %s: expected action '%s' not found in actual actions %v",
+				return s.errorf("player %s: expected action '%s' not found in actual actions %v",
 					playerID, expectedAction, actualActions)
 			}
 		}
@@ -606,17 +534,11 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Then(`^player ([A-Z]) should have (\d+) cards in discard pile$`, suite.thenPlayerShouldHaveCardsInDiscardPile)
 	ctx.Then(`^the game phase should be "([^"]*)"$`, suite.thenTheGamePhaseShouldBe)
 	ctx.Then(`^the round number should be incremented$`, suite.thenTheRoundNumberShouldBeIncremented)
-	ctx.Then(`^the deck should be created and shuffled$`, suite.thenTheDeckShouldBeCreatedAndShuffled)
-	ctx.Then(`^the top card should be removed from deck$`, suite.thenTheTopCardShouldBeRemovedFromDeck)
-	ctx.Then(`^each player should receive one card$`, suite.thenEachPlayerShouldReceiveOneCard)
-	ctx.Then(`^all player states should be reset$`, suite.thenAllPlayerStatesShouldBeReset)
 	ctx.Then(`^the deck should have (\d+) cards remaining$`, suite.thenTheDeckShouldHaveCardsRemaining)
 	ctx.Then(`^an error is returned: "([^"]*)"$`, suite.thenAnErrorIsReturned)
 	ctx.Then(`^an error occurs$`, suite.thenAnErrorOccurs)
 	ctx.Then(`^no error occurs$`, suite.thenNoErrorOccurs)
 	ctx.Then(`^the game should have (\d+) players$`, suite.thenTheGameShouldHavePlayers)
-	ctx.Then(`^player ([A-Z]) should exist in the game$`, suite.thenPlayerShouldExistInTheGame)
-	ctx.Then(`^player ([A-Z]) should have name "([^"]*)"$`, suite.thenPlayerShouldHaveName)
 	ctx.Then(`^player ([A-Z]) should be eliminated$`, suite.thenPlayerShouldBeEliminated)
 	ctx.Then(`^the available actions should be:$`, suite.thenTheAvailableActionsShouldBe)
 }

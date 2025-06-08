@@ -29,8 +29,8 @@ func (i *PlayPriestInput) Apply(g *model.Game, apply func(model.Event)) error {
 
 	// Target player reveals their hand to the current player
 	apply(&events.HandRevealedEvent{
-		SourcePlayer: i.TargetPlayer,
-		TargetPlayer: i.Player,
+		SourcePlayer:  i.TargetPlayer,
+		TargetPlayers: []model.PlayerID{i.Player},
 	})
 
 	// End the turn

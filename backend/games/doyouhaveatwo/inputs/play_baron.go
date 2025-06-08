@@ -29,13 +29,13 @@ func (i *PlayBaronInput) Apply(g *model.Game, apply func(model.Event)) error {
 
 	// Both players reveal their hands to each other
 	apply(&events.HandRevealedEvent{
-		SourcePlayer: i.Player,
-		TargetPlayer: i.TargetPlayer,
+		SourcePlayer:  i.Player,
+		TargetPlayers: []model.PlayerID{i.TargetPlayer},
 	})
 
 	apply(&events.HandRevealedEvent{
-		SourcePlayer: i.TargetPlayer,
-		TargetPlayer: i.Player,
+		SourcePlayer:  i.TargetPlayer,
+		TargetPlayers: []model.PlayerID{i.Player},
 	})
 
 	// Compare hands and eliminate lower value player

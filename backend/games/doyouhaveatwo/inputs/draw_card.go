@@ -28,7 +28,9 @@ func (i *DrawCardInput) Apply(g *model.Game, apply func(model.Event)) error {
 	}
 
 	if len(g.Deck) == 0 {
-		return fmt.Errorf("deck is empty")
+		// Deck is empty - trigger showdown
+		showdownInput := &ShowdownInput{}
+		return showdownInput.Apply(g, apply)
 	}
 
 	// Deal card to player
