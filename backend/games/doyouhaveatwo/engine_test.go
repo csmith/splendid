@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
+
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	"github.com/cucumber/godog"
@@ -18,6 +21,25 @@ type EngineTestSuite struct {
 	lastUpdate  model.GameUpdate
 	initialDeck []model.Redactable[model.Card]
 	lastError   error
+}
+
+func (s *EngineTestSuite) dumpEvents() string {
+	if s.engine == nil || len(s.engine.EventHistory) == 0 {
+		return "No events recorded"
+	}
+
+	result := "Event History:\n"
+	for i, event := range s.engine.EventHistory {
+		result += fmt.Sprintf("  %d: %s - %+v\n", i+1, event.Type(), event)
+	}
+	return result
+}
+
+func (s *EngineTestSuite) wrapError(err error) error {
+	if err == nil {
+		return nil
+	}
+	return fmt.Errorf("%v\n%s", err, s.dumpEvents())
 }
 
 func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
@@ -48,9 +70,10 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 	s.eventChan = make(chan model.Event, 100)
 
 	s.engine = &Engine{
-		Game:         *s.game,
-		EventHistory: []model.Event{},
-		updateChan:   s.updateChan,
+		Game:            *s.game,
+		EventHistory:    []model.Event{},
+		updateChan:      s.updateChan,
+		actionGenerator: &actions.DefaultActionGenerator{},
 	}
 
 	return nil
@@ -203,12 +226,7 @@ func (s *EngineTestSuite) givenPlayerHasCardsInDiscardPile(playerID string, card
 }
 
 func (s *EngineTestSuite) givenPlayerIsEliminated(playerID string) error {
-	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
-	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
-	}
-	player.IsOut = true
-	return nil
+	return s.engine.applyEvent(&events.PlayerEliminatedEvent{Player: model.PlayerID(playerID)})
 }
 
 func (s *EngineTestSuite) givenPlayerIsProtected(playerID string) error {
@@ -245,10 +263,10 @@ func (s *EngineTestSuite) thenPlayerShouldNotBeProtected(playerID string) error 
 func (s *EngineTestSuite) thenPlayerShouldHaveCardsInDiscardPile(playerID string, expectedCount int) error {
 	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
-		return fmt.Errorf("player %s not found", playerID)
+		return s.wrapError(fmt.Errorf("player %s not found", playerID))
 	}
 	if len(player.DiscardPile) != expectedCount {
-		return fmt.Errorf("expected player %s to have %d cards in discard pile, but got %d", player.ID, expectedCount, len(player.DiscardPile))
+		return s.wrapError(fmt.Errorf("expected player %s to have %d cards in discard pile, but got %d", player.ID, expectedCount, len(player.DiscardPile)))
 	}
 	return nil
 }
@@ -330,6 +348,159 @@ func (s *EngineTestSuite) thenAnErrorIsReturned(expectedError string) error {
 	return nil
 }
 
+func (s *EngineTestSuite) thenAnErrorOccurs() error {
+	if s.lastError == nil {
+		return s.wrapError(fmt.Errorf("expected an error to occur but no error was returned"))
+	}
+	return nil
+}
+
+func (s *EngineTestSuite) thenNoErrorOccurs() error {
+	if s.lastError != nil {
+		return s.wrapError(fmt.Errorf("expected no error but got: %v", s.lastError))
+	}
+	return nil
+}
+
+func (s *EngineTestSuite) whenPlayerPerformsActionAddPlayer(playerID, newPlayerID, newPlayerName string) error {
+	action := &actions.AddPlayerAction{
+		NewPlayerID:   model.PlayerID(newPlayerID),
+		NewPlayerName: newPlayerName,
+	}
+	s.lastError = s.engine.ProcessAction(model.PlayerID(playerID), action)
+	return nil
+}
+
+func (s *EngineTestSuite) whenPlayerPerformsActionStartGame(playerID string) error {
+	action := &actions.StartGameAction{
+		Player: model.PlayerID(playerID),
+	}
+	s.lastError = s.engine.ProcessAction(model.PlayerID(playerID), action)
+	return nil
+}
+
+func (s *EngineTestSuite) whenPlayerPerformsActionPlayGuardTargetingGuessing(playerID, targetPlayerID string, guessedRank int) error {
+	playerIDTyped := model.PlayerID(playerID)
+	targetPlayerIDPtr := model.PlayerID(targetPlayerID)
+
+	// Step 1: Start the play_guard action
+	initialAction := &actions.PlayGuardAction{
+		Player: playerIDTyped,
+	}
+	s.lastError = s.engine.ProcessAction(playerIDTyped, initialAction)
+	if s.lastError != nil {
+		return nil
+	}
+
+	// Step 2: Select target player
+	targetAction := &actions.PlayGuardAction{
+		Player:       playerIDTyped,
+		TargetPlayer: &targetPlayerIDPtr,
+	}
+	s.lastError = s.engine.ProcessAction(playerIDTyped, targetAction)
+	if s.lastError != nil {
+		return nil
+	}
+
+	// Step 3: Select guessed rank
+	finalAction := &actions.PlayGuardAction{
+		Player:       playerIDTyped,
+		TargetPlayer: &targetPlayerIDPtr,
+		GuessedRank:  &guessedRank,
+	}
+	s.lastError = s.engine.ProcessAction(playerIDTyped, finalAction)
+	return nil
+}
+
+func (s *EngineTestSuite) thenTheGameShouldHavePlayers(expectedCount int) error {
+	actualCount := len(s.engine.Game.Players)
+	if actualCount != expectedCount {
+		return fmt.Errorf("expected %d players, but got %d", expectedCount, actualCount)
+	}
+	return nil
+}
+
+func (s *EngineTestSuite) thenPlayerShouldExistInTheGame(playerID string) error {
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("expected player %s to exist in game", playerID)
+	}
+	return nil
+}
+
+func (s *EngineTestSuite) thenPlayerShouldHaveName(playerID, expectedName string) error {
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
+	}
+	if player.Name != expectedName {
+		return fmt.Errorf("expected player %s to have name '%s', but got '%s'", playerID, expectedName, player.Name)
+	}
+	return nil
+}
+
+func (s *EngineTestSuite) givenPlayerHasCardInTheirHand(playerID, cardName string) error {
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
+	if player == nil {
+		return fmt.Errorf("player %s not found", playerID)
+	}
+
+	var card model.Card
+	switch cardName {
+	case "Guard":
+		card = model.CardGuard
+	case "Priest":
+		card = model.CardPriest
+	case "Baron":
+		card = model.CardBaron
+	case "Handmaid":
+		card = model.CardHandmaid
+	case "Prince":
+		card = model.CardPrince
+	case "King":
+		card = model.CardKing
+	case "Countess":
+		card = model.CardCountess
+	case "Princess":
+		card = model.CardPrincess
+	default:
+		return fmt.Errorf("unknown card type: %s", cardName)
+	}
+
+	visibleTo := make(map[model.PlayerID]bool)
+	for _, p := range s.engine.Game.Players {
+		visibleTo[p.ID] = p.ID == player.ID
+	}
+
+	// Replace the hand with just this card
+	player.Hand = []model.Redactable[model.Card]{{
+		Value:     card,
+		VisibleTo: visibleTo,
+	}}
+	return nil
+}
+
+func (s *EngineTestSuite) givenItIsPlayersTurn(playerID string) error {
+	for i, player := range s.engine.Game.Players {
+		if player.ID == model.PlayerID(playerID) {
+			s.engine.Game.CurrentPlayer = i
+			return nil
+		}
+	}
+	return fmt.Errorf("player %s not found", playerID)
+}
+
+func (s *EngineTestSuite) thenPlayerShouldBeEliminated(playerID string) error {
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
+	if player == nil {
+		return s.wrapError(fmt.Errorf("player %s not found", playerID))
+	}
+	if !player.IsOut {
+		return s.wrapError(fmt.Errorf("expected player %s to be eliminated, but they are not", player.ID))
+	}
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	suite := &EngineTestSuite{}
 
@@ -341,9 +512,15 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Given(`^player ([A-Z]) is eliminated$`, suite.givenPlayerIsEliminated)
 	ctx.Given(`^player ([A-Z]) is protected$`, suite.givenPlayerIsProtected)
 	ctx.Given(`^the deck is empty$`, suite.givenTheDeckIsEmpty)
+	ctx.Given(`^player ([A-Z]) has card "([^"]*)" in their hand$`, suite.givenPlayerHasCardInTheirHand)
+	ctx.Given(`^it is player ([A-Z])'s turn$`, suite.givenItIsPlayersTurn)
+	ctx.Given(`^player ([A-Z]) draws a card$`, suite.whenPlayerDrawsACard)
 
 	ctx.When(`^a round starts$`, suite.whenARoundStarts)
 	ctx.When(`^player ([A-Z]) draws a card$`, suite.whenPlayerDrawsACard)
+	ctx.When(`^player ([A-Z]) performs action "add_player" with new player "([A-Z])" named "([^"]*)"$`, suite.whenPlayerPerformsActionAddPlayer)
+	ctx.When(`^player ([A-Z]) performs action "start_game"$`, suite.whenPlayerPerformsActionStartGame)
+	ctx.When(`^player ([A-Z]) performs action "play_guard" targeting player ([A-Z]) guessing (\d+)$`, suite.whenPlayerPerformsActionPlayGuardTargetingGuessing)
 
 	ctx.Then(`^the round number should be (\d+)$`, suite.thenTheRoundNumberShouldBe)
 	ctx.Then(`^there are (\d+) ([A-Za-z]+) cards in the game$`, suite.thenThereAreCardCardsInTheGame)
@@ -362,6 +539,12 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Then(`^all player states should be reset$`, suite.thenAllPlayerStatesShouldBeReset)
 	ctx.Then(`^the deck should have (\d+) cards remaining$`, suite.thenTheDeckShouldHaveCardsRemaining)
 	ctx.Then(`^an error is returned: "([^"]*)"$`, suite.thenAnErrorIsReturned)
+	ctx.Then(`^an error occurs$`, suite.thenAnErrorOccurs)
+	ctx.Then(`^no error occurs$`, suite.thenNoErrorOccurs)
+	ctx.Then(`^the game should have (\d+) players$`, suite.thenTheGameShouldHavePlayers)
+	ctx.Then(`^player ([A-Z]) should exist in the game$`, suite.thenPlayerShouldExistInTheGame)
+	ctx.Then(`^player ([A-Z]) should have name "([^"]*)"$`, suite.thenPlayerShouldHaveName)
+	ctx.Then(`^player ([A-Z]) should be eliminated$`, suite.thenPlayerShouldBeEliminated)
 }
 
 func TestFeatures(t *testing.T) {

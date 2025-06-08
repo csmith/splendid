@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 type InputType string
 
 type Input interface {
@@ -9,6 +11,7 @@ type Input interface {
 }
 
 type Action interface {
+	fmt.Stringer
 	PlayerID() PlayerID
 	IsComplete() bool
 	NextActions(*Game) []Action

@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"fmt"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
@@ -32,4 +34,11 @@ func (a *AddPlayerAction) ToInput() model.Input {
 
 func (a *AddPlayerAction) Type() string {
 	return "add_player"
+}
+
+func (a *AddPlayerAction) String() string {
+	if a.NewPlayerName == "" {
+		return fmt.Sprintf("add_player(id=%s)", a.NewPlayerID)
+	}
+	return fmt.Sprintf("add_player(id=%s, name=%s)", a.NewPlayerID, a.NewPlayerName)
 }

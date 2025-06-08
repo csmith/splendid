@@ -60,12 +60,9 @@ func (e *Engine) applyEvent(event model.Event) error {
 func (e *Engine) generateAvailableActions() map[model.PlayerID]model.Redactable[[]model.Action] {
 	result := make(map[model.PlayerID]model.Redactable[[]model.Action])
 
-	if e.actionGenerator == nil {
-		return result
-	}
-
 	for _, player := range e.Game.Players {
 		playerActions := e.actionGenerator.GenerateActionsForPlayer(&e.Game, player.ID)
+
 		if len(playerActions) > 0 {
 			result[player.ID] = model.Redactable[[]model.Action]{
 				Value:     playerActions,
@@ -77,10 +74,49 @@ func (e *Engine) generateAvailableActions() map[model.PlayerID]model.Redactable[
 	return result
 }
 
+func (e *Engine) validateAction(playerID model.PlayerID, action model.Action) error {
+	// If no available actions have been generated yet, generate them now
+	availableForPlayer := e.actionGenerator.GenerateActionsForPlayer(&e.Game, playerID)
+
+	// Check if the submitted action matches any of the available actions
+	for _, availableAction := range availableForPlayer {
+		if e.actionsMatch(action, availableAction) {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("action %s is not available for player %s, only: %s", action, playerID, e.formatActions(availableForPlayer))
+}
+
+func (e *Engine) formatActions(actions []model.Action) string {
+	if len(actions) == 0 {
+		return "[]"
+	}
+
+	result := "["
+	for i, action := range actions {
+		if i > 0 {
+			result += ", "
+		}
+		result += action.String()
+	}
+	result += "]"
+	return result
+}
+
+func (e *Engine) actionsMatch(submitted, available model.Action) bool {
+	return submitted.String() == available.String()
+}
+
 func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) error {
 	player := e.Game.GetPlayer(playerID)
 	if player == nil {
 		return fmt.Errorf("player not found: %s", playerID)
+	}
+
+	// Validate that the action was previously generated for this player
+	if err := e.validateAction(playerID, action); err != nil {
+		return err
 	}
 
 	// If action is already complete, execute immediately

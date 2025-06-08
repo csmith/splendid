@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"fmt"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
@@ -29,4 +31,8 @@ func (a *DrawCardAction) ToInput() model.Input {
 
 func (a *DrawCardAction) Type() string {
 	return "draw_card"
+}
+
+func (a *DrawCardAction) String() string {
+	return fmt.Sprintf("draw_card(player=%s)", a.Player)
 }
