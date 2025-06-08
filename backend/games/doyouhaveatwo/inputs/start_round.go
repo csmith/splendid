@@ -25,6 +25,26 @@ func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 		NewRound: g.Round + 1,
 	})
 
+	// Set current player: random winner from last round, or random if no winners
+	var currentPlayerIndex int
+	if len(g.LastRoundWinners) > 0 {
+		randomWinner := g.LastRoundWinners[rand.Intn(len(g.LastRoundWinners))]
+		// Find the index of the winner
+		for i, player := range g.Players {
+			if player.ID == randomWinner {
+				currentPlayerIndex = i
+				break
+			}
+		}
+	} else {
+		// No winners recorded, pick random player
+		currentPlayerIndex = rand.Intn(len(g.Players))
+	}
+
+	apply(&events.CurrentPlayerUpdatedEvent{
+		NewCurrentPlayer: currentPlayerIndex,
+	})
+
 	// Create and set new shuffled deck
 	deck := i.createShuffledDeck()
 	apply(&events.DeckUpdatedEvent{
@@ -54,9 +74,9 @@ func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 		})
 	}
 
-	// Set phase to play
+	// Set phase to draw (first player needs to draw a card)
 	apply(&events.PhaseUpdatedEvent{
-		NewPhase: model.PhasePlay,
+		NewPhase: model.PhaseDraw,
 	})
 
 	return nil

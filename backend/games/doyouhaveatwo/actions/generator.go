@@ -1,6 +1,11 @@
 package actions
 
-import "github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+import (
+	"crypto/rand"
+	"encoding/hex"
+
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+)
 
 type ActionGenerator interface {
 	GenerateActionsForPlayer(g *model.Game, playerID model.PlayerID) []model.Action
@@ -26,18 +31,47 @@ func (ag *DefaultActionGenerator) GenerateActionsForPlayer(g *model.Game, player
 func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *model.Player) []model.Action {
 	var actions []model.Action
 
-	// For now, just generate actions for cards in hand
-	for _, handCard := range player.Hand {
-		if handCard.VisibleTo[player.ID] {
-			switch handCard.Value {
-			case model.CardGuard:
-				actions = append(actions, &PlayGuardAction{
-					Player: player.ID,
-				})
-				// Add other card types as we implement them
+	// During setup phase, allow adding players and starting game
+	if g.Phase == model.PhaseSetup {
+		if len(g.Players) < 4 {
+			actions = append(actions, &AddPlayerAction{
+				NewPlayerID: model.PlayerID(ag.generateRandomID()),
+			})
+		}
+		if len(g.Players) >= 2 {
+			actions = append(actions, &StartGameAction{
+				Player: player.ID,
+			})
+		}
+	}
+
+	// During draw phase, current player can draw a card
+	if g.Phase == model.PhaseDraw && g.Players[g.CurrentPlayer].ID == player.ID {
+		actions = append(actions, &DrawCardAction{
+			Player: player.ID,
+		})
+	}
+
+	// During play phase, generate actions for cards in hand
+	if g.Phase == model.PhasePlay && g.Players[g.CurrentPlayer].ID == player.ID {
+		for _, handCard := range player.Hand {
+			if handCard.VisibleTo[player.ID] {
+				switch handCard.Value {
+				case model.CardGuard:
+					actions = append(actions, &PlayGuardAction{
+						Player: player.ID,
+					})
+					// Add other card types as we implement them
+				}
 			}
 		}
 	}
 
 	return actions
+}
+
+func (ag *DefaultActionGenerator) generateRandomID() string {
+	bytes := make([]byte, 8)
+	rand.Read(bytes)
+	return hex.EncodeToString(bytes)
 }

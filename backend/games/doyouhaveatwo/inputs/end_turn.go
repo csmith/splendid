@@ -30,17 +30,9 @@ func (i *EndTurnInput) Apply(g *model.Game, apply func(model.Event)) error {
 
 	// If only one player remains, they win the round
 	if len(activePlayers) == 1 {
-		winner := activePlayers[0]
-
-		// Award token to winner
-		apply(&events.PlayerTokenAwardedEvent{
-			Player: winner.ID,
-			Tokens: 1,
-		})
-
 		// End the round
 		endRoundInput := &EndRoundInput{
-			Player: winner.ID,
+			Winners: []model.PlayerID{activePlayers[0].ID},
 		}
 
 		return endRoundInput.Apply(g, apply)
@@ -55,6 +47,11 @@ func (i *EndTurnInput) Apply(g *model.Game, apply func(model.Event)) error {
 		// Update current player
 		apply(&events.CurrentPlayerUpdatedEvent{
 			NewCurrentPlayer: nextPlayerIndex,
+		})
+
+		// Set phase to draw for the next player's turn
+		apply(&events.PhaseUpdatedEvent{
+			NewPhase: model.PhaseDraw,
 		})
 	}
 

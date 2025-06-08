@@ -36,5 +36,10 @@ func (i *DrawCardInput) Apply(g *model.Game, apply func(model.Event)) error {
 		ToPlayer: i.Player,
 	})
 
+	// Change phase to play (player can now play a card)
+	apply(&events.PhaseUpdatedEvent{
+		NewPhase: model.PhasePlay,
+	})
+
 	return nil
 }

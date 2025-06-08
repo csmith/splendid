@@ -4,19 +4,21 @@ type GamePhase string
 
 const (
 	PhaseSetup    GamePhase = "setup"
+	PhaseDraw     GamePhase = "draw"
 	PhasePlay     GamePhase = "play"
 	PhaseRoundEnd GamePhase = "round_end"
 	PhaseGameEnd  GamePhase = "game_end"
 )
 
 type Game struct {
-	Players       []*Player
-	Deck          []Redactable[Card]
-	RemovedCard   *Redactable[Card]
-	CurrentPlayer int
-	Round         int
-	Phase         GamePhase
-	TokensToWin   int
+	Players          []*Player
+	Deck             []Redactable[Card]
+	RemovedCard      *Redactable[Card]
+	CurrentPlayer    int
+	Round            int
+	Phase            GamePhase
+	TokensToWin      int
+	LastRoundWinners []PlayerID
 }
 
 func (g *Game) GetPlayer(playerID PlayerID) *Player {

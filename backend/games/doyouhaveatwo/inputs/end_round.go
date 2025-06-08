@@ -8,7 +8,7 @@ import (
 const InputEndRound model.InputType = "end_round"
 
 type EndRoundInput struct {
-	Player model.PlayerID
+	Winners []model.PlayerID
 }
 
 func (i *EndRoundInput) Type() model.InputType {
@@ -16,28 +16,39 @@ func (i *EndRoundInput) Type() model.InputType {
 }
 
 func (i *EndRoundInput) PlayerID() *model.PlayerID {
-	return &i.Player
+	return nil
 }
 
 func (i *EndRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
-	// Find players who have reached the token threshold
-	var winners []*model.Player
+	// Update last round winners
+	apply(&events.LastRoundWinnersUpdatedEvent{
+		Winners: i.Winners,
+	})
+
+	// Award tokens to winners
+	for _, winnerID := range i.Winners {
+		apply(&events.PlayerTokenAwardedEvent{
+			Player: winnerID,
+		})
+	}
+
+	// Check if any player has reached the token threshold for game end
+	var gameWinners []*model.Player
 	for _, player := range g.Players {
 		if player.TokenCount >= g.TokensToWin {
-			winners = append(winners, player)
+			gameWinners = append(gameWinners, player)
 		}
 	}
 
-	if len(winners) > 0 {
+	if len(gameWinners) > 0 {
 		// Game ends - someone has won
 		apply(&events.PhaseUpdatedEvent{
 			NewPhase: model.PhaseGameEnd,
 		})
 
 		// Declare winner(s) - for simplicity, pick the first one if multiple
-		// In a real implementation, you might want to handle ties differently
 		apply(&events.WinnerDeclaredEvent{
-			Winner: winners[0].ID,
+			Winner: gameWinners[0].ID,
 		})
 	} else {
 		// No winner yet - continue to next round

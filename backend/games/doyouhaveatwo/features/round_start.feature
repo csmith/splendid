@@ -51,9 +51,9 @@ Feature: Round Start
     And player B should have 0 cards in discard pile
     And player C should have 0 cards in discard pile
 
-  Scenario: Game phase is set to play
+  Scenario: Game phase is set to draw
     When a round starts
-    Then the game phase should be "play"
+    Then the game phase should be "draw"
 
   Scenario: Full round start sequence
     When a round starts
@@ -62,4 +62,4 @@ Feature: Round Start
     And the top card should be removed from deck
     And each player should receive one card
     And all player states should be reset
-    And the game phase should be "play"
+    And the game phase should be "draw"
