@@ -8,7 +8,11 @@ import (
 
 const EventStartRound model.EventType = "start_round"
 
-type StartRoundEvent struct{}
+type StartRoundEvent struct {
+	DeckShuffled *[]model.Redactable[model.Card]                  `json:",omitempty"`
+	RemovedCard  *model.Redactable[model.Card]                    `json:",omitempty"`
+	DealtCards   map[model.PlayerID]*model.Redactable[model.Card] `json:",omitempty"`
+}
 
 func (e *StartRoundEvent) Type() model.EventType {
 	return EventStartRound
@@ -23,19 +27,25 @@ func (e *StartRoundEvent) Apply(g *model.Game) error {
 	g.Round++
 
 	// Create new shuffled deck
-	g.Deck = e.createShuffledDeck()
+	deck := e.createShuffledDeck()
+	e.DeckShuffled = &deck
+	g.Deck = deck
 
 	// Remove top card
-	g.RemovedCard = &g.Deck[0]
+	removedCard := g.Deck[0]
+	e.RemovedCard = &removedCard
+	g.RemovedCard = &removedCard
 	g.Deck = g.Deck[1:]
 
 	// Deal one card to each player
+	e.DealtCards = make(map[model.PlayerID]*model.Redactable[model.Card])
 	for _, player := range g.Players {
 		if len(g.Deck) > 0 {
 			card := g.Deck[0]
 			g.Deck = g.Deck[1:]
 			card.VisibleTo[player.ID] = true
 			player.Hand = []model.Redactable[model.Card]{card}
+			e.DealtCards[player.ID] = &card
 		}
 	}
 

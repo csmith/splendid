@@ -178,6 +178,45 @@ func TestStartRoundEvent_Apply_RemovedCardNotVisibleToPlayers(t *testing.T) {
 	}
 }
 
+func TestStartRoundEvent_ExposesSecretData(t *testing.T) {
+	players := []*model.Player{
+		{ID: model.PlayerID("A"), Hand: []model.Redactable[model.Card]{}},
+		{ID: model.PlayerID("B"), Hand: []model.Redactable[model.Card]{}},
+	}
+
+	game := &model.Game{
+		Players: players,
+		Round:   0,
+	}
+
+	event := &StartRoundEvent{}
+
+	err := event.Apply(game)
+
+	require.NoError(t, err)
+
+	assert.NotNil(t, event.DeckShuffled)
+	assert.Len(t, *event.DeckShuffled, 16)
+
+	assert.NotNil(t, event.RemovedCard)
+	assert.NotNil(t, event.RemovedCard.Value)
+
+	assert.NotNil(t, event.DealtCards)
+	assert.Len(t, event.DealtCards, 2)
+	assert.Contains(t, event.DealtCards, model.PlayerID("A"))
+	assert.Contains(t, event.DealtCards, model.PlayerID("B"))
+
+	playerACard := event.DealtCards[model.PlayerID("A")]
+	playerBCard := event.DealtCards[model.PlayerID("B")]
+
+	assert.NotNil(t, playerACard)
+	assert.NotNil(t, playerBCard)
+	assert.True(t, playerACard.VisibleTo[model.PlayerID("A")])
+	assert.False(t, playerACard.VisibleTo[model.PlayerID("B")])
+	assert.True(t, playerBCard.VisibleTo[model.PlayerID("B")])
+	assert.False(t, playerBCard.VisibleTo[model.PlayerID("A")])
+}
+
 func TestStartRoundEvent_createShuffledDeck(t *testing.T) {
 	event := &StartRoundEvent{}
 	deck := event.createShuffledDeck()
