@@ -1,0 +1,62 @@
+package inputs
+
+import (
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+)
+
+const InputEndTurn InputType = "end_turn"
+
+type EndTurnInput struct {
+	Player model.PlayerID
+}
+
+func (i *EndTurnInput) Type() InputType {
+	return InputEndTurn
+}
+
+func (i *EndTurnInput) PlayerID() *model.PlayerID {
+	return &i.Player
+}
+
+func (i *EndTurnInput) Apply(g *model.Game, apply func(model.Event)) error {
+	// Count remaining active players (now sees the current state with eliminations applied!)
+	activePlayers := []*model.Player{}
+	for _, player := range g.Players {
+		if !player.IsOut {
+			activePlayers = append(activePlayers, player)
+		}
+	}
+
+	// If only one player remains, they win the round
+	if len(activePlayers) == 1 {
+		winner := activePlayers[0]
+
+		// Award token to winner
+		apply(&events.PlayerTokenAwardedEvent{
+			Player: winner.ID,
+			Tokens: 1,
+		})
+
+		// End the round
+		endRoundInput := &EndRoundInput{
+			Player: winner.ID,
+		}
+
+		return endRoundInput.Apply(g, apply)
+	} else {
+		// Round continues - advance to next player
+		// Find next active player
+		nextPlayerIndex := (g.CurrentPlayer + 1) % len(g.Players)
+		for g.Players[nextPlayerIndex].IsOut {
+			nextPlayerIndex = (nextPlayerIndex + 1) % len(g.Players)
+		}
+
+		// Update current player
+		apply(&events.CurrentPlayerUpdatedEvent{
+			NewCurrentPlayer: nextPlayerIndex,
+		})
+	}
+
+	return nil
+}

@@ -15,15 +15,25 @@ type Engine struct {
 }
 
 func (e *Engine) processInput(input inputs.Input) error {
-	events, err := input.Apply(&e.Game)
+	var applyError error
+
+	// Create callback function that applies events immediately
+	apply := func(event model.Event) {
+		if applyError != nil {
+			return // Skip if we already have an error
+		}
+		applyError = e.applyEvent(event)
+	}
+
+	// Apply the input with the callback
+	err := input.Apply(&e.Game, apply)
 	if err != nil {
 		return fmt.Errorf("failed to process input %s: %w", input.Type(), err)
 	}
 
-	for _, event := range events {
-		if err := e.applyEvent(event); err != nil {
-			return err
-		}
+	// Check for any errors that occurred during event application
+	if applyError != nil {
+		return fmt.Errorf("failed to apply event during input %s: %w", input.Type(), applyError)
 	}
 
 	return nil

@@ -19,49 +19,47 @@ func (i *StartRoundInput) PlayerID() *model.PlayerID {
 	return nil
 }
 
-func (i *StartRoundInput) Apply(g *model.Game) ([]model.Event, error) {
-	var eventList []model.Event
-
+func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 	// Increment round
-	eventList = append(eventList, &events.RoundUpdatedEvent{
+	apply(&events.RoundUpdatedEvent{
 		NewRound: g.Round + 1,
 	})
 
 	// Create and set new shuffled deck
 	deck := i.createShuffledDeck()
-	eventList = append(eventList, &events.DeckUpdatedEvent{
+	apply(&events.DeckUpdatedEvent{
 		NewDeck: deck,
 	})
 
 	// Remove top card from deck
-	eventList = append(eventList, &events.CardRemovedEvent{})
+	apply(&events.CardRemovedEvent{})
 
 	// Deal cards to all players
 	for _, player := range g.Players {
-		eventList = append(eventList, &events.CardDealtEvent{
+		apply(&events.CardDealtEvent{
 			ToPlayer: player.ID,
 		})
 	}
 
 	// Reset all player states
 	for _, player := range g.Players {
-		eventList = append(eventList, &events.PlayerRestoredEvent{
+		apply(&events.PlayerRestoredEvent{
 			Player: player.ID,
 		})
-		eventList = append(eventList, &events.PlayerProtectionClearedEvent{
+		apply(&events.PlayerProtectionClearedEvent{
 			Player: player.ID,
 		})
-		eventList = append(eventList, &events.PlayerDiscardPileClearedEvent{
+		apply(&events.PlayerDiscardPileClearedEvent{
 			Player: player.ID,
 		})
 	}
 
 	// Set phase to play
-	eventList = append(eventList, &events.PhaseUpdatedEvent{
+	apply(&events.PhaseUpdatedEvent{
 		NewPhase: model.PhasePlay,
 	})
 
-	return eventList, nil
+	return nil
 }
 
 func (i *StartRoundInput) createShuffledDeck() []model.Redactable[model.Card] {
