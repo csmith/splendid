@@ -33,8 +33,7 @@ gains a token. First player to collect enough tokens wins the game.
 
 The codebase is organized into separate packages for clean separation of concerns:
 
-- **`model/`** - Core types and interfaces (Game, Player, Card, Event, etc.)
-- **`cards/`** - Individual card implementations (guard.go, priest.go, etc.)
+- **`model/`** - Core types and data structures (Game, Player, Card, Event, etc.)
 - **`events/`** - Concrete event types (StartRoundEvent, DrawCardEvent, etc.)
 - **Main package** - Game engine and orchestration logic
 
@@ -67,27 +66,40 @@ type Player struct {
 }
 ```
 
-#### Card Interface (model/card.go)
+#### Card Type (model/card.go)
 ```go
-type Card interface {
-    Play(game *Game, player *Player, target *Player) error
-    CanTarget(game *Game, player *Player, target *Player) bool
-    Value() int
-    Name() string
-    Description() string
-    Quantity() int
+type Card struct {
+    value       int
+    name        string
+    description string
+    quantity    int
+}
+
+var (
+    CardGuard    = Card{value: 1, name: "Guard", ...}
+    CardPriest   = Card{value: 2, name: "Priest", ...}
+    // ... other cards
+)
+
+var CardTypes = []Card{
+    CardGuard, CardPriest, CardBaron, CardHandmaid,
+    CardPrince, CardKing, CardCountess, CardPrincess,
 }
 ```
 
-**Card Implementations**: Each card type is implemented in `cards/` package:
-- `cards/guard.go` - Guard card implementation
-- `cards/priest.go` - Priest card implementation
-- `cards/baron.go` - Baron card implementation
-- `cards/handmaid.go` - Handmaid card implementation
-- `cards/prince.go` - Prince card implementation
-- `cards/king.go` - King card implementation
-- `cards/countess.go` - Countess card implementation
-- `cards/princess.go` - Princess card implementation
+**Card Data**: All cards are defined as simple struct instances in `model/card.go`:
+- `CardGuard` - Guard card (value 1, quantity 5)
+- `CardPriest` - Priest card (value 2, quantity 2) 
+- `CardBaron` - Baron card (value 3, quantity 2)
+- `CardHandmaid` - Handmaid card (value 4, quantity 2)
+- `CardPrince` - Prince card (value 5, quantity 2)
+- `CardKing` - King card (value 6, quantity 1)
+- `CardCountess` - Countess card (value 7, quantity 1)
+- `CardPrincess` - Princess card (value 8, quantity 1)
+
+The `CardTypes` slice contains all available card types for easy iteration during deck creation.
+
+**Card Behavior**: Card logic is implemented as individual event types in the `events/` package rather than as methods on card types. This separation allows for better event sourcing and replay capabilities.
 
 #### Redactable Type (model/redactable.go)
 ```go

@@ -12,7 +12,7 @@ const (
 type Game struct {
 	Players       []*Player
 	Deck          []Redactable[Card]
-	RemovedCard   Redactable[Card]
+	RemovedCard   *Redactable[Card]
 	CurrentPlayer int
 	Round         int
 	Phase         GamePhase

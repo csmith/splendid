@@ -3,7 +3,6 @@ package events
 import (
 	"math/rand"
 
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/cards"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
@@ -27,7 +26,7 @@ func (e *StartRoundEvent) Apply(g *model.Game) error {
 	g.Deck = e.createShuffledDeck()
 
 	// Remove top card
-	g.RemovedCard = g.Deck[0]
+	g.RemovedCard = &g.Deck[0]
 	g.Deck = g.Deck[1:]
 
 	// Deal one card to each player
@@ -57,12 +56,7 @@ func (e *StartRoundEvent) createShuffledDeck() []model.Redactable[model.Card] {
 	var deck []model.Redactable[model.Card]
 
 	// Add cards according to their quantities
-	cardTypes := []model.Card{
-		cards.Guard{}, cards.Priest{}, cards.Baron{}, cards.Handmaid{},
-		cards.Prince{}, cards.King{}, cards.Countess{}, cards.Princess{},
-	}
-
-	for _, cardType := range cardTypes {
+	for _, cardType := range model.CardTypes {
 		for i := 0; i < cardType.Quantity(); i++ {
 			deck = append(deck, model.Redactable[model.Card]{
 				Value:     cardType,

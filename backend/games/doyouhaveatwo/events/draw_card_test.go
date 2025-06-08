@@ -3,7 +3,6 @@ package events
 import (
 	"testing"
 
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/cards"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -29,7 +28,7 @@ func TestDrawCardEvent_Apply_Success(t *testing.T) {
 	}
 
 	card := model.Redactable[model.Card]{
-		Value:     cards.Guard{},
+		Value:     model.CardGuard,
 		VisibleTo: make(map[model.PlayerID]bool),
 	}
 
@@ -94,7 +93,7 @@ func TestDrawCardEvent_Apply_CardVisibility(t *testing.T) {
 	}
 
 	card := model.Redactable[model.Card]{
-		Value:     cards.Guard{},
+		Value:     model.CardGuard,
 		VisibleTo: make(map[model.PlayerID]bool),
 	}
 
@@ -121,7 +120,7 @@ func TestDrawCardEvent_Apply_ExposesDrawnCard(t *testing.T) {
 	}
 
 	expectedCard := model.Redactable[model.Card]{
-		Value:     cards.Guard{},
+		Value:     model.CardGuard,
 		VisibleTo: make(map[model.PlayerID]bool),
 	}
 
@@ -151,7 +150,7 @@ func TestDrawCardEvent_Apply_DrawnCardVisibilityInEvent(t *testing.T) {
 	}
 
 	card := model.Redactable[model.Card]{
-		Value:     cards.Priest{},
+		Value:     model.CardPriest,
 		VisibleTo: make(map[model.PlayerID]bool),
 	}
 

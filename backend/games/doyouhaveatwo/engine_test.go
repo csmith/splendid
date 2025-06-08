@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/cards"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	"github.com/cucumber/godog"
@@ -97,22 +96,18 @@ func (s *EngineTestSuite) thenThereAreCardCardsInTheGame(expectedCount int, card
 
 	// Collect all cards from deck
 	for _, card := range s.engine.Game.Deck {
-		if card.Value != nil {
-			allCards = append(allCards, card.Value)
-		}
+		allCards = append(allCards, card.Value)
 	}
 
 	// Collect removed card
-	if s.engine.Game.RemovedCard.Value != nil {
+	if s.engine.Game.RemovedCard != nil {
 		allCards = append(allCards, s.engine.Game.RemovedCard.Value)
 	}
 
 	// Collect all cards from player hands
 	for _, player := range s.engine.Game.Players {
 		for _, card := range player.Hand {
-			if card.Value != nil {
-				allCards = append(allCards, card.Value)
-			}
+			allCards = append(allCards, card.Value)
 		}
 	}
 
@@ -136,13 +131,16 @@ func (s *EngineTestSuite) thenThereAreCardCardsInTheGame(expectedCount int, card
 }
 
 func (s *EngineTestSuite) thenACardShouldBeRemovedFromTheGame() error {
-	if s.engine.Game.RemovedCard.Value == nil {
+	if s.engine.Game.RemovedCard == nil {
 		return fmt.Errorf("expected a card to be removed from the game, but no card was removed")
 	}
 	return nil
 }
 
 func (s *EngineTestSuite) thenTheRemovedCardShouldNotBeVisibleToAnyPlayer() error {
+	if s.engine.Game.RemovedCard == nil {
+		return fmt.Errorf("no card was removed")
+	}
 	for playerID := range s.engine.Game.RemovedCard.VisibleTo {
 		if s.engine.Game.RemovedCard.VisibleTo[playerID] {
 			return fmt.Errorf("expected removed card to not be visible to any player, but it is visible to player %s", playerID)
@@ -189,7 +187,7 @@ func (s *EngineTestSuite) givenPlayerHasCardsInDiscardPile(playerID string, card
 	}
 	discards := make([]model.Card, cardCount)
 	for i := 0; i < cardCount; i++ {
-		discards[i] = cards.Guard{} // Use Guard as placeholder
+		discards[i] = model.CardGuard // Use Guard as placeholder
 	}
 	player.DiscardPile = discards
 	return nil
@@ -268,7 +266,7 @@ func (s *EngineTestSuite) thenTheDeckShouldBeCreatedAndShuffled() error {
 }
 
 func (s *EngineTestSuite) thenTheTopCardShouldBeRemovedFromDeck() error {
-	if s.engine.Game.RemovedCard.Value == nil {
+	if s.engine.Game.RemovedCard == nil {
 		return fmt.Errorf("expected a card to be removed from deck, but removed card is nil")
 	}
 	return nil
