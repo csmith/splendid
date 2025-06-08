@@ -54,28 +54,48 @@ func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *
 
 	// During play phase, generate actions for cards in hand
 	if g.Phase == model.PhasePlay && g.Players[g.CurrentPlayer].ID == player.ID {
+		// Check for Countess rule: if player has Countess and (Prince or King), must play Countess
+		hasCountess := false
+		hasPrinceOrKing := false
 		for _, handCard := range player.Hand {
-			if handCard.VisibleTo[player.ID] {
-				switch handCard.Value {
-				case model.CardGuard:
-					actions = append(actions, &PlayCardGuardAction{
-						Player: player.ID,
-					})
-				case model.CardHandmaid, model.CardCountess, model.CardPrincess:
-					actions = append(actions, &PlayCardNoTargetAction{
-						Player: player.ID,
-						Card:   handCard.Value,
-					})
-				case model.CardBaron, model.CardPriest, model.CardKing:
-					actions = append(actions, &PlayCardTargetOthersAction{
-						Player: player.ID,
-						Card:   handCard.Value,
-					})
-				case model.CardPrince:
-					actions = append(actions, &PlayCardTargetAnyAction{
-						Player: player.ID,
-						Card:   handCard.Value,
-					})
+			if handCard.Value == model.CardCountess {
+				hasCountess = true
+			}
+			if handCard.Value == model.CardPrince || handCard.Value == model.CardKing {
+				hasPrinceOrKing = true
+			}
+		}
+
+		// If Countess rule applies, only allow Countess to be played
+		if hasCountess && hasPrinceOrKing {
+			actions = append(actions, &PlayCardNoTargetAction{
+				Player: player.ID,
+				Card:   model.CardCountess,
+			})
+		} else {
+			for _, handCard := range player.Hand {
+				if handCard.VisibleTo[player.ID] {
+					switch handCard.Value {
+					case model.CardGuard:
+						actions = append(actions, &PlayCardGuardAction{
+							Player: player.ID,
+						})
+					case model.CardHandmaid, model.CardCountess, model.CardPrincess:
+						actions = append(actions, &PlayCardNoTargetAction{
+							Player: player.ID,
+							Card:   handCard.Value,
+						})
+					case model.CardBaron, model.CardPriest, model.CardKing:
+						actions = append(actions, &PlayCardTargetOthersAction{
+							Player: player.ID,
+							Card:   handCard.Value,
+						})
+					case model.CardPrince:
+						actions = append(actions, &PlayCardTargetAnyAction{
+							Player: player.ID,
+							Card:   handCard.Value,
+						})
+					}
 				}
 			}
 		}
