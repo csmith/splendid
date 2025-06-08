@@ -1,9 +1,19 @@
 package model
 
-type Action struct {
-	Type  string
-	Value interface{}
-	Label string
+type InputType string
+
+type Input interface {
+	Apply(g *Game, apply func(Event)) error
+	Type() InputType
+	PlayerID() *PlayerID
+}
+
+type Action interface {
+	PlayerID() PlayerID
+	IsComplete() bool
+	NextActions(*Game) []Action
+	ToInput() Input
+	Type() string
 }
 
 type GameUpdate struct {

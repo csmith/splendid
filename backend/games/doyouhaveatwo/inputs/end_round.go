@@ -5,13 +5,13 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-const InputEndRound InputType = "end_round"
+const InputEndRound model.InputType = "end_round"
 
 type EndRoundInput struct {
 	Player model.PlayerID
 }
 
-func (i *EndRoundInput) Type() InputType {
+func (i *EndRoundInput) Type() model.InputType {
 	return InputEndRound
 }
 

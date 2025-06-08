@@ -7,13 +7,13 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-const InputDrawCard InputType = "draw_card"
+const InputDrawCard model.InputType = "draw_card"
 
 type DrawCardInput struct {
 	Player model.PlayerID
 }
 
-func (i *DrawCardInput) Type() InputType {
+func (i *DrawCardInput) Type() model.InputType {
 	return InputDrawCard
 }
 

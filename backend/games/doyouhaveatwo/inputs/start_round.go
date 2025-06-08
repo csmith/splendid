@@ -7,11 +7,11 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-const InputStartRound InputType = "start_round"
+const InputStartRound model.InputType = "start_round"
 
 type StartRoundInput struct{}
 
-func (i *StartRoundInput) Type() InputType {
+func (i *StartRoundInput) Type() model.InputType {
 	return InputStartRound
 }
 

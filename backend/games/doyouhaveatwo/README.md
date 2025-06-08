@@ -33,9 +33,10 @@ gains a token. First player to collect enough tokens wins the game.
 
 The codebase is organized into separate packages for clean separation of concerns:
 
-- **`model/`** - Core types and data structures (Game, Player, Card, Event, etc.)
+- **`model/`** - Core types and data structures (Game, Player, Card, Event, Action, Input interfaces)
 - **`inputs/`** - Input types containing game logic (StartRoundInput, DrawCardInput, etc.)  
 - **`events/`** - Atomic event types for state mutations (DeckUpdated, CardDealt, etc.)
+- **`actions/`** - Multi-step action types for complex player interactions (PlayGuardAction, etc.)
 - **Main package** - Game engine and orchestration logic
 
 ### Input/Event Architecture
@@ -47,7 +48,7 @@ The game uses a sophisticated event sourcing pattern that separates business log
 
 ```go
 type Input interface {
-    Apply(g *Game) ([]Event, error)  // Read-only Game, returns events
+    Apply(g *Game, apply func(Event)) error  // Read-only Game, applies events via callback
     Type() InputType
     PlayerID() *PlayerID
 }
@@ -56,7 +57,7 @@ type Input interface {
 **Examples:**
 - `StartRoundInput` - Shuffles deck, deals cards, resets player states
 - `DrawCardInput` - Validates player/deck, generates card deal event
-- `PlayCardInput` - Handles card effects, targeting, eliminations
+- `PlayGuardInput` - Handles Guard card effects, targeting, eliminations
 
 #### Events  
 **Events** are atomic, immutable state mutations. They contain no logic and always succeed when applied.
@@ -79,24 +80,101 @@ type Event interface {
 - `PlayerDiscardPileCleared` - Empty discard pile
 - `RoundUpdated` - Set round number
 - `PhaseUpdated` - Change game phase
+- `PlayerActionStarted` - Player begins multi-step action
+- `PlayerActionUpdated` - Player progresses through action steps
+- `PlayerActionCompleted` - Player completes action, clears pending state
 
 #### Engine Flow
 ```
-Input → Engine.processInput() → []Event → Engine.applyEvent() → State + GameUpdate
+Action → Engine.ProcessAction() → Events → State + GameUpdate
+Input → Engine.processInput() → Events → State + GameUpdate
 ```
 
-1. **Input Processing**: `processInput()` calls `input.Apply(game)` to get events
-2. **Event Application**: Each event applies atomically via `event.Apply(game)`  
-3. **History Tracking**: Events stored in `Engine.EventHistory` for replay/debugging
-4. **Client Updates**: Each event triggers a `GameUpdate` to all clients
+1. **Action Processing**: `ProcessAction()` handles multi-step actions, storing state in `Player.PendingAction`
+2. **Input Processing**: `processInput()` executes completed actions or direct inputs via callback
+3. **Event Application**: Each event applies atomically via `event.Apply(game)`  
+4. **History Tracking**: Events stored in `Engine.EventHistory` for replay/debugging
+5. **Client Updates**: Each event triggers a `GameUpdate` to all clients
+
+### Actions Architecture
+
+The game implements a sophisticated actions system for handling multi-step player interactions, particularly for complex card effects that require targeting and parameter selection.
+
+#### Actions Interface
+
+**Actions** represent multi-step player interactions that may require several rounds of client-server communication to complete:
+
+```go
+type Action interface {
+    PlayerID() PlayerID
+    IsComplete() bool
+    NextActions(*Game) []Action  // What choices are available next
+    ToInput() Input              // Convert to concrete input when complete
+    Type() string               // Action type identifier
+}
+```
+
+#### Action Types
+
+**Multi-Step Actions**: Complex cards requiring multiple choices
+- `PlayGuardAction` - Target selection → Card guess → Execution
+- Future: `PlayPriestAction`, `PlayBaronAction`, etc.
+
+**Single-Step Actions**: Simple cards executed immediately
+- Actions that are complete upon creation bypass pending state
+
+#### Action State Management
+
+**Pending Actions**: Stored in `Player.PendingAction` as `Redactable[Action]`
+- Only visible to the owning player
+- Tracked through events for replay/debugging
+- Cleared automatically when action completes
+
+**Action Events**:
+- `PlayerActionStartedEvent` - Begin multi-step action
+- `PlayerActionUpdatedEvent` - Update action with new parameters  
+- `PlayerActionCompletedEvent` - Clear pending action, execute input
+
+#### Action Flow Example (Guard Card)
+
+1. **Initial Action**: Client calls `Engine.ProcessAction(playerID, &PlayGuardAction{Player: p1})`
+2. **Start Event**: Engine generates `PlayerActionStartedEvent`, stores pending action
+3. **Target Selection**: Client receives `GameUpdate` with available target actions
+4. **Update Action**: Client calls `ProcessAction` with target selected
+5. **Update Event**: Engine generates `PlayerActionUpdatedEvent` with target info
+6. **Guess Selection**: Client receives available guess actions (all cards except Guard)
+7. **Complete Action**: Client makes final guess, action becomes complete
+8. **Execute**: Engine clears pending action and executes `PlayGuardInput`
+
+#### Action Generation
+
+**ActionGenerator**: Analyzes game state to determine available actions for each player
+
+```go
+type ActionGenerator interface {
+    GenerateActionsForPlayer(g *Game, playerID PlayerID) []Action
+}
+```
+
+- Checks pending actions for next steps
+- Generates initial actions based on cards in hand
+- Validates action availability (player turn, protection, etc.)
 
 #### Benefits
 
-**Clean Separation**: Logic lives in Inputs, state mutations in Events  
+**Multi-Step Support**: Complex card interactions handled elegantly
+**Type Safety**: Each action type has typed fields instead of generic maps
+**State Persistence**: Pending actions survive server restarts via event replay
+**Client Simplicity**: UIs just display choices, no game logic required
+**Flexible Interactions**: Easy to add new card types with complex behaviors
+
+### Combined Architecture Benefits
+
+**Clean Separation**: Logic lives in Inputs, state mutations in Events, interactions in Actions
 **Reusable Operations**: Events like `PlayerEliminated` used across many contexts  
-**Perfect Debugging**: Replay any game state from event history  
-**Simplified Clients**: Clients only handle atomic event rendering  
-**Event Sourcing**: Complete audit trail for game actions
+**Perfect Debugging**: Replay any game state from event history including partial actions
+**Simplified Clients**: Clients only handle atomic event rendering and action selection
+**Event Sourcing**: Complete audit trail for game actions and player interactions
 
 #### Event Field Conventions
 
@@ -127,14 +205,15 @@ type Game struct {
 #### Player (model/player.go)
 ```go
 type Player struct {
-    ID          PlayerID
-    Name        string
-    Hand        []Redactable[Card]
-    DiscardPile []Card      // Player's own discard pile (visible to all)
-    TokenCount  int
-    IsOut       bool        // Eliminated this round
-    IsProtected bool        // Handmaid protection
-    Position    int         // Seating order
+    ID            PlayerID
+    Name          string
+    Hand          []Redactable[Card]
+    DiscardPile   []Card                 // Player's own discard pile (visible to all)
+    TokenCount    int
+    IsOut         bool                   // Eliminated this round
+    IsProtected   bool                   // Handmaid protection
+    Position      int                    // Seating order
+    PendingAction Redactable[Action]     // Multi-step action in progress
 }
 ```
 
@@ -347,20 +426,31 @@ type GameUpdate struct {
 ```
 
 #### Action (model/action.go)
-Structured actions that UIs can handle generically:
+Interface for multi-step player interactions:
 ```go
-type Action struct {
-    Type  string      // "play_card", "target_player", "select_guess", etc.
-    Value interface{} // Card name, player ID, guess value, etc.
-    Label string      // Human-readable text for UI
+type Action interface {
+    PlayerID() PlayerID
+    IsComplete() bool
+    NextActions(*Game) []Action  // What choices are available next
+    ToInput() Input              // Convert to concrete input when complete
+    Type() string               // Action type identifier
 }
 ```
 
-#### Input Interface (inputs/input.go)
-Represents player actions and game logic:
+**Example Implementation**:
+```go
+type PlayGuardAction struct {
+    Player       PlayerID
+    TargetPlayer *PlayerID  // nil until selected
+    GuessedCard  *Card      // nil until selected
+}
+```
+
+#### Input Interface (model/action.go)
+Represents concrete game logic and validation:
 ```go
 type Input interface {
-    Apply(g *Game) ([]Event, error)  // Read-only access, returns atomic events
+    Apply(g *Game, apply func(Event)) error  // Read-only access, applies events via callback
     Type() InputType
     PlayerID() *PlayerID
 }
@@ -379,7 +469,7 @@ type Event interface {
 **Input Implementations**: Each input contains game logic in `inputs/` package:
 - `inputs/start_round.go` - StartRoundInput handles round initialization
 - `inputs/draw_card.go` - DrawCardInput handles card drawing
-- `inputs/play_card.go` - PlayCardInput handles card play effects
+- `inputs/play_guard.go` - PlayGuardInput handles Guard card effects
 
 **Event Implementations**: Each atomic event in `events/` package:
 - `events/deck_updated.go` - DeckUpdated replaces entire deck
@@ -419,45 +509,36 @@ Players receive redacted game state based on visibility rules:
 
 ### Action Flow
 
-Actions follow a multi-step approach to handle targeting and choices:
+The new actions system provides a cleaner approach to multi-step interactions:
 
-1. **Available Actions**: Server sends GameUpdate with possible actions
-   ```go
-   []Action{
-       {Type: "play_card", Value: "guard", Label: "Play Guard"},
-       {Type: "play_card", Value: "priest", Label: "Play Priest"},
-   }
-   ```
+#### Client Entry Points
 
-2. **Action Selection**: Player chooses an action
-   ```go
-   Action{Type: "play_card", Value: "guard"}
-   ```
+**Engine.ProcessAction()**: Primary method for clients to interact with the game
+```go
+func (e *Engine) ProcessAction(playerID PlayerID, action Action) error
+```
 
-3. **Sub-Actions** (if needed): Server responds with follow-up choices
-   ```go
-   []Action{
-       {Type: "target_player", Value: "player_2", Label: "Target Alice"},
-       {Type: "target_player", Value: "player_3", Label: "Target Bob"},
-   }
-   ```
+#### Flow Examples
 
-4. **Target Selection**: Player chooses target
-   ```go
-   Action{Type: "target_player", Value: "player_2"}
-   ```
+**Simple Action** (complete immediately):
+1. Client calls `ProcessAction(playerID, &PlayHandmaidAction{Player: p1})`
+2. Action is complete, executes `PlayHandmaidInput` immediately
+3. Client receives `GameUpdate` with results
 
-5. **Final Choices** (if needed): Server sends final options
-   ```go
-   []Action{
-       {Type: "select_guess", Value: "priest", Label: "Guess Priest"},
-       {Type: "select_guess", Value: "baron", Label: "Guess Baron"},
-       {Type: "select_guess", Value: "handmaid", Label: "Guess Handmaid"},
-       // ... etc
-   }
-   ```
+**Multi-Step Action** (Guard card):
+1. Client calls `ProcessAction(playerID, &PlayGuardAction{Player: p1})`
+2. Engine stores pending action, sends `GameUpdate` with target selection actions
+3. Client calls `ProcessAction(playerID, &PlayGuardAction{Player: p1, TargetPlayer: &p2})`
+4. Engine updates pending action, sends `GameUpdate` with guess selection actions  
+5. Client calls `ProcessAction(playerID, &PlayGuardAction{Player: p1, TargetPlayer: &p2, GuessedCard: &CardPriest})`
+6. Action complete, engine executes `PlayGuardInput`, clears pending action
 
-6. **Complete Action**: Player makes final choice and action resolves
+#### Available Actions Generation
+
+**Automatic**: Engine populates `GameUpdate.AvailableActions` using `ActionGenerator`
+- Initial card play actions based on hand contents
+- Next step actions based on pending action state
+- Validates targeting, protection, game phase, etc.
 
 ### State Updates
 

@@ -15,7 +15,6 @@ type EngineTestSuite struct {
 	players     []*model.Player
 	updateChan  chan model.GameUpdate
 	eventChan   chan model.Event
-	inputChan   chan inputs.Input
 	lastUpdate  model.GameUpdate
 	initialDeck []model.Redactable[model.Card]
 	lastError   error
@@ -47,13 +46,11 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 
 	s.updateChan = make(chan model.GameUpdate, 100)
 	s.eventChan = make(chan model.Event, 100)
-	s.inputChan = make(chan inputs.Input, 100)
 
 	s.engine = &Engine{
 		Game:         *s.game,
 		EventHistory: []model.Event{},
 		updateChan:   s.updateChan,
-		inputChan:    s.inputChan,
 	}
 
 	return nil
