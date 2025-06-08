@@ -1,0 +1,2 @@
+- Run check.sh to validate changes
+- When viewing or editing files, read the README.md file in that directory and any parent directories to understand the project

@@ -2,6 +2,7 @@ package cards
 
 import (
 	"errors"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 

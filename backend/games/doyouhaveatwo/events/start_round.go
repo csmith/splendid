@@ -2,6 +2,7 @@ package events
 
 import (
 	"math/rand"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/cards"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )

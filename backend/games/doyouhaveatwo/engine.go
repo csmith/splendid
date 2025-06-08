@@ -2,6 +2,7 @@ package doyouhaveatwo
 
 import (
 	"fmt"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 

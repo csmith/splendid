@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cucumber/godog"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/cards"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/cucumber/godog"
 )
 
 type EngineTestSuite struct {

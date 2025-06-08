@@ -2,6 +2,7 @@ package events
 
 import (
 	"fmt"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
