@@ -29,12 +29,21 @@ gains a token. First player to collect enough tokens wins the game.
 
 ## Architecture
 
-### Core Structs
+### Package Structure
 
-#### Game
+The codebase is organized into separate packages for clean separation of concerns:
+
+- **`model/`** - Core types and interfaces (Game, Player, Card, Event, etc.)
+- **`cards/`** - Individual card implementations (guard.go, priest.go, etc.)
+- **`events/`** - Concrete event types (StartRoundEvent, DrawCardEvent, etc.)
+- **Main package** - Game engine and orchestration logic
+
+### Core Types
+
+#### Game (model/game.go)
 ```go
 type Game struct {
-    Players        []*Player
+    Players       []*Player
     Deck          []Redactable[Card]
     RemovedCard   Redactable[Card]    // Face-down card removed each round
     CurrentPlayer int
@@ -44,21 +53,21 @@ type Game struct {
 }
 ```
 
-#### Player
+#### Player (model/player.go)
 ```go
 type Player struct {
-    ID           string
-    Name         string
-    Hand         []Redactable[Card]
-    DiscardPile  []Card      // Player's own discard pile (visible to all)
-    TokenCount   int
-    IsOut        bool        // Eliminated this round
-    IsProtected  bool        // Handmaid protection
-    Position     int         // Seating order
+    ID          PlayerID
+    Name        string
+    Hand        []Redactable[Card]
+    DiscardPile []Card      // Player's own discard pile (visible to all)
+    TokenCount  int
+    IsOut       bool        // Eliminated this round
+    IsProtected bool        // Handmaid protection
+    Position    int         // Seating order
 }
 ```
 
-#### Card Interface
+#### Card Interface (model/card.go)
 ```go
 type Card interface {
     Play(game *Game, player *Player, target *Player) error
@@ -70,7 +79,17 @@ type Card interface {
 }
 ```
 
-#### Redactable Type
+**Card Implementations**: Each card type is implemented in `cards/` package:
+- `cards/guard.go` - Guard card implementation
+- `cards/priest.go` - Priest card implementation
+- `cards/baron.go` - Baron card implementation
+- `cards/handmaid.go` - Handmaid card implementation
+- `cards/prince.go` - Prince card implementation
+- `cards/king.go` - King card implementation
+- `cards/countess.go` - Countess card implementation
+- `cards/princess.go` - Princess card implementation
+
+#### Redactable Type (model/redactable.go)
 ```go
 type Redactable[T any] struct {
     Value     T
@@ -223,7 +242,7 @@ Game events are tracked separately from the core Game state to avoid bloating cl
 - Audit trails
 - Undo functionality (if needed)
 
-Each GameEvent is sent to clients as part of GameUpdate but stored separately on the server.
+Each Event is sent to clients as part of GameUpdate but stored separately on the server.
 
 ## API Design
 
@@ -233,17 +252,17 @@ The game server maintains all game logic and state while clients only handle pre
 
 ### Communication Types
 
-#### GameUpdate
+#### GameUpdate (model/action.go)
 What the server sends to each player after every action:
 ```go
 type GameUpdate struct {
-    Game             Game        // Current redacted game state
-    Event            GameEvent   // What just happened (nil for initial state)
-    AvailableActions []Action    // What this player can do now
+    Game             Game                            // Current redacted game state
+    Event            Event                           // What just happened (nil for initial state)
+    AvailableActions map[PlayerID]Redactable[[]Action] // Actions available to each player
 }
 ```
 
-#### Action
+#### Action (model/action.go)
 Structured actions that UIs can handle generically:
 ```go
 type Action struct {
@@ -253,15 +272,36 @@ type Action struct {
 }
 ```
 
-#### GameEvent
+#### Event Interface (model/event.go)
 Records what happened for event log and client updates:
 ```go
-type GameEvent struct {
-    Type     string      // "card_played", "player_eliminated", "round_ended", etc.
-    PlayerID string      // Who performed the action
-    Details  interface{} // Action-specific details
+type Event interface {
+    Type() EventType
+    PlayerID() *PlayerID
+    Apply(g *Game) error
 }
 ```
+
+**Event Implementations**: Each event type is implemented in `events/` package:
+- `events/start_round.go` - StartRoundEvent with EventStartRound constant
+- `events/draw_card.go` - DrawCardEvent with EventDrawCard constant
+
+```go
+// Example concrete event types:
+type StartRoundEvent struct{}
+type DrawCardEvent struct {
+    Player PlayerID
+}
+type PlayCardEvent struct {
+    Player PlayerID
+    Card   Card
+    Target *PlayerID
+}
+```
+
+Each event implements the Event interface with pointer receivers for the `Apply(*Game) error` method, providing type safety and eliminating the need for `interface{}` parameters.
+
+**Secret State Revelation**: Events should expose secret information through `Redactable` fields that are populated during the `Apply` function. This allows clients to receive proper logging information while maintaining the visibility system. For example, `DrawCardEvent.CardDrawn` contains the card that was drawn, properly redacted based on player visibility rules.
 
 ### State Redaction
 
@@ -324,8 +364,8 @@ Actions follow a multi-step approach to handle targeting and choices:
 
 After each action, all players receive a `GameUpdate` containing:
 - Current redacted game state
-- GameEvent describing what just happened
-- Available actions (for active player only, empty for others)
+- Event describing what just happened
+- Available actions for each player (redacted so players only see their own actions)
 
 This approach allows clients to be "dumb" - they don't need to know game rules, just display state and present choices.
 

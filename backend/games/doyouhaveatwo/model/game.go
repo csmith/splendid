@@ -1,6 +1,4 @@
-package doyouhaveatwo
-
-type PlayerID string
+package model
 
 type GamePhase string
 
@@ -10,22 +8,6 @@ const (
 	PhaseRoundEnd GamePhase = "round_end"
 	PhaseGameEnd  GamePhase = "game_end"
 )
-
-type Redactable[T any] struct {
-	Value     T
-	VisibleTo map[PlayerID]bool
-}
-
-type Player struct {
-	ID          PlayerID
-	Name        string
-	Hand        []Redactable[Card]
-	DiscardPile []Card
-	TokenCount  int
-	IsOut       bool
-	IsProtected bool
-	Position    int
-}
 
 type Game struct {
 	Players       []*Player
@@ -44,16 +26,4 @@ func (g *Game) GetPlayer(playerID PlayerID) *Player {
 		}
 	}
 	return nil
-}
-
-type Action struct {
-	Type  string
-	Value interface{}
-	Label string
-}
-
-type GameUpdate struct {
-	Game             Game
-	Event            Event
-	AvailableActions map[PlayerID]Redactable[[]Action]
 }

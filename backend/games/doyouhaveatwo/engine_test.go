@@ -5,27 +5,30 @@ import (
 	"testing"
 
 	"github.com/cucumber/godog"
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/cards"
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 type EngineTestSuite struct {
 	engine      *Engine
-	game        *Game
-	players     []*Player
-	updateChan  chan GameUpdate
-	eventChan   chan Event
-	lastUpdate  GameUpdate
-	initialDeck []Redactable[Card]
+	game        *model.Game
+	players     []*model.Player
+	updateChan  chan model.GameUpdate
+	eventChan   chan model.Event
+	lastUpdate  model.GameUpdate
+	initialDeck []model.Redactable[model.Card]
 	lastError   error
 }
 
 func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
-	s.players = make([]*Player, playerCount)
+	s.players = make([]*model.Player, playerCount)
 	for i := 0; i < playerCount; i++ {
-		s.players[i] = &Player{
-			ID:          PlayerID(rune('A' + i)),
+		s.players[i] = &model.Player{
+			ID:          model.PlayerID(rune('A' + i)),
 			Name:        string(rune('A' + i)),
-			Hand:        []Redactable[Card]{},
-			DiscardPile: []Card{},
+			Hand:        []model.Redactable[model.Card]{},
+			DiscardPile: []model.Card{},
 			TokenCount:  0,
 			IsOut:       false,
 			IsProtected: false,
@@ -33,17 +36,17 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 		}
 	}
 
-	s.game = &Game{
+	s.game = &model.Game{
 		Players:       s.players,
-		Deck:          []Redactable[Card]{},
+		Deck:          []model.Redactable[model.Card]{},
 		CurrentPlayer: 0,
 		Round:         0,
-		Phase:         PhaseSetup,
+		Phase:         model.PhaseSetup,
 		TokensToWin:   5,
 	}
 
-	s.updateChan = make(chan GameUpdate, 100)
-	s.eventChan = make(chan Event, 100)
+	s.updateChan = make(chan model.GameUpdate, 100)
+	s.eventChan = make(chan model.Event, 100)
 
 	s.engine = &Engine{
 		Game:       *s.game,
@@ -55,7 +58,7 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 }
 
 func (s *EngineTestSuite) givenTheGameHasPhase(phaseName string) error {
-	s.engine.Game.Phase = GamePhase(phaseName)
+	s.engine.Game.Phase = model.GamePhase(phaseName)
 	return nil
 }
 
@@ -65,10 +68,10 @@ func (s *EngineTestSuite) givenTheCurrentRoundIs(roundNumber int) error {
 }
 
 func (s *EngineTestSuite) whenARoundStarts() error {
-	s.initialDeck = make([]Redactable[Card], len(s.engine.Game.Deck))
+	s.initialDeck = make([]model.Redactable[model.Card], len(s.engine.Game.Deck))
 	copy(s.initialDeck, s.engine.Game.Deck)
 
-	event := Event{Type: EventStartRound}
+	event := &events.StartRoundEvent{}
 	s.engine.applyEvent(event)
 
 	// Capture the game update
@@ -90,7 +93,7 @@ func (s *EngineTestSuite) thenTheRoundNumberShouldBe(expectedRound int) error {
 }
 
 func (s *EngineTestSuite) thenThereAreCardCardsInTheGame(expectedCount int, cardType string) error {
-	var allCards []Card
+	var allCards []model.Card
 
 	// Collect all cards from deck
 	for _, card := range s.engine.Game.Deck {
@@ -149,7 +152,7 @@ func (s *EngineTestSuite) thenTheRemovedCardShouldNotBeVisibleToAnyPlayer() erro
 }
 
 func (s *EngineTestSuite) thenPlayerShouldHaveExactlyCardInTheirHand(playerID string, cardCount int) error {
-	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
 	}
@@ -160,7 +163,7 @@ func (s *EngineTestSuite) thenPlayerShouldHaveExactlyCardInTheirHand(playerID st
 }
 
 func (s *EngineTestSuite) thenPlayersCardsShouldOnlyBeVisibleToThemselves(playerID string) error {
-	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
 	}
@@ -180,20 +183,20 @@ func (s *EngineTestSuite) thenPlayersCardsShouldOnlyBeVisibleToThemselves(player
 }
 
 func (s *EngineTestSuite) givenPlayerHasCardsInDiscardPile(playerID string, cardCount int) error {
-	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
 	}
-	cards := make([]Card, cardCount)
+	discards := make([]model.Card, cardCount)
 	for i := 0; i < cardCount; i++ {
-		cards[i] = Guard{} // Use Guard as placeholder
+		discards[i] = cards.Guard{} // Use Guard as placeholder
 	}
-	player.DiscardPile = cards
+	player.DiscardPile = discards
 	return nil
 }
 
 func (s *EngineTestSuite) givenPlayerIsEliminated(playerID string) error {
-	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
 	}
@@ -202,7 +205,7 @@ func (s *EngineTestSuite) givenPlayerIsEliminated(playerID string) error {
 }
 
 func (s *EngineTestSuite) givenPlayerIsProtected(playerID string) error {
-	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
 	}
@@ -211,7 +214,7 @@ func (s *EngineTestSuite) givenPlayerIsProtected(playerID string) error {
 }
 
 func (s *EngineTestSuite) thenPlayerShouldNotBeEliminated(playerID string) error {
-	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
 	}
@@ -222,7 +225,7 @@ func (s *EngineTestSuite) thenPlayerShouldNotBeEliminated(playerID string) error
 }
 
 func (s *EngineTestSuite) thenPlayerShouldNotBeProtected(playerID string) error {
-	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
 	}
@@ -233,7 +236,7 @@ func (s *EngineTestSuite) thenPlayerShouldNotBeProtected(playerID string) error 
 }
 
 func (s *EngineTestSuite) thenPlayerShouldHaveCardsInDiscardPile(playerID string, expectedCount int) error {
-	player := s.engine.Game.GetPlayer(PlayerID(playerID))
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
 	if player == nil {
 		return fmt.Errorf("player %s not found", playerID)
 	}
@@ -298,16 +301,15 @@ func (s *EngineTestSuite) thenTheDeckShouldHaveCardsRemaining(expectedCount int)
 }
 
 func (s *EngineTestSuite) whenPlayerDrawsACard(playerID string) error {
-	event := Event{
-		Type:     EventDrawCard,
-		PlayerID: (*PlayerID)(&playerID),
+	event := &events.DrawCardEvent{
+		Player: model.PlayerID(playerID),
 	}
 	s.lastError = s.engine.applyEvent(event)
 	return nil // Don't propagate the error to godog, we'll check it in the Then step
 }
 
 func (s *EngineTestSuite) givenTheDeckIsEmpty() error {
-	s.engine.Game.Deck = []Redactable[Card]{}
+	s.engine.Game.Deck = []model.Redactable[model.Card]{}
 	return nil
 }
 
