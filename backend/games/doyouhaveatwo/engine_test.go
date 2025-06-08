@@ -362,56 +362,6 @@ func (s *EngineTestSuite) thenNoErrorOccurs() error {
 	return nil
 }
 
-func (s *EngineTestSuite) whenPlayerPerformsActionAddPlayer(playerID, newPlayerID, newPlayerName string) error {
-	action := &actions.AddPlayerAction{
-		NewPlayerID:   model.PlayerID(newPlayerID),
-		NewPlayerName: newPlayerName,
-	}
-	s.lastError = s.engine.ProcessAction(model.PlayerID(playerID), action)
-	return nil
-}
-
-func (s *EngineTestSuite) whenPlayerPerformsActionStartGame(playerID string) error {
-	action := &actions.StartGameAction{
-		Player: model.PlayerID(playerID),
-	}
-	s.lastError = s.engine.ProcessAction(model.PlayerID(playerID), action)
-	return nil
-}
-
-func (s *EngineTestSuite) whenPlayerPerformsActionPlayGuardTargetingGuessing(playerID, targetPlayerID string, guessedRank int) error {
-	playerIDTyped := model.PlayerID(playerID)
-	targetPlayerIDPtr := model.PlayerID(targetPlayerID)
-
-	// Step 1: Start the play_guard action
-	initialAction := &actions.PlayCardGuardAction{
-		Player: playerIDTyped,
-	}
-	s.lastError = s.engine.ProcessAction(playerIDTyped, initialAction)
-	if s.lastError != nil {
-		return nil
-	}
-
-	// Step 2: Select target player
-	targetAction := &actions.PlayCardGuardAction{
-		Player:       playerIDTyped,
-		TargetPlayer: &targetPlayerIDPtr,
-	}
-	s.lastError = s.engine.ProcessAction(playerIDTyped, targetAction)
-	if s.lastError != nil {
-		return nil
-	}
-
-	// Step 3: Select guessed rank
-	finalAction := &actions.PlayCardGuardAction{
-		Player:       playerIDTyped,
-		TargetPlayer: &targetPlayerIDPtr,
-		GuessedRank:  &guessedRank,
-	}
-	s.lastError = s.engine.ProcessAction(playerIDTyped, finalAction)
-	return nil
-}
-
 func (s *EngineTestSuite) thenTheGameShouldHavePlayers(expectedCount int) error {
 	actualCount := len(s.engine.Game.Players)
 	if actualCount != expectedCount {
@@ -501,6 +451,71 @@ func (s *EngineTestSuite) thenPlayerShouldBeEliminated(playerID string) error {
 	return nil
 }
 
+func (s *EngineTestSuite) whenPlayerSendsAction(playerID, actionJSON string) error {
+	action, err := actions.Unmarshal([]byte(actionJSON))
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal action JSON: %w", err)
+	}
+	s.lastError = s.engine.ProcessAction(model.PlayerID(playerID), action)
+	return nil
+}
+
+func (s *EngineTestSuite) thenTheAvailableActionsShouldBe(table *godog.Table) error {
+	// Parse expected actions from table
+	expectedActions := make(map[model.PlayerID][]string)
+	for i, row := range table.Rows {
+		if i == 0 {
+			// Skip header row
+			continue
+		}
+		if len(row.Cells) != 2 {
+			return fmt.Errorf("table row %d should have 2 columns (player, action), got %d", i, len(row.Cells))
+		}
+		playerID := model.PlayerID(row.Cells[0].Value)
+		actionJSON := row.Cells[1].Value
+		expectedActions[playerID] = append(expectedActions[playerID], actionJSON)
+	}
+
+	// Compare actual vs expected for each player
+	for _, player := range s.engine.Game.Players {
+		playerID := player.ID
+
+		// Generate actual actions for this player
+		actualActionsList := s.engine.actionGenerator.GenerateActionsForPlayer(&s.engine.Game, playerID)
+		actualActions := []string{}
+		for _, action := range actualActionsList {
+			actualActions = append(actualActions, action.String())
+		}
+
+		// Get expected actions for this player
+		expectedForPlayer := expectedActions[playerID]
+		if expectedForPlayer == nil {
+			expectedForPlayer = []string{}
+		}
+
+		// Compare counts
+		if len(actualActions) != len(expectedForPlayer) {
+			return fmt.Errorf("player %s: expected %d actions, got %d\nExpected: %v\nActual: %v",
+				playerID, len(expectedForPlayer), len(actualActions), expectedForPlayer, actualActions)
+		}
+
+		// Compare each action (order-independent)
+		actualSet := make(map[string]bool)
+		for _, action := range actualActions {
+			actualSet[action] = true
+		}
+
+		for _, expectedAction := range expectedForPlayer {
+			if !actualSet[expectedAction] {
+				return fmt.Errorf("player %s: expected action '%s' not found in actual actions %v",
+					playerID, expectedAction, actualActions)
+			}
+		}
+	}
+
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	suite := &EngineTestSuite{}
 
@@ -518,9 +533,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 
 	ctx.When(`^a round starts$`, suite.whenARoundStarts)
 	ctx.When(`^player ([A-Z]) draws a card$`, suite.whenPlayerDrawsACard)
-	ctx.When(`^player ([A-Z]) performs action "add_player" with new player "([A-Z])" named "([^"]*)"$`, suite.whenPlayerPerformsActionAddPlayer)
-	ctx.When(`^player ([A-Z]) performs action "start_game"$`, suite.whenPlayerPerformsActionStartGame)
-	ctx.When(`^player ([A-Z]) performs action "play_guard" targeting player ([A-Z]) guessing (\d+)$`, suite.whenPlayerPerformsActionPlayGuardTargetingGuessing)
+	ctx.When(`^player ([A-Z]) sends action (.*)$`, suite.whenPlayerSendsAction)
 
 	ctx.Then(`^the round number should be (\d+)$`, suite.thenTheRoundNumberShouldBe)
 	ctx.Then(`^there are (\d+) ([A-Za-z]+) cards in the game$`, suite.thenThereAreCardCardsInTheGame)
@@ -545,6 +558,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Then(`^player ([A-Z]) should exist in the game$`, suite.thenPlayerShouldExistInTheGame)
 	ctx.Then(`^player ([A-Z]) should have name "([^"]*)"$`, suite.thenPlayerShouldHaveName)
 	ctx.Then(`^player ([A-Z]) should be eliminated$`, suite.thenPlayerShouldBeEliminated)
+	ctx.Then(`^the available actions should be:$`, suite.thenTheAvailableActionsShouldBe)
 }
 
 func TestFeatures(t *testing.T) {

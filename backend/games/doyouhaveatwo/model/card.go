@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 type Card struct {
 	value       int
 	name        string
@@ -37,4 +39,14 @@ var (
 var CardTypes = []Card{
 	CardGuard, CardPriest, CardBaron, CardHandmaid,
 	CardPrince, CardKing, CardCountess, CardPrincess,
+}
+
+// GetCardByName returns the card with the given name, or an error if not found
+func GetCardByName(name string) (Card, error) {
+	for _, card := range CardTypes {
+		if card.Name() == name {
+			return card, nil
+		}
+	}
+	return Card{}, fmt.Errorf("unknown card name: %s", name)
 }

@@ -85,23 +85,7 @@ func (e *Engine) validateAction(playerID model.PlayerID, action model.Action) er
 		}
 	}
 
-	return fmt.Errorf("action %s is not available for player %s, only: %s", action, playerID, e.formatActions(availableForPlayer))
-}
-
-func (e *Engine) formatActions(actions []model.Action) string {
-	if len(actions) == 0 {
-		return "[]"
-	}
-
-	result := "["
-	for i, action := range actions {
-		if i > 0 {
-			result += ", "
-		}
-		result += action.String()
-	}
-	result += "]"
-	return result
+	return fmt.Errorf("action %s is not available for player %s, only: %s", action, playerID, availableForPlayer)
 }
 
 func (e *Engine) actionsMatch(submitted, available model.Action) bool {

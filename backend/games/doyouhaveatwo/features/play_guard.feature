@@ -1,16 +1,18 @@
 Feature: Play Guard
+
   Background:
     Given a game with 3 players
-    And the game has phase "play"
     And a round starts
     And player A has card "Guard" in their hand
     And player B has card "Priest" in their hand
     And player C has card "Baron" in their hand
-    And player A draws a card
+    And the game has phase "play"
 
   Scenario: Player is able to perform action play_guard when it's their turn and they have a Guard
     Given it is player A's turn
-    When player A performs action "play_guard" targeting player B guessing 2
+    When player A sends action {"type": "play_guard", "player": "A"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B", "guessedRank": 2}
     Then no error occurs
     And player A should have 1 cards in discard pile
     And player B should be eliminated
@@ -18,24 +20,28 @@ Feature: Play Guard
 
   Scenario: Player cannot perform action play_guard when it's not their turn
     Given it is player B's turn
-    When player A performs action "play_guard" targeting player B guessing 2
+    When player A sends action {"type": "play_guard", "player": "A"}
     Then an error occurs
 
   Scenario: Player cannot perform action play_guard when they don't have a Guard
     Given it is player B's turn
-    When player B performs action "play_guard" targeting player A guessing 2
+    When player B sends action {"type": "play_guard", "player": "B"}
     Then an error occurs
 
   Scenario: Play Guard with incorrect guess does not eliminate target
     Given it is player A's turn
-    When player A performs action "play_guard" targeting player B guessing 3
+    When player A sends action {"type": "play_guard", "player": "A"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B", "guessedRank": 3}
     Then no error occurs
     And player B should not be eliminated
     And player A should have 1 cards in discard pile
 
   Scenario: Play Guard with correct guess eliminates target
     Given it is player A's turn
-    When player A performs action "play_guard" targeting player B guessing 2
+    When player A sends action {"type": "play_guard", "player": "A"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B", "guessedRank": 2}
     Then no error occurs
     And player B should be eliminated
     And player A should have 1 cards in discard pile
@@ -43,21 +49,90 @@ Feature: Play Guard
   Scenario: Cannot target protected player with Guard
     Given it is player A's turn
     And player B is protected
-    When player A performs action "play_guard" targeting player B guessing 2
+    When player A sends action {"type": "play_guard", "player": "A"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B"}
     Then an error occurs
 
   Scenario: Cannot target eliminated player with Guard
     Given it is player A's turn
     And player B is eliminated
-    When player A performs action "play_guard" targeting player B guessing 2
+    When player A sends action {"type": "play_guard", "player": "A"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B"}
     Then an error occurs
 
   Scenario: Cannot target yourself with Guard
     Given it is player A's turn
-    When player A performs action "play_guard" targeting player A guessing 2
+    When player A sends action {"type": "play_guard", "player": "A"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "A"}
     Then an error occurs
 
   Scenario: Cannot guess Guard with Guard
     Given it is player A's turn
-    When player A performs action "play_guard" targeting player B guessing 1
+    When player A sends action {"type": "play_guard", "player": "A"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B", "guessedRank": 1}
     Then an error occurs
+
+  Scenario: Available actions when player holds Guard
+    Given it is player A's turn
+    Then the available actions should be:
+      | player | action               |
+      | A      | play_guard(player=A) |
+
+  Scenario: Available actions when player starts playing Guard
+    Given it is player A's turn
+    When player A sends action {"type": "play_guard", "player": "A"}
+    Then no error occurs
+    And the available actions should be:
+      | player | action                         |
+      | A      | play_guard(player=A, target=B) |
+      | A      | play_guard(player=A, target=C) |
+
+  Scenario: Available actions when player selects Guard target
+    Given it is player A's turn
+    When player A sends action {"type": "play_guard", "player": "A"}
+    And player A sends action {"type": "play_guard", "player": "A", "targetPlayer": "B"}
+    Then no error occurs
+    And the available actions should be:
+      | player | action                                  |
+      | A      | play_guard(player=A, target=B, guess=2) |
+      | A      | play_guard(player=A, target=B, guess=3) |
+      | A      | play_guard(player=A, target=B, guess=4) |
+      | A      | play_guard(player=A, target=B, guess=5) |
+      | A      | play_guard(player=A, target=B, guess=6) |
+      | A      | play_guard(player=A, target=B, guess=7) |
+      | A      | play_guard(player=A, target=B, guess=8) |
+
+  Scenario: Available actions exclude protected players as targets
+    Given it is player A's turn
+    And player B is protected
+    When player A sends action {"type": "play_guard", "player": "A"}
+    Then no error occurs
+    And the available actions should be:
+      | player | action                         |
+      | A      | play_guard(player=A, target=C) |
+
+  Scenario: Available actions exclude eliminated players as targets
+    Given it is player A's turn
+    And player B is eliminated
+    When player A sends action {"type": "play_guard", "player": "A"}
+    Then no error occurs
+    And the available actions should be:
+      | player | action                         |
+      | A      | play_guard(player=A, target=C) |
+
+  Scenario: Available actions offer discard when no valid targets exist
+    Given it is player A's turn
+    And player B is eliminated
+    And player C is protected
+    Then the available actions should be:
+      | player | action                            |
+      | A      | discard_card(player=A, card=Guard) |
+
+  Scenario: Player can discard Guard when no valid targets
+    Given it is player A's turn
+    And player B is eliminated
+    And player C is protected
+    When player A sends action {"type": "discard_card", "player": "A", "cardName": "Guard"}
+    Then no error occurs
+    And player A should have 1 cards in discard pile

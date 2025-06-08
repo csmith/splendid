@@ -9,7 +9,7 @@ import (
 
 type PlayCardTargetOthersAction struct {
 	Player       model.PlayerID
-	Card         model.Card
+	CardName     string
 	TargetPlayer *model.PlayerID
 }
 
@@ -33,18 +33,18 @@ func (a *PlayCardTargetOthersAction) ToInput() model.Input {
 		return nil
 	}
 
-	switch a.Card {
-	case model.CardBaron:
+	switch a.CardName {
+	case "Baron":
 		return &inputs.PlayBaronInput{
 			Player:       a.Player,
 			TargetPlayer: *a.TargetPlayer,
 		}
-	case model.CardPriest:
+	case "Priest":
 		return &inputs.PlayPriestInput{
 			Player:       a.Player,
 			TargetPlayer: *a.TargetPlayer,
 		}
-	case model.CardKing:
+	case "King":
 		return &inputs.PlayKingInput{
 			Player:       a.Player,
 			TargetPlayer: *a.TargetPlayer,
@@ -55,14 +55,14 @@ func (a *PlayCardTargetOthersAction) ToInput() model.Input {
 }
 
 func (a *PlayCardTargetOthersAction) Type() string {
-	return fmt.Sprintf("play_%s", a.Card.Name())
+	return fmt.Sprintf("play_%s", a.CardName)
 }
 
 func (a *PlayCardTargetOthersAction) String() string {
 	if a.TargetPlayer == nil {
-		return fmt.Sprintf("play_%s(player=%s)", a.Card.Name(), a.Player)
+		return fmt.Sprintf("play_%s(player=%s)", a.CardName, a.Player)
 	}
-	return fmt.Sprintf("play_%s(player=%s, target=%s)", a.Card.Name(), a.Player, *a.TargetPlayer)
+	return fmt.Sprintf("play_%s(player=%s, target=%s)", a.CardName, a.Player, *a.TargetPlayer)
 }
 
 func (a *PlayCardTargetOthersAction) generateTargetActions(g *model.Game) []model.Action {
@@ -75,7 +75,7 @@ func (a *PlayCardTargetOthersAction) generateTargetActions(g *model.Game) []mode
 			// Create a new action with this target selected
 			targetAction := &PlayCardTargetOthersAction{
 				Player:       a.Player,
-				Card:         a.Card,
+				CardName:     a.CardName,
 				TargetPlayer: &player.ID,
 			}
 			actions = append(actions, targetAction)

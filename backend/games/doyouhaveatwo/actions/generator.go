@@ -69,31 +69,50 @@ func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *
 		// If Countess rule applies, only allow Countess to be played
 		if hasCountess && hasPrinceOrKing {
 			actions = append(actions, &PlayCardNoTargetAction{
-				Player: player.ID,
-				Card:   model.CardCountess,
+				Player:   player.ID,
+				CardName: "Countess",
 			})
 		} else {
 			for _, handCard := range player.Hand {
 				if handCard.VisibleTo[player.ID] {
 					switch handCard.Value {
 					case model.CardGuard:
-						actions = append(actions, &PlayCardGuardAction{
-							Player: player.ID,
-						})
+						// Check if there are valid targets for Guard
+						if ag.hasValidTargetsForOthers(g, player.ID) {
+							actions = append(actions, &PlayCardGuardAction{
+								Player: player.ID,
+							})
+						} else {
+							// No valid targets, offer discard instead
+							actions = append(actions, &DiscardCardAction{
+								Player:   player.ID,
+								CardName: handCard.Value.Name(),
+							})
+						}
 					case model.CardHandmaid, model.CardCountess, model.CardPrincess:
 						actions = append(actions, &PlayCardNoTargetAction{
-							Player: player.ID,
-							Card:   handCard.Value,
+							Player:   player.ID,
+							CardName: handCard.Value.Name(),
 						})
 					case model.CardBaron, model.CardPriest, model.CardKing:
-						actions = append(actions, &PlayCardTargetOthersAction{
-							Player: player.ID,
-							Card:   handCard.Value,
-						})
+						// Check if there are valid targets for these cards
+						if ag.hasValidTargetsForOthers(g, player.ID) {
+							actions = append(actions, &PlayCardTargetOthersAction{
+								Player:   player.ID,
+								CardName: handCard.Value.Name(),
+							})
+						} else {
+							// No valid targets, offer discard instead
+							actions = append(actions, &DiscardCardAction{
+								Player:   player.ID,
+								CardName: handCard.Value.Name(),
+							})
+						}
 					case model.CardPrince:
+						// Prince can always target self if no others available
 						actions = append(actions, &PlayCardTargetAnyAction{
-							Player: player.ID,
-							Card:   handCard.Value,
+							Player:   player.ID,
+							CardName: handCard.Value.Name(),
 						})
 					}
 				}
@@ -108,4 +127,15 @@ func (ag *DefaultActionGenerator) generateRandomID() string {
 	bytes := make([]byte, 8)
 	rand.Read(bytes)
 	return hex.EncodeToString(bytes)
+}
+
+// hasValidTargetsForOthers checks if there are any valid targets for cards that target other players
+func (ag *DefaultActionGenerator) hasValidTargetsForOthers(g *model.Game, playerID model.PlayerID) bool {
+	for _, player := range g.Players {
+		// Can target other players who are not eliminated and not protected
+		if player.ID != playerID && !player.IsOut && !player.IsProtected {
+			return true
+		}
+	}
+	return false
 }

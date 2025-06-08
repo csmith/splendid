@@ -8,8 +8,8 @@ import (
 )
 
 type PlayCardNoTargetAction struct {
-	Player model.PlayerID
-	Card   model.Card
+	Player   model.PlayerID
+	CardName string
 }
 
 func (a *PlayCardNoTargetAction) PlayerID() model.PlayerID {
@@ -25,16 +25,16 @@ func (a *PlayCardNoTargetAction) NextActions(g *model.Game) []model.Action {
 }
 
 func (a *PlayCardNoTargetAction) ToInput() model.Input {
-	switch a.Card {
-	case model.CardHandmaid:
+	switch a.CardName {
+	case "Handmaid":
 		return &inputs.PlayHandmaidInput{
 			Player: a.Player,
 		}
-	case model.CardCountess:
+	case "Countess":
 		return &inputs.PlayCountessInput{
 			Player: a.Player,
 		}
-	case model.CardPrincess:
+	case "Princess":
 		return &inputs.PlayPrincessInput{
 			Player: a.Player,
 		}
@@ -44,9 +44,9 @@ func (a *PlayCardNoTargetAction) ToInput() model.Input {
 }
 
 func (a *PlayCardNoTargetAction) Type() string {
-	return fmt.Sprintf("play_%s", a.Card.Name())
+	return fmt.Sprintf("play_%s", a.CardName)
 }
 
 func (a *PlayCardNoTargetAction) String() string {
-	return fmt.Sprintf("play_%s(player=%s)", a.Card.Name(), a.Player)
+	return fmt.Sprintf("play_%s(player=%s)", a.CardName, a.Player)
 }
