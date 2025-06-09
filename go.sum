@@ -5,6 +5,8 @@ github.com/coder/websocket v1.8.13/go.mod h1:LNVeNrXQZfe5qhS9ALED3uA+l5pPqvwXg3C
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/csmith/aca v1.1.0 h1:sm/5KDumg/LrMd9z8XcmwiHstn3kyi3WlMLmnCqgZW0=
 github.com/csmith/aca v1.1.0/go.mod h1:oaBpJA7ngd/XK97AOp7jAGiWdWSxnziBSmyMsWFFDlQ=
+github.com/csmith/envflag/v2 v2.0.0 h1:jho28W/psEqJ02EdbUHmkmFpbc5HFhog6NzHRbgtIFg=
+github.com/csmith/envflag/v2 v2.0.0/go.mod h1:GNzzXvZ2bC3z6tdoO45mTrs7l4Uht2WfBKaF1KQu0Pk=
 github.com/csmith/hotsource v1.0.2 h1:F39OyPmtbCrK17XQ1Urv/h/Qq6cAhijTNpWdg6xmxSc=
 github.com/csmith/hotsource v1.0.2/go.mod h1:8GNWyPhW1ER/AY8UHUELw6RRsjp4rAowQ/3bQzsMzDY=
 github.com/cucumber/gherkin/go/v26 v26.2.0 h1:EgIjePLWiPeslwIWmNQ3XHcypPsWAHoMCz/YEBKP4GI=

@@ -5,6 +5,7 @@ go 1.24.3
 require (
 	github.com/coder/websocket v1.8.13
 	github.com/csmith/aca v1.1.0
+	github.com/csmith/envflag/v2 v2.0.0
 	github.com/csmith/hotsource v1.0.2
 	github.com/cucumber/godog v0.15.0
 	github.com/stretchr/testify v1.10.0

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/csmith/envflag/v2"
 	"github.com/csmith/hotsource"
 	"github.com/csmith/splendid/frontend"
 
@@ -16,7 +17,7 @@ import (
 func main() {
 	// Parse command line flags
 	logDir := flag.String("data", "data", "Directory to store game logs")
-	flag.Parse()
+	envflag.Parse()
 
 	// Set up structured logging
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
@@ -38,7 +39,8 @@ func main() {
 	// Set up routes
 	mux := http.NewServeMux()
 
-	mux.Handle("/", hotsource.Maybe(http.FileServerFS(frontend.FS), "frontend", true))
+	_, err = os.Stat("frontend")
+	mux.Handle("/", hotsource.Maybe(http.FileServerFS(frontend.FS), "frontend", err == nil))
 
 	// HTTP endpoints
 	mux.HandleFunc("POST /api/games", httpHandler.CreateGame)
