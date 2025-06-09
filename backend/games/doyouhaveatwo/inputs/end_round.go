@@ -29,6 +29,7 @@ func (i *EndRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 	for _, winnerID := range i.Winners {
 		apply(&events.PlayerTokenAwardedEvent{
 			Player: winnerID,
+			Tokens: 1,
 		})
 	}
 

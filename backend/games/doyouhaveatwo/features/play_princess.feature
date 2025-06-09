@@ -14,19 +14,19 @@ Feature: Play Princess
 
   Scenario: Playing Princess eliminates the player immediately
     Given it is player A's turn
-    When player A sends action {"type": "play_card_no_target", "player": "A", "cardName": "Princess"}
+    When player A sends action {"type": "play_princess", "player": "A", "card_name": "Princess"}
     Then no error occurs
     And player A should have 2 cards in discard pile
     And player A should be eliminated
 
   Scenario: Player cannot perform action play_princess when it's not their turn
     Given it is player B's turn
-    When player A sends action {"type": "play_card_no_target", "player": "A", "cardName": "Princess"}
+    When player A sends action {"type": "play_princess", "player": "A", "card_name": "Princess"}
     Then an error occurs
 
   Scenario: Player cannot perform action play_princess when they don't have a Princess
     Given it is player B's turn
-    When player B sends action {"type": "play_card_no_target", "player": "B", "cardName": "Princess"}
+    When player B sends action {"type": "play_princess", "player": "B", "card_name": "Princess"}
     Then an error occurs
 
   Scenario: Princess is discarded when forced by Prince
@@ -36,8 +36,8 @@ Feature: Play Princess
       | King   |
     And player A has the following cards in their hand:
       | Princess |
-    When player B sends action {"type": "play_card_target_any", "player": "B", "cardName": "Prince"}
-    And player B sends action {"type": "play_card_target_any", "player": "B", "cardName": "Prince", "targetPlayer": "A"}
+    When player B sends action {"type": "play_prince", "player": "B", "card_name": "Prince"}
+    And player B sends action {"type": "play_prince", "player": "B", "card_name": "Prince", "target_player": "A"}
     Then no error occurs
     And player A should be eliminated
     And player A should have 1 cards in discard pile
@@ -62,7 +62,7 @@ Feature: Play Princess
 
   Scenario: Princess action is immediately complete and eliminates player
     Given it is player A's turn
-    When player A sends action {"type": "play_card_no_target", "player": "A", "cardName": "Princess"}
+    When player A sends action {"type": "play_princess", "player": "A", "card_name": "Princess"}
     Then no error occurs
     And player A should be eliminated
     And it should be player B's turn

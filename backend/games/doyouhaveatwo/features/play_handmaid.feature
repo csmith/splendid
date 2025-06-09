@@ -14,19 +14,19 @@ Feature: Play Handmaid
 
   Scenario: Player is able to perform action play_handmaid when it's their turn and they have a Handmaid
     Given it is player A's turn
-    When player A sends action {"type": "play_card_no_target", "player": "A", "cardName": "Handmaid"}
+    When player A sends action {"type": "play_handmaid", "player": "A", "card_name": "Handmaid"}
     Then no error occurs
     And player A should have 1 cards in discard pile
     And player A should be protected
 
   Scenario: Player cannot perform action play_handmaid when it's not their turn
     Given it is player B's turn
-    When player A sends action {"type": "play_card_no_target", "player": "A", "cardName": "Handmaid"}
+    When player A sends action {"type": "play_handmaid", "player": "A", "card_name": "Handmaid"}
     Then an error occurs
 
   Scenario: Player cannot perform action play_handmaid when they don't have a Handmaid
     Given it is player B's turn
-    When player B sends action {"type": "play_card_no_target", "player": "B", "cardName": "Handmaid"}
+    When player B sends action {"type": "play_handmaid", "player": "B", "card_name": "Handmaid"}
     Then an error occurs
 
   Scenario: Available actions when player holds Handmaid
@@ -38,6 +38,6 @@ Feature: Play Handmaid
 
   Scenario: Handmaid action is immediately complete
     Given it is player A's turn
-    When player A sends action {"type": "play_card_no_target", "player": "A", "cardName": "Handmaid"}
+    When player A sends action {"type": "play_handmaid", "player": "A", "card_name": "Handmaid"}
     Then no error occurs
     And it should be player B's turn

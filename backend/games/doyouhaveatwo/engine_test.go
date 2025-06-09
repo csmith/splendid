@@ -423,6 +423,93 @@ func (s *EngineTestSuite) thenPlayerShouldBeEliminated(playerID string) error {
 	return nil
 }
 
+func (s *EngineTestSuite) thenPlayerShouldHaveTokens(playerID string, expectedTokens int) error {
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
+	if player == nil {
+		return s.errorf("player %s not found", playerID)
+	}
+	if player.TokenCount != expectedTokens {
+		return s.errorf("expected player %s to have %d tokens, but got %d", player.ID, expectedTokens, player.TokenCount)
+	}
+	return nil
+}
+
+func (s *EngineTestSuite) givenPlayerHasTokens(playerID string, tokenCount int) error {
+	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
+	if player == nil {
+		return s.errorf("player %s not found", playerID)
+	}
+	player.TokenCount = tokenCount
+	return nil
+}
+
+func (s *EngineTestSuite) givenPlayerWonLastRound(playerID string) error {
+	playerIDs := []model.PlayerID{model.PlayerID(playerID)}
+	s.engine.Game.LastRoundWinners = append(s.engine.Game.LastRoundWinners, playerIDs...)
+	return nil
+}
+
+func (s *EngineTestSuite) whenTheRoundEndsWithWinners(winnersStr string) error {
+	var winners []model.PlayerID
+	for _, char := range winnersStr {
+		if char >= 'A' && char <= 'Z' {
+			winners = append(winners, model.PlayerID(char))
+		}
+	}
+
+	input := &inputs.EndRoundInput{Winners: winners}
+	s.lastError = s.engine.processInput(input)
+	return nil
+}
+
+func (s *EngineTestSuite) whenAShowdownOccurs() error {
+	input := &inputs.ShowdownInput{}
+	s.lastError = s.engine.processInput(input)
+	return nil
+}
+
+func (s *EngineTestSuite) thenPlayersShouldWinTheRound(winnersStr string) error {
+	expectedWinners := make(map[model.PlayerID]bool)
+	for _, char := range winnersStr {
+		if char >= 'A' && char <= 'Z' {
+			expectedWinners[model.PlayerID(char)] = true
+		}
+	}
+
+	if len(s.engine.Game.LastRoundWinners) != len(expectedWinners) {
+		return s.errorf("expected %d round winners, but got %d", len(expectedWinners), len(s.engine.Game.LastRoundWinners))
+	}
+
+	for _, winner := range s.engine.Game.LastRoundWinners {
+		if !expectedWinners[winner] {
+			return s.errorf("unexpected round winner: %s", winner)
+		}
+	}
+
+	return nil
+}
+
+func (s *EngineTestSuite) thenTheGameShouldEnd() error {
+	if s.engine.Game.Phase != model.PhaseGameEnd {
+		return s.errorf("expected game phase to be game_end, but got %s", s.engine.Game.Phase)
+	}
+	return nil
+}
+
+func (s *EngineTestSuite) thenPlayerShouldWinTheGame(playerID string) error {
+	// Check if WinnerDeclaredEvent occurred for this player
+	for _, event := range s.engine.EventHistory {
+		if event.Type() == events.EventWinnerDeclared {
+			if winnerEvent, ok := event.(*events.WinnerDeclaredEvent); ok {
+				if winnerEvent.Winner == model.PlayerID(playerID) {
+					return nil
+				}
+			}
+		}
+	}
+	return s.errorf("expected player %s to win the game, but no winner event found", playerID)
+}
+
 func (s *EngineTestSuite) whenPlayerSendsAction(playerID, actionJSON string) error {
 	action, err := actions.Unmarshal([]byte(actionJSON))
 	if err != nil {
@@ -530,6 +617,16 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Then(`^the game should have (\d+) players$`, suite.thenTheGameShouldHavePlayers)
 	ctx.Then(`^player ([A-Z]) should be eliminated$`, suite.thenPlayerShouldBeEliminated)
 	ctx.Then(`^the available actions should be:$`, suite.thenTheAvailableActionsShouldBe)
+
+	// New step definitions for round win and tokens
+	ctx.Given(`^player ([A-Z]) has (\d+) tokens$`, suite.givenPlayerHasTokens)
+	ctx.Given(`^player ([A-Z]) won the last round$`, suite.givenPlayerWonLastRound)
+	ctx.When(`^the round ends with winners ([A-Z,]+)$`, suite.whenTheRoundEndsWithWinners)
+	ctx.When(`^a showdown occurs$`, suite.whenAShowdownOccurs)
+	ctx.Then(`^player ([A-Z]) should have (\d+) tokens$`, suite.thenPlayerShouldHaveTokens)
+	ctx.Then(`^players ([A-Z,]+) should win the round$`, suite.thenPlayersShouldWinTheRound)
+	ctx.Then(`^the game should end$`, suite.thenTheGameShouldEnd)
+	ctx.Then(`^player ([A-Z]) should win the game$`, suite.thenPlayerShouldWinTheGame)
 }
 
 func TestFeatures(t *testing.T) {

@@ -51,17 +51,7 @@ func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 		NewDeck: deck,
 	})
 
-	// Remove top card from deck
-	apply(&events.CardRemovedEvent{})
-
-	// Deal cards to all players
-	for _, player := range g.Players {
-		apply(&events.CardDealtEvent{
-			ToPlayer: player.ID,
-		})
-	}
-
-	// Reset all player states
+	// Reset all player states first
 	for _, player := range g.Players {
 		apply(&events.PlayerRestoredEvent{
 			Player: player.ID,
@@ -71,6 +61,19 @@ func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 		})
 		apply(&events.PlayerDiscardPileClearedEvent{
 			Player: player.ID,
+		})
+		apply(&events.PlayerHandClearedEvent{
+			Player: player.ID,
+		})
+	}
+
+	// Remove top card from deck
+	apply(&events.CardRemovedEvent{})
+
+	// Deal cards to all players
+	for _, player := range g.Players {
+		apply(&events.CardDealtEvent{
+			ToPlayer: player.ID,
 		})
 	}
 
