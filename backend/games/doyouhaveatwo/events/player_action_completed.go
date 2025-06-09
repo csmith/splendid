@@ -2,13 +2,14 @@ package events
 
 import (
 	"encoding/json"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 const EventPlayerActionCompleted model.EventType = "player_action_completed"
 
 type PlayerActionCompletedEvent struct {
-	Player model.PlayerID
+	Player model.PlayerID `json:"player"`
 }
 
 func (e *PlayerActionCompletedEvent) Type() model.EventType {

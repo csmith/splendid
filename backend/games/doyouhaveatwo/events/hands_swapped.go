@@ -10,10 +10,10 @@ import (
 const EventHandsSwapped model.EventType = "hands_swapped"
 
 type HandsSwappedEvent struct {
-	PlayerA     model.PlayerID
-	PlayerB     model.PlayerID
-	ResultHandA model.Redactable[model.Card]
-	ResultHandB model.Redactable[model.Card]
+	PlayerA     model.PlayerID               `json:"player_a"`
+	PlayerB     model.PlayerID               `json:"player_b"`
+	ResultHandA model.Redactable[model.Card] `json:"hand_a"`
+	ResultHandB model.Redactable[model.Card] `json:"hand_b"`
 }
 
 func (e *HandsSwappedEvent) Type() model.EventType {

@@ -10,7 +10,7 @@ import (
 const EventPlayerProtectionGranted model.EventType = "player_protection_granted"
 
 type PlayerProtectionGrantedEvent struct {
-	Player model.PlayerID
+	Player model.PlayerID `json:"player"`
 }
 
 func (e *PlayerProtectionGrantedEvent) Type() model.EventType {

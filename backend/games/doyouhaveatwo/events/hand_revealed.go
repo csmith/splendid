@@ -10,9 +10,9 @@ import (
 const EventHandRevealed model.EventType = "hand_revealed"
 
 type HandRevealedEvent struct {
-	SourcePlayer       model.PlayerID
-	TargetPlayers      []model.PlayerID
-	ResultRevealedCard model.Redactable[model.Card]
+	SourcePlayer       model.PlayerID               `json:"source_player"`
+	TargetPlayers      []model.PlayerID             `json:"target_players"`
+	ResultRevealedCard model.Redactable[model.Card] `json:"revealed_card"`
 }
 
 func (e *HandRevealedEvent) Type() model.EventType {

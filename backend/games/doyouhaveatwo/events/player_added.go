@@ -2,15 +2,16 @@ package events
 
 import (
 	"encoding/json"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 const EventPlayerAdded model.EventType = "player_added"
 
 type PlayerAddedEvent struct {
-	NewPlayerID   model.PlayerID
-	NewPlayerName string
-	Position      int
+	NewPlayerID   model.PlayerID `json:"player"`
+	NewPlayerName string         `json:"name"`
+	Position      int            `json:"position"`
 }
 
 func (e *PlayerAddedEvent) Type() model.EventType {

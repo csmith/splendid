@@ -2,13 +2,14 @@ package events
 
 import (
 	"encoding/json"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 const EventCardRemoved model.EventType = "card_removed"
 
 type CardRemovedEvent struct {
-	ResultRemovedCard model.Redactable[model.Card]
+	ResultRemovedCard model.Redactable[model.Card] `json:"removed_card"`
 }
 
 func (e *CardRemovedEvent) Type() model.EventType {

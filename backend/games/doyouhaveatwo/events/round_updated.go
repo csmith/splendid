@@ -2,13 +2,14 @@ package events
 
 import (
 	"encoding/json"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 const EventRoundUpdated model.EventType = "round_updated"
 
 type RoundUpdatedEvent struct {
-	NewRound int
+	NewRound int `json:"round"`
 }
 
 func (e *RoundUpdatedEvent) Type() model.EventType {

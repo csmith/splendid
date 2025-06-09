@@ -10,9 +10,9 @@ import (
 const EventCardDiscarded model.EventType = "card_discarded"
 
 type CardDiscardedEvent struct {
-	Player              model.PlayerID
-	Card                model.Card
-	ResultCardDiscarded model.Card
+	Player              model.PlayerID `json:"player"`
+	Card                model.Card     `json:"card"`
+	ResultCardDiscarded model.Card     `json:"discarded_card"`
 }
 
 func (e *CardDiscardedEvent) Type() model.EventType {

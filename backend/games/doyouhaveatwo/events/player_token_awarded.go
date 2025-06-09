@@ -10,8 +10,8 @@ import (
 const EventPlayerTokenAwarded model.EventType = "player_token_awarded"
 
 type PlayerTokenAwardedEvent struct {
-	Player model.PlayerID
-	Tokens int
+	Player model.PlayerID `json:"player"`
+	Tokens int            `json:"tokens"`
 }
 
 func (e *PlayerTokenAwardedEvent) Type() model.EventType {

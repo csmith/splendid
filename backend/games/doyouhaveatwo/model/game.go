@@ -11,14 +11,14 @@ const (
 )
 
 type Game struct {
-	Players          []*Player
-	Deck             []Redactable[Card]
-	RemovedCard      *Redactable[Card]
-	CurrentPlayer    int
-	Round            int
-	Phase            GamePhase
-	TokensToWin      int
-	LastRoundWinners []PlayerID
+	Players          []*Player          `json:"players"`
+	Deck             []Redactable[Card] `json:"deck"`
+	RemovedCard      *Redactable[Card]  `json:"removed_card"`
+	CurrentPlayer    int                `json:"current_player"`
+	Round            int                `json:"round"`
+	Phase            GamePhase          `json:"phase"`
+	TokensToWin      int                `json:"tokens_to_win"`
+	LastRoundWinners []PlayerID         `json:"last_round_winners"`
 }
 
 func (g *Game) GetPlayer(playerID PlayerID) *Player {

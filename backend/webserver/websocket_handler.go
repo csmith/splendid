@@ -66,6 +66,9 @@ func (h *WebSocketHandler) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 
 	slog.Info("Player connected", "sessionID", sessionID, "playerID", client.PlayerID, "playerName", client.PlayerName)
 
+	// Send player ID to client
+	h.sendPlayerID(conn, client.PlayerID)
+
 	// Send initial game state
 	h.sendInitialGameState(conn, session, client.PlayerID)
 
@@ -219,6 +222,33 @@ func (h *WebSocketHandler) handleActionMessage(conn *websocket.Conn, sessionID s
 		slog.Error("Failed to process action", "error", err, "sessionID", sessionID, "playerID", playerID)
 		h.sendError(conn, fmt.Sprintf("Action failed: %s", err.Error()))
 		return
+	}
+}
+
+func (h *WebSocketHandler) sendPlayerID(conn *websocket.Conn, playerID model.PlayerID) {
+	playerIDData, err := json.Marshal(string(playerID))
+	if err != nil {
+		slog.Error("Failed to marshal player ID", "error", err)
+		return
+	}
+
+	msg := WebSocketMessage{
+		Type: MessageTypePlayerID,
+		Data: playerIDData,
+	}
+
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		slog.Error("Failed to marshal player ID WebSocket message", "error", err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	err = conn.Write(ctx, websocket.MessageText, msgBytes)
+	if err != nil {
+		slog.Error("Failed to send player ID message", "error", err)
 	}
 }
 

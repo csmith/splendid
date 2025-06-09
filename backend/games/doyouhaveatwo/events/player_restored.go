@@ -10,7 +10,7 @@ import (
 const EventPlayerRestored model.EventType = "player_restored"
 
 type PlayerRestoredEvent struct {
-	Player model.PlayerID
+	Player model.PlayerID `json:"player"`
 }
 
 func (e *PlayerRestoredEvent) Type() model.EventType {

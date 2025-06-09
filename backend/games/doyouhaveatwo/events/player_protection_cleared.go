@@ -10,7 +10,7 @@ import (
 const EventPlayerProtectionCleared model.EventType = "player_protection_cleared"
 
 type PlayerProtectionClearedEvent struct {
-	Player model.PlayerID
+	Player model.PlayerID `json:"player"`
 }
 
 func (e *PlayerProtectionClearedEvent) Type() model.EventType {

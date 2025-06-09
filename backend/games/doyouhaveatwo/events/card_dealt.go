@@ -10,8 +10,8 @@ import (
 const EventCardDealt model.EventType = "card_dealt"
 
 type CardDealtEvent struct {
-	ToPlayer        model.PlayerID
-	ResultCardDealt model.Redactable[model.Card]
+	ToPlayer        model.PlayerID               `json:"to_player"`
+	ResultCardDealt model.Redactable[model.Card] `json:"card_dealt"`
 }
 
 func (e *CardDealtEvent) Type() model.EventType {

@@ -2,13 +2,14 @@ package events
 
 import (
 	"encoding/json"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 const EventLastRoundWinnersUpdated model.EventType = "last_round_winners_updated"
 
 type LastRoundWinnersUpdatedEvent struct {
-	Winners []model.PlayerID
+	Winners []model.PlayerID `json:"winners"`
 }
 
 func (e *LastRoundWinnersUpdatedEvent) Type() model.EventType {

@@ -117,6 +117,10 @@ function connectWebSocket(sessionID) {
 
 function handleWebSocketMessage(message) {
     switch (message.type) {
+        case 'player_id':
+            currentPlayerID = message.data;
+            logEvent('Player ID received', currentPlayerID);
+            break;
         case 'game_update':
             handleGameUpdate(message.data);
             break;
@@ -131,17 +135,13 @@ function handleWebSocketMessage(message) {
 function handleGameUpdate(gameUpdateData) {
     gameState = gameUpdateData.game;
     
-    // Update available actions - find any that are not "REDACTED"
+    // Update available actions - find actions for our player ID
     availableActions = [];
-    currentPlayerID = null;
     
-    if (gameUpdateData.available_actions) {
-        for (const [playerID, playerActions] of Object.entries(gameUpdateData.available_actions)) {
-            if (playerActions && playerActions !== "REDACTED" && Array.isArray(playerActions)) {
-                availableActions = playerActions;
-                currentPlayerID = playerID; // This is us
-                break;
-            }
+    if (gameUpdateData.available_actions && currentPlayerID) {
+        const playerActions = gameUpdateData.available_actions[currentPlayerID];
+        if (playerActions && playerActions !== "REDACTED" && Array.isArray(playerActions)) {
+            availableActions = playerActions;
         }
     }
 
@@ -155,7 +155,7 @@ function handleGameUpdate(gameUpdateData) {
 }
 
 function getCurrentPlayerID() {
-    // currentPlayerID is now set in handleGameUpdate from visible actions
+    // currentPlayerID is now set when we receive the player_id message
     return currentPlayerID;
 }
 
@@ -208,7 +208,7 @@ function updatePlayersList() {
                 ${player.is_out ? '<span class="status eliminated">Eliminated</span>' : ''}
                 ${player.is_protected ? '<span class="status protected">Protected</span>' : ''}
             </div>
-            ${lastDiscard ? `<div class="last-discard">Last played: ${lastDiscard.name}</div>` : ''}
+            ${lastDiscard ? `<div class="last-discard">Last played: ${lastDiscard}</div>` : ''}
         `;
 
         playersContainer.appendChild(playerDiv);
@@ -225,18 +225,28 @@ function updateYourHand() {
     if (!currentPlayer || !currentPlayer.hand) return;
 
     currentPlayer.hand.forEach(handCard => {
-        if (handCard !== "REDACTED" && handCard.value) {
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'card';
-            cardDiv.onclick = () => showCardInfo(handCard.value.name);
-            
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        
+        if (handCard === "REDACTED") {
+            cardDiv.classList.add('redacted');
             cardDiv.innerHTML = `
-                <div class="card-value">${handCard.value.value}</div>
-                <div class="card-name">${handCard.value.name}</div>
+                <div class="card-value">?</div>
+                <div class="card-name">Hidden</div>
             `;
-
-            handContainer.appendChild(cardDiv);
+        } else if (typeof handCard === 'string') {
+            // Card name as string
+            const cardInfo = CARD_INFO[handCard];
+            if (cardInfo) {
+                cardDiv.onclick = () => showCardInfo(handCard);
+                cardDiv.innerHTML = `
+                    <div class="card-value">${cardInfo.value}</div>
+                    <div class="card-name">${handCard}</div>
+                `;
+            }
         }
+
+        handContainer.appendChild(cardDiv);
     });
 }
 
@@ -340,8 +350,8 @@ function logGameEvent(event) {
             eventText = `Card dealt to ${getPlayerName(event.to_player)}`;
             break;
         case 'card_discarded':
-            if (event.discarded_card && event.discarded_card.name) {
-                eventText = `${getPlayerName(event.player)} discarded ${event.discarded_card.name}`;
+            if (event.discarded_card) {
+                eventText = `${getPlayerName(event.player)} discarded ${event.discarded_card}`;
             } else {
                 eventText = `${getPlayerName(event.player)} discarded a card`;
             }

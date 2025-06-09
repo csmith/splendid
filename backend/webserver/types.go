@@ -14,6 +14,7 @@ const (
 	MessageTypeGameUpdate MessageType = "game_update"
 	MessageTypeAction     MessageType = "action"
 	MessageTypeError      MessageType = "error"
+	MessageTypePlayerID   MessageType = "player_id"
 )
 
 // WebSocketMessage is the wrapper for all WebSocket communication
@@ -32,6 +33,11 @@ type GameUpdateMessage struct {
 // ErrorMessage contains error information
 type ErrorMessage struct {
 	Message string `json:"message"`
+}
+
+// PlayerIDMessage contains the player ID for a connected client
+type PlayerIDMessage struct {
+	PlayerID string `json:"player_id"`
 }
 
 // CreateGameResponse is returned when creating a new game

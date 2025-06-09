@@ -10,7 +10,7 @@ import (
 const EventPlayerDiscardPileCleared model.EventType = "player_discard_pile_cleared"
 
 type PlayerDiscardPileClearedEvent struct {
-	Player model.PlayerID
+	Player model.PlayerID `json:"player"`
 }
 
 func (e *PlayerDiscardPileClearedEvent) Type() model.EventType {

@@ -2,13 +2,14 @@ package events
 
 import (
 	"encoding/json"
+
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 const EventPhaseUpdated model.EventType = "phase_updated"
 
 type PhaseUpdatedEvent struct {
-	NewPhase model.GamePhase
+	NewPhase model.GamePhase `json:"phase"`
 }
 
 func (e *PhaseUpdatedEvent) Type() model.EventType {
