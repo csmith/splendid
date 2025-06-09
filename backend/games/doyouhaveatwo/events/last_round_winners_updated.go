@@ -1,6 +1,9 @@
 package events
 
-import "github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+import (
+	"encoding/json"
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+)
 
 const EventLastRoundWinnersUpdated model.EventType = "last_round_winners_updated"
 
@@ -19,4 +22,12 @@ func (e *LastRoundWinnersUpdatedEvent) PlayerID() *model.PlayerID {
 func (e *LastRoundWinnersUpdatedEvent) Apply(g *model.Game) error {
 	g.LastRoundWinners = e.Winners
 	return nil
+}
+
+func (e *LastRoundWinnersUpdatedEvent) MarshalJSON() ([]byte, error) {
+	type Alias LastRoundWinnersUpdatedEvent
+	return json.Marshal(&struct {
+		Type model.EventType `json:"type"`
+		*Alias
+	}{e.Type(), (*Alias)(e)})
 }

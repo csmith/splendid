@@ -1,6 +1,9 @@
 package events
 
-import "github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+import (
+	"encoding/json"
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+)
 
 const EventPhaseUpdated model.EventType = "phase_updated"
 
@@ -19,4 +22,12 @@ func (e *PhaseUpdatedEvent) PlayerID() *model.PlayerID {
 func (e *PhaseUpdatedEvent) Apply(g *model.Game) error {
 	g.Phase = e.NewPhase
 	return nil
+}
+
+func (e *PhaseUpdatedEvent) MarshalJSON() ([]byte, error) {
+	type Alias PhaseUpdatedEvent
+	return json.Marshal(&struct {
+		Type model.EventType `json:"type"`
+		*Alias
+	}{e.Type(), (*Alias)(e)})
 }

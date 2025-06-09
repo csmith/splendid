@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
@@ -28,4 +29,12 @@ func (e *PlayerDiscardPileClearedEvent) Apply(g *model.Game) error {
 
 	player.DiscardPile = []model.Card{}
 	return nil
+}
+
+func (e *PlayerDiscardPileClearedEvent) MarshalJSON() ([]byte, error) {
+	type Alias PlayerDiscardPileClearedEvent
+	return json.Marshal(&struct {
+		Type model.EventType `json:"type"`
+		*Alias
+	}{e.Type(), (*Alias)(e)})
 }

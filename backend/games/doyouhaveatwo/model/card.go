@@ -12,23 +12,23 @@ type Card struct {
 	quantity    int
 }
 
-func (c *Card) Value() int {
+func (c Card) Value() int {
 	return c.value
 }
 
-func (c *Card) Name() string {
+func (c Card) Name() string {
 	return c.name
 }
 
-func (c *Card) Description() string {
+func (c Card) Description() string {
 	return c.description
 }
 
-func (c *Card) Quantity() int {
+func (c Card) Quantity() int {
 	return c.quantity
 }
 
-func (c *Card) MarshalJSON() ([]byte, error) {
+func (c Card) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.name)
 }
 

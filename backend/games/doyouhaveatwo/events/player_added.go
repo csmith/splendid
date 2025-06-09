@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
@@ -38,4 +39,12 @@ func (e *PlayerAddedEvent) Apply(g *model.Game) error {
 	g.Players = append(g.Players, newPlayer)
 
 	return nil
+}
+
+func (e *PlayerAddedEvent) MarshalJSON() ([]byte, error) {
+	type Alias PlayerAddedEvent
+	return json.Marshal(&struct {
+		Type model.EventType `json:"type"`
+		*Alias
+	}{e.Type(), (*Alias)(e)})
 }

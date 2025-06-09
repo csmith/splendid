@@ -1,6 +1,9 @@
 package events
 
-import "github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+import (
+	"encoding/json"
+	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+)
 
 const EventPlayerActionCompleted model.EventType = "player_action_completed"
 
@@ -22,4 +25,12 @@ func (e *PlayerActionCompletedEvent) Apply(g *model.Game) error {
 		player.PendingAction = model.Redactable[model.Action]{}
 	}
 	return nil
+}
+
+func (e *PlayerActionCompletedEvent) MarshalJSON() ([]byte, error) {
+	type Alias PlayerActionCompletedEvent
+	return json.Marshal(&struct {
+		Type model.EventType `json:"type"`
+		*Alias
+	}{e.Type(), (*Alias)(e)})
 }

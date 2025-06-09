@@ -39,8 +39,6 @@ func Redact(value any, playerID model.PlayerID) ([]byte, error) {
 				return `"REDACTED-ERROR"` // Return error on safe side
 			}
 
-			value := fullMatches[1]
-
 			// Split player IDs to avoid substring matches
 			playerIDs := strings.Split(playerIDsStr, ",")
 
@@ -48,7 +46,7 @@ func Redact(value any, playerID model.PlayerID) ([]byte, error) {
 			for _, id := range playerIDs {
 				if strings.TrimSpace(id) == string(playerID) {
 					// Player can see the value, return the actual value
-					return value
+					return fullMatches[1]
 				}
 			}
 

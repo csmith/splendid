@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
@@ -38,4 +39,12 @@ func (e *PlayerEliminatedEvent) Apply(g *model.Game) error {
 
 	player.IsOut = true
 	return nil
+}
+
+func (e *PlayerEliminatedEvent) MarshalJSON() ([]byte, error) {
+	type Alias PlayerEliminatedEvent
+	return json.Marshal(&struct {
+		Type model.EventType `json:"type"`
+		*Alias
+	}{e.Type(), (*Alias)(e)})
 }

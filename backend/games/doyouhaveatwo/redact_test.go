@@ -24,6 +24,20 @@ func TestRedact_BasicVisiblePlayer(t *testing.T) {
 	assert.Equal(t, `"secret-data"`, string(result))
 }
 
+func TestRedact_CardVisiblePlayer(t *testing.T) {
+	redactable := model.Redactable[model.Card]{
+		Value: model.CardPrincess,
+		VisibleTo: map[model.PlayerID]bool{
+			"player1": true,
+			"player2": false,
+		},
+	}
+
+	result, err := Redact(redactable, "player1")
+	require.NoError(t, err)
+	assert.Equal(t, `"Princess"`, string(result))
+}
+
 func TestRedact_BasicNonVisiblePlayer(t *testing.T) {
 	redactable := model.Redactable[string]{
 		Value: "secret-data",

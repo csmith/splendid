@@ -35,7 +35,7 @@ func (r Redactable[T]) MarshalJSON() ([]byte, error) {
 	result = append(result, visibility.String())
 
 	// Add the actual value as raw JSON
-	valueBytes, err := json.Marshal(r.Value)
+	valueBytes, err := json.Marshal(&r.Value)
 	if err != nil {
 		return nil, err
 	}
