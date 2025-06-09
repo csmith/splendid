@@ -53,6 +53,13 @@ func (i *EndTurnInput) Apply(g *model.Game, apply func(model.Event)) error {
 		apply(&events.PhaseUpdatedEvent{
 			NewPhase: model.PhaseDraw,
 		})
+
+		// If the new player is protected, their protection wanes
+		if g.Players[nextPlayerIndex].IsProtected {
+			apply(&events.PlayerProtectionClearedEvent{
+				Player: g.Players[nextPlayerIndex].ID,
+			})
+		}
 	}
 
 	return nil

@@ -20,6 +20,29 @@ func (i *StartRoundInput) PlayerID() *model.PlayerID {
 }
 
 func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
+	for _, player := range g.Players {
+		if player.IsOut {
+			apply(&events.PlayerRestoredEvent{
+				Player: player.ID,
+			})
+		}
+		if player.IsProtected {
+			apply(&events.PlayerProtectionClearedEvent{
+				Player: player.ID,
+			})
+		}
+		if len(player.DiscardPile) > 0 {
+			apply(&events.PlayerDiscardPileClearedEvent{
+				Player: player.ID,
+			})
+		}
+		if len(player.Hand) > 0 {
+			apply(&events.PlayerHandClearedEvent{
+				Player: player.ID,
+			})
+		}
+	}
+
 	// Increment round
 	apply(&events.RoundUpdatedEvent{
 		NewRound: g.Round + 1,
@@ -50,22 +73,6 @@ func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 	apply(&events.DeckUpdatedEvent{
 		NewDeck: deck,
 	})
-
-	// Reset all player states first
-	for _, player := range g.Players {
-		apply(&events.PlayerRestoredEvent{
-			Player: player.ID,
-		})
-		apply(&events.PlayerProtectionClearedEvent{
-			Player: player.ID,
-		})
-		apply(&events.PlayerDiscardPileClearedEvent{
-			Player: player.ID,
-		})
-		apply(&events.PlayerHandClearedEvent{
-			Player: player.ID,
-		})
-	}
 
 	// Remove top card from deck
 	apply(&events.CardRemovedEvent{})
