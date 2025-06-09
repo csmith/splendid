@@ -9,7 +9,7 @@ import (
 )
 
 type StartGameAction struct {
-	Player model.PlayerID
+	Player model.PlayerID `json:"player"`
 }
 
 func (a *StartGameAction) PlayerID() model.PlayerID {

@@ -9,8 +9,8 @@ import (
 )
 
 type AddPlayerAction struct {
-	NewPlayerID   model.PlayerID
-	NewPlayerName string
+	NewPlayerID   model.PlayerID `json:"new_player_id"`
+	NewPlayerName string         `json:"new_player_name"`
 }
 
 func (a *AddPlayerAction) PlayerID() model.PlayerID {

@@ -9,7 +9,7 @@ import (
 )
 
 type DrawCardAction struct {
-	Player model.PlayerID
+	Player model.PlayerID `json:"player"`
 }
 
 func (a *DrawCardAction) PlayerID() model.PlayerID {

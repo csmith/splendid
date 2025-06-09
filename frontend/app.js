@@ -308,30 +308,38 @@ function formatActionText(action) {
             return 'Draw Card';
         case 'play_guard':
             if (!action.target_player && !action.guessed_rank) {
-                return 'Play Guard';
+                return 'Play Guard - Choose Target';
             } else if (!action.guessed_rank) {
-                return `Play Guard → Target: ${getPlayerName(action.target_player)}`;
+                return `Choose Card to Guess (vs ${getPlayerName(action.target_player)})`;
             } else {
-                return `Play Guard → Target: ${getPlayerName(action.target_player)}, Guess: ${getCardName(action.guessed_rank)}`;
+                return `Confirm: Guard vs ${getPlayerName(action.target_player)} (Guess: ${getCardName(action.guessed_rank)})`;
             }
-        case 'play_card_no_target':
-            return `Play ${action.card_name}`;
-        case 'play_card_target_any':
+        case 'play_handmaid':
+        case 'play_countess':
+        case 'play_princess':
+            return `Play ${action.card_name || getCardNameFromAction(action.type)}`;
+        case 'play_priest':
+        case 'play_baron':
+        case 'play_king':
             if (!action.target_player) {
-                return `Play ${action.card_name}`;
+                return `Play ${action.card_name || getCardNameFromAction(action.type)} - Choose Target`;
             } else {
-                return `Play ${action.card_name} → Target: ${getPlayerName(action.target_player)}`;
+                return `${action.card_name || getCardNameFromAction(action.type)} → ${getPlayerName(action.target_player)}`;
             }
-        case 'play_card_target_others':
+        case 'play_prince':
             if (!action.target_player) {
-                return `Play ${action.card_name}`;
+                return `Play ${action.card_name || getCardNameFromAction(action.type)} - Choose Target`;
             } else {
-                return `Play ${action.card_name} → Target: ${getPlayerName(action.target_player)}`;
+                return `${action.card_name || getCardNameFromAction(action.type)} → ${getPlayerName(action.target_player)}`;
             }
         case 'discard_card':
             return `Discard ${action.card_name}`;
         default:
-            return action.type;
+            // Convert snake_case to Title Case for unknown action types
+            return action.type
+                .split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
     }
 }
 
@@ -344,6 +352,15 @@ function getPlayerName(playerID) {
 function getCardName(rank) {
     const cardEntry = Object.entries(CARD_INFO).find(([name, info]) => info.value === rank);
     return cardEntry ? cardEntry[0] : `Card ${rank}`;
+}
+
+function getCardNameFromAction(actionType) {
+    // Convert action type like "play_priest" to "Priest"
+    if (actionType.startsWith('play_')) {
+        const cardName = actionType.substring(5); // Remove "play_"
+        return cardName.charAt(0).toUpperCase() + cardName.slice(1);
+    }
+    return actionType;
 }
 
 function sendAction(action) {

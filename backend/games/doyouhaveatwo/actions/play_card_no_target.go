@@ -10,8 +10,8 @@ import (
 )
 
 type PlayCardNoTargetAction struct {
-	Player   model.PlayerID
-	CardName string
+	Player   model.PlayerID `json:"player"`
+	CardName string         `json:"card_name"`
 }
 
 func (a *PlayCardNoTargetAction) PlayerID() model.PlayerID {

@@ -10,9 +10,9 @@ import (
 )
 
 type PlayCardTargetOthersAction struct {
-	Player       model.PlayerID
-	CardName     string
-	TargetPlayer *model.PlayerID
+	Player       model.PlayerID  `json:"player"`
+	CardName     string          `json:"card_name"`
+	TargetPlayer *model.PlayerID `json:"target_player"`
 }
 
 func (a *PlayCardTargetOthersAction) PlayerID() model.PlayerID {

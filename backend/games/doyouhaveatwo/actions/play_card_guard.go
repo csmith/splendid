@@ -9,9 +9,9 @@ import (
 )
 
 type PlayCardGuardAction struct {
-	Player       model.PlayerID
-	TargetPlayer *model.PlayerID
-	GuessedRank  *int
+	Player       model.PlayerID  `json:"player"`
+	TargetPlayer *model.PlayerID `json:"target_player"`
+	GuessedRank  *int            `json:"guessed_rank"`
 }
 
 func (a *PlayCardGuardAction) PlayerID() model.PlayerID {
