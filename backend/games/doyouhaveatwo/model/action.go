@@ -2,6 +2,8 @@ package model
 
 import (
 	"fmt"
+
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 type InputType string
@@ -14,15 +16,15 @@ type Input interface {
 
 type Action interface {
 	fmt.Stringer
+	serialization.Typeable
 	PlayerID() PlayerID
 	IsComplete() bool
 	NextActions(*Game) []Action
 	ToInput() Input
-	Type() string
 }
 
 type GameUpdate struct {
 	Game             Game
-	Event            Event
-	AvailableActions map[PlayerID]Redactable[[]Action]
+	Event            *serialization.Box[Event]
+	AvailableActions map[PlayerID]Redactable[[]serialization.Box[Action]]
 }

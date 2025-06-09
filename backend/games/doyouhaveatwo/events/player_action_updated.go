@@ -1,20 +1,19 @@
 package events
 
 import (
-	"encoding/json"
-
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 const EventPlayerActionUpdated model.EventType = "player_action_updated"
 
 type PlayerActionUpdatedEvent struct {
-	Player model.PlayerID                 `json:"player"`
-	Action model.Redactable[model.Action] `json:"action"`
+	Player model.PlayerID                                     `json:"player"`
+	Action model.Redactable[*serialization.Box[model.Action]] `json:"action"`
 }
 
-func (e *PlayerActionUpdatedEvent) Type() model.EventType {
-	return EventPlayerActionUpdated
+func (e *PlayerActionUpdatedEvent) Type() serialization.Specifier {
+	return specifier("player_action_updated")
 }
 
 func (e *PlayerActionUpdatedEvent) PlayerID() *model.PlayerID {
@@ -27,12 +26,4 @@ func (e *PlayerActionUpdatedEvent) Apply(g *model.Game) error {
 		player.PendingAction = e.Action
 	}
 	return nil
-}
-
-func (e *PlayerActionUpdatedEvent) MarshalJSON() ([]byte, error) {
-	type Alias PlayerActionUpdatedEvent
-	return json.Marshal(&struct {
-		Type model.EventType `json:"type"`
-		*Alias
-	}{e.Type(), (*Alias)(e)})
 }

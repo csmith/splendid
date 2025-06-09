@@ -358,38 +358,47 @@ function updateActionsList() {
 }
 
 function formatActionText(action) {
-    switch (action.type) {
+    // Extract action type (remove dyhat:a: prefix if present)
+    const actionType = action.type.startsWith('dyhat:a:') ? action.type.substring(8) : action.type;
+    
+    switch (actionType) {
         case 'add_player':
             return 'Add Player';
         case 'start_game':
             return 'Start Game';
         case 'draw_card':
             return 'Draw Card';
-        case 'play_guard':
+        case 'play_card_with_guess':
+            // Guard card actions
             if (!action.target_player && !action.guessed_rank) {
-                return 'Play Guard';
+                return `Play ${action.card_name || 'Guard'}`;
             } else if (!action.guessed_rank) {
-                return `Guard: target ${getPlayerName(action.target_player)}`;
+                return `${action.card_name || 'Guard'}: target ${getPlayerName(action.target_player)}`;
             } else {
-                return `Guard: guess ${action.guessed_rank} (${getCardName(action.guessed_rank)})`;
+                return `${action.card_name || 'Guard'}: guess ${action.guessed_rank} (${getCardName(action.guessed_rank)})`;
             }
-        case 'play_handmaid':
-        case 'play_countess':
-        case 'play_princess':
-        case 'play_priest':
-        case 'play_baron':
-        case 'play_king':
-        case 'play_prince':
+        case 'play_card_target_others':
+            // Baron, Priest, King cards
             if (!action.target_player) {
-                return `Play ${action.card_name || getCardNameFromAction(action.type)}`;
+                return `Play ${action.card_name}`;
             } else {
-                return `${action.card_name || getCardNameFromAction(action.type)}: target ${getPlayerName(action.target_player)}`;
+                return `${action.card_name}: target ${getPlayerName(action.target_player)}`;
             }
+        case 'play_card_target_any':
+            // Prince card
+            if (!action.target_player) {
+                return `Play ${action.card_name}`;
+            } else {
+                return `${action.card_name}: target ${getPlayerName(action.target_player)}`;
+            }
+        case 'play_card_no_target':
+            // Handmaid, Countess, Princess cards
+            return `Play ${action.card_name}`;
         case 'discard_card':
             return `Play ${action.card_name} (no effect)`;
         default:
             // Convert snake_case to Title Case for unknown action types
-            return action.type
+            return actionType
                 .split('_')
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
@@ -441,8 +450,11 @@ function logGameEvent(event) {
     
     let eventText;
     
+    // Extract event type (remove dyhat:e: prefix if present)
+    const eventType = event.type.startsWith('dyhat:e:') ? event.type.substring(8) : event.type;
+    
     // Add event-specific details
-    switch (event.type) {
+    switch (eventType) {
         case 'player_added':
             eventText = `Player ${getPlayerName(event.player)} joined the game`;
             break;
@@ -511,6 +523,27 @@ function logGameEvent(event) {
             } else {
                 eventText = `${sourcePlayer}'s card was revealed to ${targetPlayers}`;
             }
+            break;
+        case 'hands_swapped':
+            eventText = `${getPlayerName(event.player1)} and ${getPlayerName(event.player2)} swapped hands`;
+            break;
+        case 'last_round_winners_updated':
+            eventText = `Last round winners updated`;
+            break;
+        case 'player_action_completed':
+            eventText = `${getPlayerName(event.player)} completed their action`;
+            break;
+        case 'player_action_started':
+            eventText = `${getPlayerName(event.player)} started their action`;
+            break;
+        case 'player_action_updated':
+            eventText = `${getPlayerName(event.player)} updated their action`;
+            break;
+        case 'player_hand_cleared':
+            eventText = `${getPlayerName(event.player)}'s hand was cleared`;
+            break;
+        case 'removed_card_dealt':
+            eventText = `The removed card was dealt to ${getPlayerName(event.to_player)}`;
             break;
         default:
             // For unknown event types, just show the type and any available info

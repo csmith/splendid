@@ -243,8 +243,10 @@ func (s *EngineTestSuite) thenTheFollowingEventOccurred(eventType string) error 
 	}
 
 	// Check if any event in the history matches the expected type
+	// The eventType parameter is just the name part, so we need to construct the full qualified name
+	expectedType := "dyhat:e:" + eventType
 	for _, event := range s.engine.EventHistory {
-		if string(event.Type()) == eventType {
+		if event.Type().String() == expectedType {
 			return nil
 		}
 	}
@@ -499,11 +501,9 @@ func (s *EngineTestSuite) thenTheGameShouldEnd() error {
 func (s *EngineTestSuite) thenPlayerShouldWinTheGame(playerID string) error {
 	// Check if WinnerDeclaredEvent occurred for this player
 	for _, event := range s.engine.EventHistory {
-		if event.Type() == events.EventWinnerDeclared {
-			if winnerEvent, ok := event.(*events.WinnerDeclaredEvent); ok {
-				if winnerEvent.Winner == model.PlayerID(playerID) {
-					return nil
-				}
+		if winnerEvent, ok := event.(*events.WinnerDeclaredEvent); ok {
+			if winnerEvent.Winner == model.PlayerID(playerID) {
+				return nil
 			}
 		}
 	}

@@ -1,12 +1,12 @@
 package actions
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 type PlayCardTargetOthersAction struct {
@@ -56,8 +56,8 @@ func (a *PlayCardTargetOthersAction) ToInput() model.Input {
 	}
 }
 
-func (a *PlayCardTargetOthersAction) Type() string {
-	return fmt.Sprintf("play_%s", strings.ToLower(a.CardName))
+func (a *PlayCardTargetOthersAction) Type() serialization.Specifier {
+	return specifier("play_card_target_others")
 }
 
 func (a *PlayCardTargetOthersAction) String() string {
@@ -85,15 +85,4 @@ func (a *PlayCardTargetOthersAction) generateTargetActions(g *model.Game) []mode
 	}
 
 	return actions
-}
-
-func (a *PlayCardTargetOthersAction) MarshalJSON() ([]byte, error) {
-	type Alias PlayCardTargetOthersAction
-	return json.Marshal(&struct {
-		Type string `json:"type"`
-		*Alias
-	}{
-		Type:  a.Type(),
-		Alias: (*Alias)(a),
-	})
 }

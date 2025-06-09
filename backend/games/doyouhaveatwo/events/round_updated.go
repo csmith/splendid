@@ -1,9 +1,8 @@
 package events
 
 import (
-	"encoding/json"
-
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 const EventRoundUpdated model.EventType = "round_updated"
@@ -12,8 +11,8 @@ type RoundUpdatedEvent struct {
 	NewRound int `json:"round"`
 }
 
-func (e *RoundUpdatedEvent) Type() model.EventType {
-	return EventRoundUpdated
+func (e *RoundUpdatedEvent) Type() serialization.Specifier {
+	return specifier("round_updated")
 }
 
 func (e *RoundUpdatedEvent) PlayerID() *model.PlayerID {
@@ -23,12 +22,4 @@ func (e *RoundUpdatedEvent) PlayerID() *model.PlayerID {
 func (e *RoundUpdatedEvent) Apply(g *model.Game) error {
 	g.Round = e.NewRound
 	return nil
-}
-
-func (e *RoundUpdatedEvent) MarshalJSON() ([]byte, error) {
-	type Alias RoundUpdatedEvent
-	return json.Marshal(&struct {
-		Type model.EventType `json:"type"`
-		*Alias
-	}{e.Type(), (*Alias)(e)})
 }

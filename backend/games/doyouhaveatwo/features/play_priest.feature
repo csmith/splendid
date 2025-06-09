@@ -14,40 +14,40 @@ Feature: Play Priest
 
   Scenario: Player is able to perform action play_priest when it's their turn and they have a Priest
     Given it is player A's turn
-    When player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest"}
-    And player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest", "target_player": "B"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest"}
+    And player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest", "target_player": "B"}
     Then no error occurs
     And player A should have 1 cards in discard pile
     And the following event occurred: "hand_revealed"
 
   Scenario: Player cannot perform action play_priest when it's not their turn
     Given it is player B's turn
-    When player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest"}
     Then an error occurs
 
   Scenario: Player cannot perform action play_priest when they don't have a Priest
     Given it is player B's turn
-    When player B sends action {"type": "play_priest", "player": "B", "card_name": "Priest"}
+    When player B sends action {"type": "dyhat:a:play_card_target_others", "player": "B", "card_name": "Priest"}
     Then an error occurs
 
   Scenario: Cannot target protected player with Priest
     Given it is player A's turn
     And player B is protected
-    When player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest"}
-    And player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest", "target_player": "B"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest"}
+    And player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest", "target_player": "B"}
     Then an error occurs
 
   Scenario: Cannot target eliminated player with Priest
     Given it is player A's turn
     And player B is eliminated
-    When player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest"}
-    And player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest", "target_player": "B"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest"}
+    And player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest", "target_player": "B"}
     Then an error occurs
 
   Scenario: Cannot target yourself with Priest
     Given it is player A's turn
-    When player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest"}
-    And player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest", "target_player": "A"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest"}
+    And player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest", "target_player": "A"}
     Then an error occurs
 
   Scenario: Available actions when player holds Priest
@@ -59,7 +59,7 @@ Feature: Play Priest
 
   Scenario: Available actions when player starts playing Priest
     Given it is player A's turn
-    When player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest"}
     Then no error occurs
     And the available actions should be:
       | player | action                          |
@@ -69,7 +69,7 @@ Feature: Play Priest
   Scenario: Available actions exclude protected players as targets
     Given it is player A's turn
     And player B is protected
-    When player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest"}
     Then no error occurs
     And the available actions should be:
       | player | action                          |
@@ -78,7 +78,7 @@ Feature: Play Priest
   Scenario: Available actions exclude eliminated players as targets
     Given it is player A's turn
     And player B is eliminated
-    When player A sends action {"type": "play_priest", "player": "A", "card_name": "Priest"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "Priest"}
     Then no error occurs
     And the available actions should be:
       | player | action                          |
@@ -97,6 +97,6 @@ Feature: Play Priest
     Given it is player A's turn
     And player B is eliminated
     And player C is protected
-    When player A sends action {"type": "discard_card", "player": "A", "card_name": "Priest"}
+    When player A sends action {"type": "dyhat:a:discard_card", "player": "A", "card_name": "Priest"}
     Then no error occurs
     And player A should have 1 cards in discard pile

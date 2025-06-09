@@ -1,10 +1,10 @@
 package events
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 const EventHandsSwapped model.EventType = "hands_swapped"
@@ -16,8 +16,8 @@ type HandsSwappedEvent struct {
 	ResultHandB model.Redactable[model.Card] `json:"hand_b"`
 }
 
-func (e *HandsSwappedEvent) Type() model.EventType {
-	return EventHandsSwapped
+func (e *HandsSwappedEvent) Type() serialization.Specifier {
+	return specifier("hands_swapped")
 }
 
 func (e *HandsSwappedEvent) PlayerID() *model.PlayerID {
@@ -56,12 +56,4 @@ func (e *HandsSwappedEvent) Apply(g *model.Game) error {
 	}
 
 	return nil
-}
-
-func (e *HandsSwappedEvent) MarshalJSON() ([]byte, error) {
-	type Alias HandsSwappedEvent
-	return json.Marshal(&struct {
-		Type model.EventType `json:"type"`
-		*Alias
-	}{e.Type(), (*Alias)(e)})
 }

@@ -14,7 +14,7 @@ Feature: Play Countess
 
   Scenario: Player is able to perform action play_countess when it's their turn and they have a Countess
     Given it is player A's turn
-    When player A sends action {"type": "play_countess", "player": "A", "card_name": "Countess"}
+    When player A sends action {"type": "dyhat:a:play_card_no_target", "player": "A", "card_name": "Countess"}
     Then no error occurs
     And player A should have 1 cards in discard pile
 
@@ -51,7 +51,7 @@ Feature: Play Countess
     And player A has the following cards in their hand:
       | King     |
       | Countess |
-    When player A sends action {"type": "play_king", "player": "A", "card_name": "King"}
+    When player A sends action {"type": "dyhat:a:play_card_target_others", "player": "A", "card_name": "King"}
     Then an error occurs
 
   Scenario: Player cannot play Prince when holding Countess
@@ -59,17 +59,17 @@ Feature: Play Countess
     And player A has the following cards in their hand:
       | Prince   |
       | Countess |
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
     Then an error occurs
 
   Scenario: Player cannot perform action play_countess when it's not their turn
     Given it is player B's turn
-    When player A sends action {"type": "play_countess", "player": "A", "card_name": "Countess"}
+    When player A sends action {"type": "dyhat:a:play_card_no_target", "player": "A", "card_name": "Countess"}
     Then an error occurs
 
   Scenario: Player cannot perform action play_countess when they don't have a Countess
     Given it is player B's turn
-    When player B sends action {"type": "play_countess", "player": "B", "card_name": "Countess"}
+    When player B sends action {"type": "dyhat:a:play_card_no_target", "player": "B", "card_name": "Countess"}
     Then an error occurs
 
   Scenario: Available actions when player holds Countess with a lesser card
@@ -81,6 +81,6 @@ Feature: Play Countess
 
   Scenario: Countess action is immediately complete
     Given it is player A's turn
-    When player A sends action {"type": "play_countess", "player": "A", "card_name": "Countess"}
+    When player A sends action {"type": "dyhat:a:play_card_no_target", "player": "A", "card_name": "Countess"}
     Then no error occurs
     And it should be player B's turn

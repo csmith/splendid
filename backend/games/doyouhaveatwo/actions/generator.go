@@ -18,7 +18,7 @@ func (ag *DefaultActionGenerator) GenerateActionsForPlayer(g *model.Game, player
 
 	// If player has a pending action, return next steps
 	if player.PendingAction.Value() != nil {
-		return player.PendingAction.Value().NextActions(g)
+		return player.PendingAction.Value().Value.NextActions(g)
 	}
 
 	// Otherwise, generate initial actions based on game state
@@ -71,8 +71,9 @@ func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *
 				case model.CardGuard:
 					// Check if there are valid targets for Guard
 					if ag.hasValidTargetsForOthers(g, player.ID) {
-						actions = append(actions, &PlayCardGuardAction{
-							Player: player.ID,
+						actions = append(actions, &PlayCardWithGuessAction{
+							Player:   player.ID,
+							CardName: "Guard",
 						})
 					} else {
 						// No valid targets, offer discard instead

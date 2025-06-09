@@ -6,6 +6,7 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 type Engine struct {
@@ -75,21 +76,26 @@ func (e *Engine) applyEvent(event model.Event) error {
 
 	e.updateChan <- model.GameUpdate{
 		Game:             e.Game,
-		Event:            event,
+		Event:            &serialization.Box[model.Event]{Value: event},
 		AvailableActions: e.generateAvailableActions(),
 	}
 
 	return nil
 }
 
-func (e *Engine) generateAvailableActions() map[model.PlayerID]model.Redactable[[]model.Action] {
-	result := make(map[model.PlayerID]model.Redactable[[]model.Action])
+func (e *Engine) generateAvailableActions() map[model.PlayerID]model.Redactable[[]serialization.Box[model.Action]] {
+	result := make(map[model.PlayerID]model.Redactable[[]serialization.Box[model.Action]])
 
 	for _, player := range e.Game.Players {
 		playerActions := e.actionGenerator.GenerateActionsForPlayer(&e.Game, player.ID)
 
 		if len(playerActions) > 0 {
-			result[player.ID] = model.NewRedactable(playerActions, player.ID)
+			// Convert to boxes
+			boxedActions := make([]serialization.Box[model.Action], len(playerActions))
+			for i, action := range playerActions {
+				boxedActions[i] = serialization.Box[model.Action]{Value: action}
+			}
+			result[player.ID] = model.NewRedactable(boxedActions, player.ID)
 		}
 	}
 
@@ -145,7 +151,7 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 	if player.PendingAction.Value() == nil {
 		return e.applyEvent(&events.PlayerActionStartedEvent{
 			Player: playerID,
-			Action: model.NewRedactable(action, playerID),
+			Action: model.NewRedactable(&serialization.Box[model.Action]{Value: action}, playerID),
 		})
 	} else {
 		// Check if the action is now complete after update
@@ -166,7 +172,7 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 		} else {
 			return e.applyEvent(&events.PlayerActionUpdatedEvent{
 				Player: playerID,
-				Action: model.NewRedactable(action, playerID),
+				Action: model.NewRedactable(&serialization.Box[model.Action]{Value: action}, playerID),
 			})
 		}
 	}

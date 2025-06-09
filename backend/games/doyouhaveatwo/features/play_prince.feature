@@ -14,8 +14,8 @@ Feature: Play Prince
 
   Scenario: Player is able to perform action play_prince when it's their turn and they have a Prince
     Given it is player A's turn
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
-    And player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince", "target_player": "B"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
+    And player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince", "target_player": "B"}
     Then no error occurs
     And player A should have 1 cards in discard pile
     And player B should have 1 cards in discard pile
@@ -23,8 +23,8 @@ Feature: Play Prince
 
   Scenario: Prince can target self
     Given it is player A's turn
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
-    And player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince", "target_player": "A"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
+    And player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince", "target_player": "A"}
     Then no error occurs
     And player A should have 2 cards in discard pile
     And the following event occurred: "card_dealt"
@@ -33,8 +33,8 @@ Feature: Play Prince
     Given it is player A's turn
     And player B has the following cards in their hand:
       | Princess |
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
-    And player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince", "target_player": "B"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
+    And player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince", "target_player": "B"}
     Then no error occurs
     And player A should have 1 cards in discard pile
     And player B should be eliminated
@@ -44,46 +44,46 @@ Feature: Play Prince
     Given it is player A's turn
     And the deck is empty
     And the removed card is a Princess
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
-    And player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince", "target_player": "B"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
+    And player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince", "target_player": "B"}
     Then no error occurs
     And player B should have card "Princess" in their hand
 
   Scenario: Player cannot perform action play_prince when it's not their turn
     Given it is player B's turn
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
     Then an error occurs
 
   Scenario: Player cannot perform action play_prince when they don't have a Prince
     Given it is player B's turn
-    When player B sends action {"type": "play_prince", "player": "B", "card_name": "Prince"}
+    When player B sends action {"type": "dyhat:a:play_card_target_any", "player": "B", "card_name": "Prince"}
     Then an error occurs
 
   Scenario: Cannot target protected player with Prince
     Given it is player A's turn
     And player B is protected
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
-    And player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince", "target_player": "B"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
+    And player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince", "target_player": "B"}
     Then an error occurs
 
   Scenario: Cannot target eliminated player with Prince
     Given it is player A's turn
     And player B is eliminated
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
-    And player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince", "target_player": "B"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
+    And player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince", "target_player": "B"}
     Then an error occurs
 
   Scenario: Can target yourself with Prince
     Given it is player A's turn
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
-    And player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince", "target_player": "A"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
+    And player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince", "target_player": "A"}
     Then no error occurs
 
   Scenario: Must target self when all other players are protected
     Given it is player A's turn
     And player B is protected
     And player C is protected
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
     Then the available actions should be:
       | player | action                          |
       | A      | play_prince(player=A, target=A) |
@@ -97,7 +97,7 @@ Feature: Play Prince
 
   Scenario: Available actions when player starts playing Prince
     Given it is player A's turn
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
     Then no error occurs
     And the available actions should be:
       | player | action                          |
@@ -108,7 +108,7 @@ Feature: Play Prince
   Scenario: Available actions exclude protected players as targets
     Given it is player A's turn
     And player B is protected
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
     Then no error occurs
     And the available actions should be:
       | player | action                          |
@@ -118,7 +118,7 @@ Feature: Play Prince
   Scenario: Available actions exclude eliminated players as targets
     Given it is player A's turn
     And player B is eliminated
-    When player A sends action {"type": "play_prince", "player": "A", "card_name": "Prince"}
+    When player A sends action {"type": "dyhat:a:play_card_target_any", "player": "A", "card_name": "Prince"}
     Then no error occurs
     And the available actions should be:
       | player | action                          |

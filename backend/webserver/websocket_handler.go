@@ -12,6 +12,7 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 type WebSocketHandler struct {
@@ -88,7 +89,7 @@ func (h *WebSocketHandler) sendInitialGameState(conn *websocket.Conn, session *G
 	gameUpdate := model.GameUpdate{
 		Game:             session.Engine.Game,
 		Event:            nil, // No specific event for initial state
-		AvailableActions: make(map[model.PlayerID]model.Redactable[[]model.Action]),
+		AvailableActions: make(map[model.PlayerID]model.Redactable[[]serialization.Box[model.Action]]),
 	}
 
 	// For now, we'll create an empty map and let the regular update flow handle actions
