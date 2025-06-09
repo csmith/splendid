@@ -308,32 +308,26 @@ function formatActionText(action) {
             return 'Draw Card';
         case 'play_guard':
             if (!action.target_player && !action.guessed_rank) {
-                return 'Play Guard - Choose Target';
+                return 'Play Guard';
             } else if (!action.guessed_rank) {
-                return `Choose Card to Guess (vs ${getPlayerName(action.target_player)})`;
+                return `Guard: target ${getPlayerName(action.target_player)}`;
             } else {
-                return `Confirm: Guard vs ${getPlayerName(action.target_player)} (Guess: ${getCardName(action.guessed_rank)})`;
+                return `Guard: guess ${action.guessed_rank} (${getCardName(action.guessed_rank)})`;
             }
         case 'play_handmaid':
         case 'play_countess':
         case 'play_princess':
-            return `Play ${action.card_name || getCardNameFromAction(action.type)}`;
         case 'play_priest':
         case 'play_baron':
         case 'play_king':
-            if (!action.target_player) {
-                return `Play ${action.card_name || getCardNameFromAction(action.type)} - Choose Target`;
-            } else {
-                return `${action.card_name || getCardNameFromAction(action.type)} → ${getPlayerName(action.target_player)}`;
-            }
         case 'play_prince':
             if (!action.target_player) {
-                return `Play ${action.card_name || getCardNameFromAction(action.type)} - Choose Target`;
+                return `Play ${action.card_name || getCardNameFromAction(action.type)}`;
             } else {
-                return `${action.card_name || getCardNameFromAction(action.type)} → ${getPlayerName(action.target_player)}`;
+                return `${action.card_name || getCardNameFromAction(action.type)}: target ${getPlayerName(action.target_player)}`;
             }
         case 'discard_card':
-            return `Discard ${action.card_name}`;
+            return `Play ${action.card_name} (no effect)`;
         default:
             // Convert snake_case to Title Case for unknown action types
             return action.type
