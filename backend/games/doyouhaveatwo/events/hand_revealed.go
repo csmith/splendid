@@ -33,19 +33,9 @@ func (e *HandRevealedEvent) Apply(g *model.Game) error {
 		return fmt.Errorf("source player %s has no cards to reveal", e.SourcePlayer)
 	}
 
-	// Create a new redacted card visible to source and all target players
-	card := sourcePlayer.Hand[0].Value
-	visibility := make(map[model.PlayerID]bool)
-	visibility[e.SourcePlayer] = true
-	for _, targetPlayer := range e.TargetPlayers {
-		visibility[targetPlayer] = true
-	}
+	players := append([]model.PlayerID{e.SourcePlayer}, e.TargetPlayers...)
 
-	// Set result for client visibility
-	e.ResultRevealedCard = model.Redactable[model.Card]{
-		Value:     card,
-		VisibleTo: visibility,
-	}
+	e.ResultRevealedCard = sourcePlayer.Hand[0].WithVisibility(players...)
 
 	return nil
 }

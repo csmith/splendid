@@ -37,7 +37,7 @@ func (e *CardDealtEvent) Apply(g *model.Game) error {
 	g.Deck = g.Deck[1:]
 
 	// Make card visible to the player
-	card.VisibleTo[e.ToPlayer] = true
+	card = card.WithVisibility(e.ToPlayer)
 
 	// Add to player's hand
 	player.Hand = append(player.Hand, card)

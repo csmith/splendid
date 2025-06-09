@@ -36,7 +36,7 @@ func (e *RemovedCardDealtEvent) Apply(g *model.Game) error {
 	card := *g.RemovedCard
 
 	// Make card visible to the player
-	card.VisibleTo[e.ToPlayer] = true
+	card = card.WithVisibility(e.ToPlayer)
 
 	// Add to player's hand
 	player.Hand = append(player.Hand, card)

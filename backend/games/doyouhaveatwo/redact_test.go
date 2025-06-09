@@ -11,13 +11,7 @@ import (
 )
 
 func TestRedact_BasicVisiblePlayer(t *testing.T) {
-	redactable := model.Redactable[string]{
-		Value: "secret-data",
-		VisibleTo: map[model.PlayerID]bool{
-			"player1": true,
-			"player2": false,
-		},
-	}
+	redactable := model.NewRedactable("secret-data", "player1")
 
 	result, err := Redact(redactable, "player1")
 	require.NoError(t, err)
@@ -25,13 +19,7 @@ func TestRedact_BasicVisiblePlayer(t *testing.T) {
 }
 
 func TestRedact_CardVisiblePlayer(t *testing.T) {
-	redactable := model.Redactable[model.Card]{
-		Value: model.CardPrincess,
-		VisibleTo: map[model.PlayerID]bool{
-			"player1": true,
-			"player2": false,
-		},
-	}
+	redactable := model.NewRedactable(model.CardPrincess, "player1")
 
 	result, err := Redact(redactable, "player1")
 	require.NoError(t, err)
@@ -39,13 +27,7 @@ func TestRedact_CardVisiblePlayer(t *testing.T) {
 }
 
 func TestRedact_BasicNonVisiblePlayer(t *testing.T) {
-	redactable := model.Redactable[string]{
-		Value: "secret-data",
-		VisibleTo: map[model.PlayerID]bool{
-			"player1": true,
-			"player2": false,
-		},
-	}
+	redactable := model.NewRedactable("secret-data", "player1")
 
 	result, err := Redact(redactable, "player2")
 	require.NoError(t, err)
@@ -53,13 +35,7 @@ func TestRedact_BasicNonVisiblePlayer(t *testing.T) {
 }
 
 func TestRedact_UnknownPlayer(t *testing.T) {
-	redactable := model.Redactable[string]{
-		Value: "secret-data",
-		VisibleTo: map[model.PlayerID]bool{
-			"player1": true,
-			"player2": false,
-		},
-	}
+	redactable := model.NewRedactable("secret-data", "player1")
 
 	result, err := Redact(redactable, "player3")
 	require.NoError(t, err)
@@ -67,20 +43,8 @@ func TestRedact_UnknownPlayer(t *testing.T) {
 }
 
 func TestRedact_NestedRedactable(t *testing.T) {
-	innerRedactable := model.Redactable[string]{
-		Value: "inner-secret",
-		VisibleTo: map[model.PlayerID]bool{
-			"player1": true,
-		},
-	}
-
-	outerRedactable := model.Redactable[model.Redactable[string]]{
-		Value: innerRedactable,
-		VisibleTo: map[model.PlayerID]bool{
-			"player1": true,
-			"player2": true,
-		},
-	}
+	innerRedactable := model.NewRedactable("inner-secret", "player1")
+	outerRedactable := model.NewRedactable(innerRedactable, "player1", "player2")
 
 	// Test with player1 - can see both outer and inner
 	result1, err := Redact(outerRedactable, "player1")
@@ -105,19 +69,9 @@ func TestRedact_MultipleRedactables(t *testing.T) {
 	}
 
 	data := TestStruct{
-		Public: "everyone-can-see",
-		Secret1: model.Redactable[string]{
-			Value: "secret-string",
-			VisibleTo: map[model.PlayerID]bool{
-				"player1": true,
-			},
-		},
-		Secret2: model.Redactable[int]{
-			Value: 42,
-			VisibleTo: map[model.PlayerID]bool{
-				"player2": true,
-			},
-		},
+		Public:  "everyone-can-see",
+		Secret1: model.NewRedactable("secret-string", "player1"),
+		Secret2: model.NewRedactable(42, "player2"),
 	}
 
 	// Test with player1 - can see secret1 but not secret2
@@ -136,10 +90,7 @@ func TestRedact_MultipleRedactables(t *testing.T) {
 }
 
 func TestRedact_EmptyVisibility(t *testing.T) {
-	redactable := model.Redactable[string]{
-		Value:     "secret-data",
-		VisibleTo: map[model.PlayerID]bool{},
-	}
+	redactable := model.NewRedactable("secret-data")
 
 	result, err := Redact(redactable, "player1")
 	require.NoError(t, err)
@@ -164,14 +115,7 @@ func TestRedact_NonRedactableValue(t *testing.T) {
 }
 
 func TestRedact_PlayerIDSubstring(t *testing.T) {
-	redactable := model.Redactable[string]{
-		Value: "secret-data",
-		VisibleTo: map[model.PlayerID]bool{
-			"player1":   true,
-			"player11":  false,
-			"xplayer1x": false,
-		},
-	}
+	redactable := model.NewRedactable("secret-data", "player1")
 
 	// Test that "player1" doesn't match "player11" or "xplayer1x"
 	result, err := Redact(redactable, "player1")

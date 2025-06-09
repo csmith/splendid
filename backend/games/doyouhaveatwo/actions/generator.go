@@ -20,8 +20,8 @@ func (ag *DefaultActionGenerator) GenerateActionsForPlayer(g *model.Game, player
 	}
 
 	// If player has a pending action, return next steps
-	if player.PendingAction.Value != nil {
-		return player.PendingAction.Value.NextActions(g)
+	if player.PendingAction.Value() != nil {
+		return player.PendingAction.Value().NextActions(g)
 	}
 
 	// Otherwise, generate initial actions based on game state
@@ -58,10 +58,10 @@ func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *
 		hasCountess := false
 		hasPrinceOrKing := false
 		for _, handCard := range player.Hand {
-			if handCard.Value == model.CardCountess {
+			if handCard.Value() == model.CardCountess {
 				hasCountess = true
 			}
-			if handCard.Value == model.CardPrince || handCard.Value == model.CardKing {
+			if handCard.Value() == model.CardPrince || handCard.Value() == model.CardKing {
 				hasPrinceOrKing = true
 			}
 		}
@@ -74,47 +74,46 @@ func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *
 			})
 		} else {
 			for _, handCard := range player.Hand {
-				if handCard.VisibleTo[player.ID] {
-					switch handCard.Value {
-					case model.CardGuard:
-						// Check if there are valid targets for Guard
-						if ag.hasValidTargetsForOthers(g, player.ID) {
-							actions = append(actions, &PlayCardGuardAction{
-								Player: player.ID,
-							})
-						} else {
-							// No valid targets, offer discard instead
-							actions = append(actions, &DiscardCardAction{
-								Player:   player.ID,
-								CardName: handCard.Value.Name(),
-							})
-						}
-					case model.CardHandmaid, model.CardCountess, model.CardPrincess:
-						actions = append(actions, &PlayCardNoTargetAction{
-							Player:   player.ID,
-							CardName: handCard.Value.Name(),
+				// Note: All cards in hand are visible to the player by default
+				switch handCard.Value() {
+				case model.CardGuard:
+					// Check if there are valid targets for Guard
+					if ag.hasValidTargetsForOthers(g, player.ID) {
+						actions = append(actions, &PlayCardGuardAction{
+							Player: player.ID,
 						})
-					case model.CardBaron, model.CardPriest, model.CardKing:
-						// Check if there are valid targets for these cards
-						if ag.hasValidTargetsForOthers(g, player.ID) {
-							actions = append(actions, &PlayCardTargetOthersAction{
-								Player:   player.ID,
-								CardName: handCard.Value.Name(),
-							})
-						} else {
-							// No valid targets, offer discard instead
-							actions = append(actions, &DiscardCardAction{
-								Player:   player.ID,
-								CardName: handCard.Value.Name(),
-							})
-						}
-					case model.CardPrince:
-						// Prince can always target self if no others available
-						actions = append(actions, &PlayCardTargetAnyAction{
+					} else {
+						// No valid targets, offer discard instead
+						actions = append(actions, &DiscardCardAction{
 							Player:   player.ID,
-							CardName: handCard.Value.Name(),
+							CardName: handCard.Value().Name(),
 						})
 					}
+				case model.CardHandmaid, model.CardCountess, model.CardPrincess:
+					actions = append(actions, &PlayCardNoTargetAction{
+						Player:   player.ID,
+						CardName: handCard.Value().Name(),
+					})
+				case model.CardBaron, model.CardPriest, model.CardKing:
+					// Check if there are valid targets for these cards
+					if ag.hasValidTargetsForOthers(g, player.ID) {
+						actions = append(actions, &PlayCardTargetOthersAction{
+							Player:   player.ID,
+							CardName: handCard.Value().Name(),
+						})
+					} else {
+						// No valid targets, offer discard instead
+						actions = append(actions, &DiscardCardAction{
+							Player:   player.ID,
+							CardName: handCard.Value().Name(),
+						})
+					}
+				case model.CardPrince:
+					// Prince can always target self if no others available
+					actions = append(actions, &PlayCardTargetAnyAction{
+						Player:   player.ID,
+						CardName: handCard.Value().Name(),
+					})
 				}
 			}
 		}

@@ -33,7 +33,7 @@ func (i *PlayGuardInput) Apply(g *model.Game, apply func(model.Event)) error {
 	if targetPlayer != nil && len(targetPlayer.Hand) > 0 {
 		// Check if any card in target's hand matches the guessed rank
 		for _, handCard := range targetPlayer.Hand {
-			if handCard.Value.Value() == i.GuessedRank {
+			if handCard.Value().Value() == i.GuessedRank {
 				// Guess is correct - eliminate the target player (applied immediately!)
 				apply(&events.PlayerEliminatedEvent{
 					Player: i.TargetPlayer,

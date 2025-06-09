@@ -58,7 +58,7 @@ func (i *ShowdownInput) Apply(g *model.Game, apply func(model.Event)) error {
 	for _, playerID := range activePlayers {
 		player := g.GetPlayer(playerID)
 		if player != nil && len(player.Hand) > 0 {
-			cardValue := player.Hand[0].Value.Value()
+			cardValue := player.Hand[0].Value().Value()
 			if cardValue > highestValue {
 				highestValue = cardValue
 				winners = []model.PlayerID{playerID}

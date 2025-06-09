@@ -9,8 +9,8 @@ import (
 const EventPlayerActionUpdated model.EventType = "player_action_updated"
 
 type PlayerActionUpdatedEvent struct {
-	Player model.PlayerID `json:"player"`
-	Action model.Action   `json:"action"`
+	Player model.PlayerID                 `json:"player"`
+	Action model.Redactable[model.Action] `json:"action"`
 }
 
 func (e *PlayerActionUpdatedEvent) Type() model.EventType {
@@ -24,10 +24,7 @@ func (e *PlayerActionUpdatedEvent) PlayerID() *model.PlayerID {
 func (e *PlayerActionUpdatedEvent) Apply(g *model.Game) error {
 	player := g.GetPlayer(e.Player)
 	if player != nil {
-		player.PendingAction = model.Redactable[model.Action]{
-			Value:     e.Action,
-			VisibleTo: map[model.PlayerID]bool{e.Player: true},
-		}
+		player.PendingAction = e.Action
 	}
 	return nil
 }

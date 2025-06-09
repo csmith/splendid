@@ -39,38 +39,20 @@ func (e *HandsSwappedEvent) Apply(g *model.Game) error {
 		return fmt.Errorf("players must have cards to swap hands")
 	}
 
-	// Create visibility for both players
-	visibility := make(map[model.PlayerID]bool)
-	visibility[e.PlayerA] = true
-	visibility[e.PlayerB] = true
-
 	// Set result cards visible to both players
-	e.ResultHandA = model.Redactable[model.Card]{
-		Value:     playerA.Hand[0].Value,
-		VisibleTo: visibility,
-	}
-
-	e.ResultHandB = model.Redactable[model.Card]{
-		Value:     playerB.Hand[0].Value,
-		VisibleTo: visibility,
-	}
+	e.ResultHandA = model.NewRedactable(playerA.Hand[0].Value(), e.PlayerA, e.PlayerB)
+	e.ResultHandB = model.NewRedactable(playerB.Hand[0].Value(), e.PlayerA, e.PlayerB)
 
 	// Swap the hands
 	playerA.Hand, playerB.Hand = playerB.Hand, playerA.Hand
 
 	// Update visibility for swapped cards
-	for _, card := range playerA.Hand {
-		if card.VisibleTo != nil {
-			delete(card.VisibleTo, e.PlayerB)
-			card.VisibleTo[e.PlayerA] = true
-		}
+	for i, card := range playerA.Hand {
+		playerA.Hand[i] = card.WithVisibility(e.PlayerA)
 	}
 
-	for _, card := range playerB.Hand {
-		if card.VisibleTo != nil {
-			delete(card.VisibleTo, e.PlayerA)
-			card.VisibleTo[e.PlayerB] = true
-		}
+	for i, card := range playerB.Hand {
+		playerB.Hand[i] = card.WithVisibility(e.PlayerB)
 	}
 
 	return nil

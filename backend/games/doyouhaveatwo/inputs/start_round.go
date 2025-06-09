@@ -88,10 +88,7 @@ func (i *StartRoundInput) createShuffledDeck() []model.Redactable[model.Card] {
 	// Add cards according to their quantities
 	for _, cardType := range model.CardTypes {
 		for j := 0; j < cardType.Quantity(); j++ {
-			deck = append(deck, model.Redactable[model.Card]{
-				Value:     cardType,
-				VisibleTo: make(map[model.PlayerID]bool),
-			})
+			deck = append(deck, model.NewRedactable(cardType))
 		}
 	}
 

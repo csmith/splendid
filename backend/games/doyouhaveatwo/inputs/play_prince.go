@@ -30,7 +30,7 @@ func (i *PlayPrinceInput) Apply(g *model.Game, apply func(model.Event)) error {
 	// Target player discards their hand
 	targetPlayer := g.GetPlayer(i.TargetPlayer)
 	if targetPlayer != nil && len(targetPlayer.Hand) > 0 {
-		discardedCard := targetPlayer.Hand[0].Value
+		discardedCard := targetPlayer.Hand[0].Value()
 
 		apply(&events.CardDiscardedEvent{
 			Player: i.TargetPlayer,

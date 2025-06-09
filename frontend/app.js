@@ -196,7 +196,6 @@ function updatePlayersList() {
 
         const handSize = player.hand ? player.hand.length : 0;
         const discardPile = player.discard_pile || [];
-        const lastDiscard = discardPile.length > 0 ? discardPile[discardPile.length - 1] : null;
 
         playerDiv.innerHTML = `
             <div class="player-name">${player.name} ${player.id === currentPlayerID ? '(You)' : ''}</div>
@@ -208,8 +207,39 @@ function updatePlayersList() {
                 ${player.is_out ? '<span class="status eliminated">Eliminated</span>' : ''}
                 ${player.is_protected ? '<span class="status protected">Protected</span>' : ''}
             </div>
-            ${lastDiscard ? `<div class="last-discard">Last played: ${lastDiscard}</div>` : ''}
+            ${discardPile.length > 0 ? `<div class="discard-pile">
+                <div class="discard-title">Played cards:</div>
+                <div class="discard-cards"></div>
+            </div>` : ''}
         `;
+
+        // Add discard pile cards if any exist
+        if (discardPile.length > 0) {
+            const discardCardsContainer = playerDiv.querySelector('.discard-cards');
+            discardPile.forEach(cardName => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card discard-card';
+                
+                if (cardName === "REDACTED") {
+                    cardDiv.classList.add('redacted');
+                    cardDiv.innerHTML = `
+                        <div class="card-value">?</div>
+                        <div class="card-name">Hidden</div>
+                    `;
+                } else if (typeof cardName === 'string') {
+                    const cardInfo = CARD_INFO[cardName];
+                    if (cardInfo) {
+                        cardDiv.onclick = () => showCardInfo(cardName);
+                        cardDiv.innerHTML = `
+                            <div class="card-value">${cardInfo.value}</div>
+                            <div class="card-name">${cardName}</div>
+                        `;
+                    }
+                }
+                
+                discardCardsContainer.appendChild(cardDiv);
+            });
+        }
 
         playersContainer.appendChild(playerDiv);
     });
@@ -384,6 +414,33 @@ function logGameEvent(event) {
             break;
         case 'winner_declared':
             eventText = `🎉 ${getPlayerName(event.winner)} wins the game! 🎉`;
+            break;
+        case 'deck_updated':
+            eventText = `Deck updated (${event.deck ? event.deck.length : 0} cards remaining)`;
+            break;
+        case 'card_removed':
+            if (event.removed_card && event.removed_card !== "REDACTED") {
+                eventText = `${event.removed_card} was removed from the deck`;
+            } else {
+                eventText = `A card was removed from the deck`;
+            }
+            break;
+        case 'player_restored':
+            eventText = `${getPlayerName(event.player)} was restored to the game`;
+            break;
+        case 'player_discard_pile_cleared':
+            eventText = `${getPlayerName(event.player)}'s discard pile was cleared`;
+            break;
+        case 'hand_revealed':
+            const sourcePlayer = getPlayerName(event.source_player);
+            const targetPlayers = event.target_players && event.target_players.length > 0 
+                ? event.target_players.map(getPlayerName).join(', ') 
+                : 'someone';
+            if (event.revealed_card && event.revealed_card !== "REDACTED") {
+                eventText = `${sourcePlayer}'s ${event.revealed_card} was revealed to ${targetPlayers}`;
+            } else {
+                eventText = `${sourcePlayer}'s card was revealed to ${targetPlayers}`;
+            }
             break;
         default:
             // For unknown event types, just show the type and any available info

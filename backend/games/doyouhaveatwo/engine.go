@@ -80,10 +80,7 @@ func (e *Engine) generateAvailableActions() map[model.PlayerID]model.Redactable[
 		playerActions := e.actionGenerator.GenerateActionsForPlayer(&e.Game, player.ID)
 
 		if len(playerActions) > 0 {
-			result[player.ID] = model.Redactable[[]model.Action]{
-				Value:     playerActions,
-				VisibleTo: map[model.PlayerID]bool{player.ID: true},
-			}
+			result[player.ID] = model.NewRedactable(playerActions, player.ID)
 		}
 	}
 
@@ -129,15 +126,15 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 	}
 
 	// If no pending action, start it; otherwise update it
-	if player.PendingAction.Value == nil {
+	if player.PendingAction.Value() == nil {
 		return e.applyEvent(&events.PlayerActionStartedEvent{
 			Player: playerID,
-			Action: action,
+			Action: model.NewRedactable(action, playerID),
 		})
 	} else {
 		err := e.applyEvent(&events.PlayerActionUpdatedEvent{
 			Player: playerID,
-			Action: action,
+			Action: model.NewRedactable(action, playerID),
 		})
 		if err != nil {
 			return err

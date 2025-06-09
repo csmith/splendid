@@ -243,11 +243,41 @@ button {
     color: white;
 }
 
-.last-discard {
+.discard-pile {
     margin-top: 8px;
+}
+
+.discard-title {
     font-size: 0.9rem;
     color: #4a5568;
-    font-style: italic;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.discard-cards {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.discard-card {
+    width: 60px !important;
+    height: 90px !important;
+    opacity: 0.7;
+    border-width: 1px !important;
+}
+
+.discard-card:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+.discard-card .card-value {
+    font-size: 1.4rem !important;
+}
+
+.discard-card .card-name {
+    font-size: 0.7rem !important;
 }
 
 /* Hand section */

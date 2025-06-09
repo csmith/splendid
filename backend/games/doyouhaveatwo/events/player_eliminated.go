@@ -31,8 +31,8 @@ func (e *PlayerEliminatedEvent) Apply(g *model.Game) error {
 	// Move all cards from hand to discard pile and populate ResultDiscardedCards
 	var discardedCards []model.Card
 	for _, handCard := range player.Hand {
-		discardedCards = append(discardedCards, handCard.Value)
-		player.DiscardPile = append(player.DiscardPile, handCard.Value)
+		discardedCards = append(discardedCards, handCard.Value())
+		player.DiscardPile = append(player.DiscardPile, handCard.Value())
 	}
 	player.Hand = []model.Redactable[model.Card]{}
 	e.ResultDiscardedCards = discardedCards

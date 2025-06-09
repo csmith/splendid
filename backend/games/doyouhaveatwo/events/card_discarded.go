@@ -32,7 +32,7 @@ func (e *CardDiscardedEvent) Apply(g *model.Game) error {
 	// Find and remove the card from player's hand
 	cardIndex := -1
 	for i, handCard := range player.Hand {
-		if handCard.Value.Value() == e.Card.Value() && handCard.Value.Name() == e.Card.Name() {
+		if handCard.Value().Value() == e.Card.Value() && handCard.Value().Name() == e.Card.Name() {
 			cardIndex = i
 			break
 		}

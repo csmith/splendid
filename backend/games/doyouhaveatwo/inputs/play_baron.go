@@ -45,8 +45,8 @@ func (i *PlayBaronInput) Apply(g *model.Game, apply func(model.Event)) error {
 	if currentPlayer != nil && targetPlayer != nil &&
 		len(currentPlayer.Hand) > 0 && len(targetPlayer.Hand) > 0 {
 
-		currentCard := currentPlayer.Hand[0].Value
-		targetCard := targetPlayer.Hand[0].Value
+		currentCard := currentPlayer.Hand[0].Value()
+		targetCard := targetPlayer.Hand[0].Value()
 
 		if currentCard.Value() < targetCard.Value() {
 			// Current player has lower value, eliminate them
