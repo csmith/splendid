@@ -1,9 +1,6 @@
 package actions
 
 import (
-	"crypto/rand"
-	"encoding/hex"
-
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
@@ -31,13 +28,8 @@ func (ag *DefaultActionGenerator) GenerateActionsForPlayer(g *model.Game, player
 func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *model.Player) []model.Action {
 	var actions []model.Action
 
-	// During setup phase, allow adding players and starting game
+	// During setup phase, allow starting game
 	if g.Phase == model.PhaseSetup {
-		if len(g.Players) < 4 {
-			actions = append(actions, &AddPlayerAction{
-				NewPlayerID: model.PlayerID(ag.generateRandomID()),
-			})
-		}
 		if len(g.Players) >= 2 {
 			actions = append(actions, &StartGameAction{
 				Player: player.ID,
@@ -120,12 +112,6 @@ func (ag *DefaultActionGenerator) generateInitialActions(g *model.Game, player *
 	}
 
 	return actions
-}
-
-func (ag *DefaultActionGenerator) generateRandomID() string {
-	bytes := make([]byte, 8)
-	rand.Read(bytes)
-	return hex.EncodeToString(bytes)
 }
 
 // hasValidTargetsForOthers checks if there are any valid targets for cards that target other players

@@ -11,15 +11,21 @@ const HTTP_BASE = window.location.origin;
 
 // Card information for tooltips
 const CARD_INFO = {
-    'Guard': { value: 1, description: 'Guess another player\'s card. If correct, that player is eliminated.' },
-    'Priest': { value: 2, description: 'Look at another player\'s hand.' },
-    'Baron': { value: 3, description: 'Compare hands with another player. Player with lower value is eliminated.' },
-    'Handmaid': { value: 4, description: 'Cannot be targeted by other players until your next turn.' },
-    'Prince': { value: 5, description: 'Target player discards their hand and draws a new card.' },
-    'King': { value: 6, description: 'Trade hands with another player.' },
-    'Countess': { value: 7, description: 'Must be discarded if holding King or Prince.' },
-    'Princess': { value: 8, description: 'If discarded, player is eliminated.' }
+    'Guard': { value: 1, description: 'Guess another player\'s card. If correct, that player is eliminated.', quantity: 5 },
+    'Priest': { value: 2, description: 'Look at another player\'s hand.', quantity: 2 },
+    'Baron': { value: 3, description: 'Compare hands with another player. Player with lower value is eliminated.', quantity: 2 },
+    'Handmaid': { value: 4, description: 'Cannot be targeted by other players until your next turn.', quantity: 2 },
+    'Prince': { value: 5, description: 'Target player discards their hand and draws a new card.', quantity: 2 },
+    'King': { value: 6, description: 'Trade hands with another player.', quantity: 1 },
+    'Countess': { value: 7, description: 'Must be discarded if holding King or Prince.', quantity: 1 },
+    'Princess': { value: 8, description: 'If discarded, player is eliminated.', quantity: 1 }
 };
+
+// Function to convert quantity to braille dots
+function getBrailleDots(quantity) {
+    const brailleNumbers = ['⠀', '⠈', '⠉', '⠙', '⠛', '⠻'];
+    return brailleNumbers[quantity] || '⠻';
+}
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -162,6 +168,7 @@ function getCurrentPlayerID() {
 function updateGameUI() {
     updateGameStatus();
     updatePlayersList();
+    updateDeckDisplay();
     updateYourHand();
     updateActionsList();
 }
@@ -231,6 +238,7 @@ function updatePlayersList() {
                     if (cardInfo) {
                         cardDiv.onclick = () => showCardInfo(cardName);
                         cardDiv.innerHTML = `
+                            <div class="card-quantity">${getBrailleDots(cardInfo.quantity)}</div>
                             <div class="card-value">${cardInfo.value}</div>
                             <div class="card-name">${cardName}</div>
                         `;
@@ -243,6 +251,56 @@ function updatePlayersList() {
 
         playersContainer.appendChild(playerDiv);
     });
+}
+
+function updateDeckDisplay() {
+    const deckContainer = document.getElementById('deck-display');
+    deckContainer.innerHTML = '';
+
+    if (!gameState || !gameState.deck) {
+        // Show empty deck outline
+        const emptyDeck = document.createElement('div');
+        emptyDeck.className = 'deck-empty';
+        emptyDeck.textContent = 'Empty Deck';
+        deckContainer.appendChild(emptyDeck);
+        return;
+    }
+
+    const deckSize = gameState.deck.length;
+    
+    if (deckSize === 0) {
+        // Show empty deck outline
+        const emptyDeck = document.createElement('div');
+        emptyDeck.className = 'deck-empty';
+        emptyDeck.textContent = 'Empty Deck';
+        deckContainer.appendChild(emptyDeck);
+        return;
+    }
+
+    // Show staggered deck cards
+    // We'll show up to 5 cards for visual effect, but the real count on the top card
+    const cardsToShow = Math.min(5, deckSize);
+    
+    for (let i = 0; i < cardsToShow; i++) {
+        const deckCard = document.createElement('div');
+        deckCard.className = 'deck-card';
+        
+        // Add card back design
+        const cardBack = document.createElement('div');
+        cardBack.className = 'deck-card-back';
+        cardBack.innerHTML = '?';
+        deckCard.appendChild(cardBack);
+        
+        // Add count only to the top (last) card
+        if (i === cardsToShow - 1) {
+            const countBadge = document.createElement('div');
+            countBadge.className = 'deck-count';
+            countBadge.textContent = deckSize.toString();
+            deckCard.appendChild(countBadge);
+        }
+        
+        deckContainer.appendChild(deckCard);
+    }
 }
 
 function updateYourHand() {
@@ -270,6 +328,7 @@ function updateYourHand() {
             if (cardInfo) {
                 cardDiv.onclick = () => showCardInfo(handCard);
                 cardDiv.innerHTML = `
+                    <div class="card-quantity">${getBrailleDots(cardInfo.quantity)}</div>
                     <div class="card-value">${cardInfo.value}</div>
                     <div class="card-name">${handCard}</div>
                 `;

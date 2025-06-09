@@ -180,6 +180,7 @@ button {
     padding: 15px;
     background: #f7fafc;
     transition: all 0.2s;
+    position: relative;
 }
 
 .player.current {
@@ -222,15 +223,21 @@ button {
 }
 
 .player-status {
+    position: absolute;
+    top: 8px;
+    right: 8px;
     display: flex;
-    gap: 8px;
+    gap: 4px;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .status {
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .status.eliminated {
@@ -265,6 +272,7 @@ button {
     height: 90px !important;
     opacity: 0.7;
     border-width: 1px !important;
+    position: relative;
 }
 
 .discard-card:hover {
@@ -278,6 +286,87 @@ button {
 
 .discard-card .card-name {
     font-size: 0.7rem !important;
+}
+
+.discard-card .card-quantity {
+    font-size: 0.7rem !important;
+    top: 2px;
+    right: 2px;
+}
+
+/* Deck section */
+.deck-section {
+    margin-bottom: 25px;
+}
+
+.deck-section h3 {
+    margin-bottom: 15px;
+    color: #2d3748;
+}
+
+.deck-display {
+    display: flex;
+    align-items: flex-end;
+    min-height: 120px;
+    position: relative;
+}
+
+.deck-empty {
+    width: 80px;
+    height: 120px;
+    border: 2px dashed #cbd5e0;
+    border-radius: 8px;
+    background: #f7fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a0aec0;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.deck-card {
+    width: 80px;
+    height: 120px;
+    border: 2px solid #4a5568;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #2d3748, #4a5568);
+    position: relative;
+    margin-right: -65px; /* Creates the staggered effect */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.deck-card:last-child {
+    margin-right: 0;
+}
+
+.deck-card-back {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+.deck-count {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.9);
+    color: #2d3748;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    z-index: 10;
 }
 
 /* Hand section */
@@ -309,6 +398,7 @@ button {
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
 }
 
 .card:hover {
@@ -329,6 +419,16 @@ button {
     color: #4a5568;
     text-align: center;
     line-height: 1.2;
+}
+
+.card-quantity {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 0.9rem;
+    color: #2d3748;
+    opacity: 0.8;
+    font-weight: bold;
 }
 
 /* Actions section */
