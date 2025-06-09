@@ -5,6 +5,7 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 const InputStartRound model.InputType = "start_round"
@@ -92,13 +93,13 @@ func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 	return nil
 }
 
-func (i *StartRoundInput) createShuffledDeck() []model.Redactable[model.Card] {
-	var deck []model.Redactable[model.Card]
+func (i *StartRoundInput) createShuffledDeck() []serialization.Redactable[model.Card] {
+	var deck []serialization.Redactable[model.Card]
 
 	// Add cards according to their quantities
 	for _, cardType := range model.CardTypes {
 		for j := 0; j < cardType.Quantity(); j++ {
-			deck = append(deck, model.NewRedactable(cardType))
+			deck = append(deck, serialization.NewRedactable(cardType))
 		}
 	}
 

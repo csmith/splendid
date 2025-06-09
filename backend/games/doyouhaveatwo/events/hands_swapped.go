@@ -10,10 +10,10 @@ import (
 const EventHandsSwapped model.EventType = "hands_swapped"
 
 type HandsSwappedEvent struct {
-	PlayerA     model.PlayerID               `json:"player_a"`
-	PlayerB     model.PlayerID               `json:"player_b"`
-	ResultHandA model.Redactable[model.Card] `json:"hand_a"`
-	ResultHandB model.Redactable[model.Card] `json:"hand_b"`
+	PlayerA     model.PlayerID                       `json:"player_a"`
+	PlayerB     model.PlayerID                       `json:"player_b"`
+	ResultHandA serialization.Redactable[model.Card] `json:"hand_a"`
+	ResultHandB serialization.Redactable[model.Card] `json:"hand_b"`
 }
 
 func (e *HandsSwappedEvent) Type() serialization.Specifier {
@@ -40,8 +40,8 @@ func (e *HandsSwappedEvent) Apply(g *model.Game) error {
 	}
 
 	// Set result cards visible to both players
-	e.ResultHandA = model.NewRedactable(playerA.Hand[0].Value(), e.PlayerA, e.PlayerB)
-	e.ResultHandB = model.NewRedactable(playerB.Hand[0].Value(), e.PlayerA, e.PlayerB)
+	e.ResultHandA = serialization.NewRedactable(playerA.Hand[0].Value(), e.PlayerA, e.PlayerB)
+	e.ResultHandB = serialization.NewRedactable(playerB.Hand[0].Value(), e.PlayerA, e.PlayerB)
 
 	// Swap the hands
 	playerA.Hand, playerB.Hand = playerB.Hand, playerA.Hand

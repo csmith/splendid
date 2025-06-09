@@ -34,7 +34,7 @@ func (e *PlayerEliminatedEvent) Apply(g *model.Game) error {
 		discardedCards = append(discardedCards, handCard.Value())
 		player.DiscardPile = append(player.DiscardPile, handCard.Value())
 	}
-	player.Hand = []model.Redactable[model.Card]{}
+	player.Hand = []serialization.Redactable[model.Card]{}
 	e.ResultDiscardedCards = discardedCards
 
 	player.IsOut = true

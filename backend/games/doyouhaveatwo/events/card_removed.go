@@ -8,7 +8,7 @@ import (
 const EventCardRemoved model.EventType = "card_removed"
 
 type CardRemovedEvent struct {
-	ResultRemovedCard model.Redactable[model.Card] `json:"removed_card"`
+	ResultRemovedCard serialization.Redactable[model.Card] `json:"removed_card"`
 }
 
 func (e *CardRemovedEvent) Type() serialization.Specifier {

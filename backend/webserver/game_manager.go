@@ -10,6 +10,7 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 )
 
 // GameSession represents an active game session
@@ -174,7 +175,7 @@ func (gm *GameManager) handleGameUpdates(session *GameSession) {
 			msg.Data = gameUpdateData
 
 			// Now redact the entire message for this player
-			redactedMsgBytes, err := doyouhaveatwo.Redact(msg, playerID)
+			redactedMsgBytes, err := serialization.Redact(msg, playerID)
 			if err != nil {
 				slog.Error("Failed to redact message for player", "error", err, "sessionID", session.ID, "playerID", playerID)
 				continue

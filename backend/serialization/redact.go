@@ -1,11 +1,11 @@
-package doyouhaveatwo
+package serialization
 
 import (
 	"encoding/json"
 	"regexp"
 	"strings"
 
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/model"
 )
 
 func Redact(value any, playerID model.PlayerID) ([]byte, error) {

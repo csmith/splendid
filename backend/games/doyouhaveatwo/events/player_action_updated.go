@@ -8,8 +8,8 @@ import (
 const EventPlayerActionUpdated model.EventType = "player_action_updated"
 
 type PlayerActionUpdatedEvent struct {
-	Player model.PlayerID                                     `json:"player"`
-	Action model.Redactable[*serialization.Box[model.Action]] `json:"action"`
+	Player model.PlayerID                                             `json:"player"`
+	Action serialization.Redactable[*serialization.Box[model.Action]] `json:"action"`
 }
 
 func (e *PlayerActionUpdatedEvent) Type() serialization.Specifier {

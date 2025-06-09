@@ -1,4 +1,4 @@
-package doyouhaveatwo
+package serialization
 
 import (
 	"encoding/json"
@@ -6,12 +6,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 func TestRedact_BasicVisiblePlayer(t *testing.T) {
-	redactable := model.NewRedactable("secret-data", "player1")
+	redactable := NewRedactable("secret-data", "player1")
 
 	result, err := Redact(redactable, "player1")
 	require.NoError(t, err)
@@ -19,7 +17,7 @@ func TestRedact_BasicVisiblePlayer(t *testing.T) {
 }
 
 func TestRedact_CardVisiblePlayer(t *testing.T) {
-	redactable := model.NewRedactable(model.CardPrincess, "player1")
+	redactable := NewRedactable("Princess", "player1")
 
 	result, err := Redact(redactable, "player1")
 	require.NoError(t, err)
@@ -27,7 +25,7 @@ func TestRedact_CardVisiblePlayer(t *testing.T) {
 }
 
 func TestRedact_BasicNonVisiblePlayer(t *testing.T) {
-	redactable := model.NewRedactable("secret-data", "player1")
+	redactable := NewRedactable("secret-data", "player1")
 
 	result, err := Redact(redactable, "player2")
 	require.NoError(t, err)
@@ -35,7 +33,7 @@ func TestRedact_BasicNonVisiblePlayer(t *testing.T) {
 }
 
 func TestRedact_UnknownPlayer(t *testing.T) {
-	redactable := model.NewRedactable("secret-data", "player1")
+	redactable := NewRedactable("secret-data", "player1")
 
 	result, err := Redact(redactable, "player3")
 	require.NoError(t, err)
@@ -43,8 +41,8 @@ func TestRedact_UnknownPlayer(t *testing.T) {
 }
 
 func TestRedact_NestedRedactable(t *testing.T) {
-	innerRedactable := model.NewRedactable("inner-secret", "player1")
-	outerRedactable := model.NewRedactable(innerRedactable, "player1", "player2")
+	innerRedactable := NewRedactable("inner-secret", "player1")
+	outerRedactable := NewRedactable(innerRedactable, "player1", "player2")
 
 	// Test with player1 - can see both outer and inner
 	result1, err := Redact(outerRedactable, "player1")
@@ -63,15 +61,15 @@ func TestRedact_NestedRedactable(t *testing.T) {
 
 func TestRedact_MultipleRedactables(t *testing.T) {
 	type TestStruct struct {
-		Public  string                   `json:"public"`
-		Secret1 model.Redactable[string] `json:"secret1"`
-		Secret2 model.Redactable[int]    `json:"secret2"`
+		Public  string             `json:"public"`
+		Secret1 Redactable[string] `json:"secret1"`
+		Secret2 Redactable[int]    `json:"secret2"`
 	}
 
 	data := TestStruct{
 		Public:  "everyone-can-see",
-		Secret1: model.NewRedactable("secret-string", "player1"),
-		Secret2: model.NewRedactable(42, "player2"),
+		Secret1: NewRedactable("secret-string", "player1"),
+		Secret2: NewRedactable(42, "player2"),
 	}
 
 	// Test with player1 - can see secret1 but not secret2
@@ -90,7 +88,7 @@ func TestRedact_MultipleRedactables(t *testing.T) {
 }
 
 func TestRedact_EmptyVisibility(t *testing.T) {
-	redactable := model.NewRedactable("secret-data")
+	redactable := NewRedactable[string]("secret-data")
 
 	result, err := Redact(redactable, "player1")
 	require.NoError(t, err)
@@ -115,7 +113,7 @@ func TestRedact_NonRedactableValue(t *testing.T) {
 }
 
 func TestRedact_PlayerIDSubstring(t *testing.T) {
-	redactable := model.NewRedactable("secret-data", "player1")
+	redactable := NewRedactable("secret-data", "player1")
 
 	// Test that "player1" doesn't match "player11" or "xplayer1x"
 	result, err := Redact(redactable, "player1")

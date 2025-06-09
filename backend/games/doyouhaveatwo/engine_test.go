@@ -9,6 +9,7 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/serialization"
 	"github.com/cucumber/godog"
 )
 
@@ -18,7 +19,7 @@ type EngineTestSuite struct {
 	players     []*model.Player
 	updateChan  chan model.GameUpdate
 	eventChan   chan model.Event
-	initialDeck []model.Redactable[model.Card]
+	initialDeck []serialization.Redactable[model.Card]
 	lastError   error
 }
 
@@ -44,7 +45,7 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 		s.players[i] = &model.Player{
 			ID:          model.PlayerID(rune('A' + i)),
 			Name:        string(rune('A' + i)),
-			Hand:        []model.Redactable[model.Card]{},
+			Hand:        []serialization.Redactable[model.Card]{},
 			DiscardPile: []model.Card{},
 			TokenCount:  0,
 			IsOut:       false,
@@ -55,7 +56,7 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 
 	s.game = &model.Game{
 		Players:       s.players,
-		Deck:          []model.Redactable[model.Card]{},
+		Deck:          []serialization.Redactable[model.Card]{},
 		CurrentPlayer: 0,
 		Round:         0,
 		Phase:         model.PhaseSetup,
@@ -86,7 +87,7 @@ func (s *EngineTestSuite) givenTheCurrentRoundIs(roundNumber int) error {
 }
 
 func (s *EngineTestSuite) whenARoundStarts() error {
-	s.initialDeck = make([]model.Redactable[model.Card], len(s.engine.Game.Deck))
+	s.initialDeck = make([]serialization.Redactable[model.Card], len(s.engine.Game.Deck))
 	copy(s.initialDeck, s.engine.Game.Deck)
 
 	input := &inputs.StartRoundInput{}
@@ -304,7 +305,7 @@ func (s *EngineTestSuite) whenPlayerDrawsACard(playerID string) error {
 }
 
 func (s *EngineTestSuite) givenTheDeckIsEmpty() error {
-	s.engine.Game.Deck = []model.Redactable[model.Card]{}
+	s.engine.Game.Deck = []serialization.Redactable[model.Card]{}
 	return nil
 }
 
@@ -313,7 +314,7 @@ func (s *EngineTestSuite) givenTheRemovedCardIsA(cardName string) error {
 	if err != nil {
 		return err
 	}
-	removedCard := model.NewRedactable(card)
+	removedCard := serialization.NewRedactable(card)
 	s.engine.Game.RemovedCard = &removedCard
 	return nil
 }
@@ -362,7 +363,7 @@ func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID st
 	}
 
 	// Clear existing hand
-	player.Hand = []model.Redactable[model.Card]{}
+	player.Hand = []serialization.Redactable[model.Card]{}
 
 	// Add each card from the table
 	for _, row := range cardTable.Rows {
@@ -383,7 +384,7 @@ func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID st
 				playerIDs = append(playerIDs, playerID)
 			}
 		}
-		player.Hand = append(player.Hand, model.NewRedactable(card, playerIDs...))
+		player.Hand = append(player.Hand, serialization.NewRedactable(card, playerIDs...))
 	}
 
 	return nil

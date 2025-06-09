@@ -1,19 +1,21 @@
-package model
+package serialization
 
 import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"strings"
+
+	"github.com/csmith/splendid/backend/model"
 )
 
 type Redactable[T any] struct {
 	value     T
-	visibleTo map[PlayerID]bool
+	visibleTo map[model.PlayerID]bool
 }
 
-func NewRedactable[T any](value T, playerIDs ...PlayerID) Redactable[T] {
-	visibleTo := make(map[PlayerID]bool)
+func NewRedactable[T any](value T, playerIDs ...model.PlayerID) Redactable[T] {
+	visibleTo := make(map[model.PlayerID]bool)
 	for _, playerID := range playerIDs {
 		visibleTo[playerID] = true
 	}
@@ -63,7 +65,7 @@ func (r Redactable[T]) Value() T {
 	return r.value
 }
 
-func (r Redactable[T]) WithVisibility(playerIDs ...PlayerID) Redactable[T] {
+func (r Redactable[T]) WithVisibility(playerIDs ...model.PlayerID) Redactable[T] {
 	return NewRedactable(r.value, playerIDs...)
 }
 

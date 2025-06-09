@@ -1,6 +1,8 @@
 package model
 
-import "github.com/csmith/splendid/backend/serialization"
+import (
+	"github.com/csmith/splendid/backend/serialization"
+)
 
 type EventType string
 

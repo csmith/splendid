@@ -10,8 +10,8 @@ import (
 const EventRemovedCardDealt model.EventType = "removed_card_dealt"
 
 type RemovedCardDealtEvent struct {
-	ToPlayer               model.PlayerID               `json:"to_player"`
-	ResultRemovedCardDealt model.Redactable[model.Card] `json:"removed_card_dealt"`
+	ToPlayer               model.PlayerID                       `json:"to_player"`
+	ResultRemovedCardDealt serialization.Redactable[model.Card] `json:"removed_card_dealt"`
 }
 
 func (e *RemovedCardDealtEvent) Type() serialization.Specifier {

@@ -27,6 +27,6 @@ func (e *PlayerHandClearedEvent) Apply(g *model.Game) error {
 		return fmt.Errorf("player with ID %s not found", e.Player)
 	}
 
-	player.Hand = []model.Redactable[model.Card]{}
+	player.Hand = []serialization.Redactable[model.Card]{}
 	return nil
 }

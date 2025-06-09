@@ -21,7 +21,7 @@ func NewEngine(updateChan chan<- model.GameUpdate, eventLogger EventLogger) *Eng
 	return &Engine{
 		Game: model.Game{
 			Players:       []*model.Player{},
-			Deck:          []model.Redactable[model.Card]{},
+			Deck:          []serialization.Redactable[model.Card]{},
 			CurrentPlayer: 0,
 			Round:         0,
 			Phase:         model.PhaseSetup,
@@ -83,8 +83,8 @@ func (e *Engine) applyEvent(event model.Event) error {
 	return nil
 }
 
-func (e *Engine) generateAvailableActions() map[model.PlayerID]model.Redactable[[]serialization.Box[model.Action]] {
-	result := make(map[model.PlayerID]model.Redactable[[]serialization.Box[model.Action]])
+func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Redactable[[]serialization.Box[model.Action]] {
+	result := make(map[model.PlayerID]serialization.Redactable[[]serialization.Box[model.Action]])
 
 	for _, player := range e.Game.Players {
 		playerActions := e.actionGenerator.GenerateActionsForPlayer(&e.Game, player.ID)
@@ -95,7 +95,7 @@ func (e *Engine) generateAvailableActions() map[model.PlayerID]model.Redactable[
 			for i, action := range playerActions {
 				boxedActions[i] = serialization.Box[model.Action]{Value: action}
 			}
-			result[player.ID] = model.NewRedactable(boxedActions, player.ID)
+			result[player.ID] = serialization.NewRedactable(boxedActions, player.ID)
 		}
 	}
 
@@ -151,7 +151,7 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 	if player.PendingAction.Value() == nil {
 		return e.applyEvent(&events.PlayerActionStartedEvent{
 			Player: playerID,
-			Action: model.NewRedactable(&serialization.Box[model.Action]{Value: action}, playerID),
+			Action: serialization.NewRedactable(&serialization.Box[model.Action]{Value: action}, playerID),
 		})
 	} else {
 		// Check if the action is now complete after update
@@ -172,7 +172,7 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 		} else {
 			return e.applyEvent(&events.PlayerActionUpdatedEvent{
 				Player: playerID,
-				Action: model.NewRedactable(&serialization.Box[model.Action]{Value: action}, playerID),
+				Action: serialization.NewRedactable(&serialization.Box[model.Action]{Value: action}, playerID),
 			})
 		}
 	}

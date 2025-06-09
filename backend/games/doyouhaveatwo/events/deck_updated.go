@@ -8,7 +8,7 @@ import (
 const EventDeckUpdated model.EventType = "deck_updated"
 
 type DeckUpdatedEvent struct {
-	NewDeck []model.Redactable[model.Card] `json:"deck"`
+	NewDeck []serialization.Redactable[model.Card] `json:"deck"`
 }
 
 func (e *DeckUpdatedEvent) Type() serialization.Specifier {

@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	"github.com/csmith/splendid/backend/serialization"
@@ -89,7 +88,7 @@ func (h *WebSocketHandler) sendInitialGameState(conn *websocket.Conn, session *G
 	gameUpdate := model.GameUpdate{
 		Game:             session.Engine.Game,
 		Event:            nil, // No specific event for initial state
-		AvailableActions: make(map[model.PlayerID]model.Redactable[[]serialization.Box[model.Action]]),
+		AvailableActions: make(map[model.PlayerID]serialization.Redactable[[]serialization.Box[model.Action]]),
 	}
 
 	// For now, we'll create an empty map and let the regular update flow handle actions
@@ -114,7 +113,7 @@ func (h *WebSocketHandler) sendInitialGameState(conn *websocket.Conn, session *G
 	msg.Data = gameUpdateData
 
 	// Redact the entire message for this player
-	redactedMsgBytes, err := doyouhaveatwo.Redact(msg, playerID)
+	redactedMsgBytes, err := serialization.Redact(msg, playerID)
 	if err != nil {
 		slog.Error("Failed to redact initial game state", "error", err, "sessionID", session.ID, "playerID", playerID)
 		return

@@ -22,7 +22,7 @@ func (e *PlayerActionCompletedEvent) PlayerID() *model.PlayerID {
 func (e *PlayerActionCompletedEvent) Apply(g *model.Game) error {
 	player := g.GetPlayer(e.Player)
 	if player != nil {
-		player.PendingAction = model.Redactable[*serialization.Box[model.Action]]{}
+		player.PendingAction = serialization.Redactable[*serialization.Box[model.Action]]{}
 	}
 	return nil
 }
