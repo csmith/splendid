@@ -120,9 +120,16 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 	if action.IsComplete() {
 		concreteInput := action.ToInput()
 		if concreteInput != nil {
-			return e.processInput(concreteInput)
+			err := e.processInput(concreteInput)
+			if err != nil {
+				return err
+			}
 		}
-		return nil
+
+		// Clear the pending action after processing
+		return e.applyEvent(&events.PlayerActionCompletedEvent{
+			Player: playerID,
+		})
 	}
 
 	// If no pending action, start it; otherwise update it
@@ -132,33 +139,28 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 			Action: model.NewRedactable(action, playerID),
 		})
 	} else {
-		err := e.applyEvent(&events.PlayerActionUpdatedEvent{
-			Player: playerID,
-			Action: model.NewRedactable(action, playerID),
-		})
-		if err != nil {
-			return err
-		}
-
 		// Check if the action is now complete after update
 		if action.IsComplete() {
-			// Clear the pending action
-			err := e.applyEvent(&events.PlayerActionCompletedEvent{
-				Player: playerID,
-			})
-			if err != nil {
-				return err
-			}
-
-			// Execute the concrete input
+			// Execute the concrete input first
 			concreteInput := action.ToInput()
 			if concreteInput != nil {
-				return e.processInput(concreteInput)
+				err := e.processInput(concreteInput)
+				if err != nil {
+					return err
+				}
 			}
+
+			// Clear the pending action after processing
+			return e.applyEvent(&events.PlayerActionCompletedEvent{
+				Player: playerID,
+			})
+		} else {
+			return e.applyEvent(&events.PlayerActionUpdatedEvent{
+				Player: playerID,
+				Action: model.NewRedactable(action, playerID),
+			})
 		}
 	}
-
-	return nil
 }
 
 func (e *Engine) ProcessServerAction(action model.Action) error {
