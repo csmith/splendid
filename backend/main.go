@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -13,6 +14,10 @@ import (
 )
 
 func main() {
+	// Parse command line flags
+	logDir := flag.String("data", "data", "Directory to store game logs")
+	flag.Parse()
+
 	// Set up structured logging
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
@@ -20,7 +25,7 @@ func main() {
 	slog.SetDefault(logger)
 
 	// Create game manager
-	gameManager, err := webserver.NewGameManager()
+	gameManager, err := webserver.NewGameManager(*logDir)
 	if err != nil {
 		slog.Error("Failed to create game manager", "error", err)
 		os.Exit(1)

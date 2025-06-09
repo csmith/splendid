@@ -33,10 +33,11 @@ type Client struct {
 type GameManager struct {
 	sessions  map[string]*GameSession
 	generator *aca.Generator
+	logDir    string
 	mu        sync.RWMutex
 }
 
-func NewGameManager() (*GameManager, error) {
+func NewGameManager(logDir string) (*GameManager, error) {
 	generator, err := aca.NewDefaultGenerator()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ID generator: %w", err)
@@ -45,6 +46,7 @@ func NewGameManager() (*GameManager, error) {
 	return &GameManager{
 		sessions:  make(map[string]*GameSession),
 		generator: generator,
+		logDir:    logDir,
 	}, nil
 }
 
@@ -57,8 +59,9 @@ func (gm *GameManager) CreateGame() (string, error) {
 	// Create update channel for this game session
 	updateCh := make(chan model.GameUpdate, 100)
 
-	// Create engine
-	engine := doyouhaveatwo.NewEngine(updateCh)
+	// Create engine with JSONL logger
+	logger := doyouhaveatwo.NewJSONLEventLogger(gm.logDir, sessionID)
+	engine := doyouhaveatwo.NewEngine(updateCh, logger)
 
 	session := &GameSession{
 		ID:       sessionID,

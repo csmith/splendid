@@ -13,9 +13,10 @@ type Engine struct {
 	EventHistory    []model.Event
 	updateChan      chan<- model.GameUpdate
 	actionGenerator actions.ActionGenerator
+	eventLogger     EventLogger
 }
 
-func NewEngine(updateChan chan<- model.GameUpdate) *Engine {
+func NewEngine(updateChan chan<- model.GameUpdate, eventLogger EventLogger) *Engine {
 	return &Engine{
 		Game: model.Game{
 			Players:       []*model.Player{},
@@ -28,6 +29,7 @@ func NewEngine(updateChan chan<- model.GameUpdate) *Engine {
 		EventHistory:    []model.Event{},
 		updateChan:      updateChan,
 		actionGenerator: &actions.DefaultActionGenerator{},
+		eventLogger:     eventLogger,
 	}
 }
 
@@ -63,6 +65,13 @@ func (e *Engine) applyEvent(event model.Event) error {
 
 	// Store event in history
 	e.EventHistory = append(e.EventHistory, event)
+
+	// Log event to persistent storage
+	if e.eventLogger != nil {
+		if err := e.eventLogger.LogEvent(event); err != nil {
+			return fmt.Errorf("failed to log event %s: %w", event.Type(), err)
+		}
+	}
 
 	e.updateChan <- model.GameUpdate{
 		Game:             e.Game,
