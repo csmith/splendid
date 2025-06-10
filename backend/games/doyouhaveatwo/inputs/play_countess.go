@@ -5,14 +5,8 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-const InputPlayCountess model.InputType = "play_countess"
-
 type PlayCountessInput struct {
 	Player model.PlayerID
-}
-
-func (i *PlayCountessInput) Type() model.InputType {
-	return InputPlayCountess
 }
 
 func (i *PlayCountessInput) PlayerID() *model.PlayerID {

@@ -6,11 +6,8 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-type InputType string
-
 type Input interface {
 	Apply(g *Game, apply func(Event)) error
-	Type() InputType
 	PlayerID() *PlayerID
 }
 

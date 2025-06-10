@@ -5,15 +5,9 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-const InputDiscardCard model.InputType = "discard_card"
-
 type DiscardCardInput struct {
 	Player   model.PlayerID
 	CardName string
-}
-
-func (i *DiscardCardInput) Type() model.InputType {
-	return InputDiscardCard
 }
 
 func (i *DiscardCardInput) PlayerID() *model.PlayerID {

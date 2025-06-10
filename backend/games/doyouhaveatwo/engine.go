@@ -48,12 +48,12 @@ func (e *Engine) processInput(input model.Input) error {
 	// Apply the input with the callback
 	err := input.Apply(&e.Game, apply)
 	if err != nil {
-		return fmt.Errorf("failed to process input %s: %w", input.Type(), err)
+		return fmt.Errorf("failed to process input: %w", err)
 	}
 
 	// Check for any errors that occurred during event application
 	if applyError != nil {
-		return fmt.Errorf("failed to apply event during input %s: %w", input.Type(), applyError)
+		return fmt.Errorf("failed to apply event during input processing: %w", applyError)
 	}
 
 	return nil

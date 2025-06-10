@@ -5,16 +5,10 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-const InputPlayGuard model.InputType = "play_guard"
-
 type PlayGuardInput struct {
 	Player       model.PlayerID
 	TargetPlayer model.PlayerID
 	GuessedRank  int
-}
-
-func (i *PlayGuardInput) Type() model.InputType {
-	return InputPlayGuard
 }
 
 func (i *PlayGuardInput) PlayerID() *model.PlayerID {

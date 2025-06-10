@@ -5,14 +5,8 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-const InputEndRound model.InputType = "end_round"
-
 type EndRoundInput struct {
 	Winners []model.PlayerID
-}
-
-func (i *EndRoundInput) Type() model.InputType {
-	return InputEndRound
 }
 
 func (i *EndRoundInput) PlayerID() *model.PlayerID {

@@ -8,13 +8,7 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const InputStartRound model.InputType = "start_round"
-
 type StartRoundInput struct{}
-
-func (i *StartRoundInput) Type() model.InputType {
-	return InputStartRound
-}
 
 func (i *StartRoundInput) PlayerID() *model.PlayerID {
 	return nil
