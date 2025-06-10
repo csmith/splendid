@@ -230,17 +230,20 @@ function updatePlayersList() {
                 if (cardName === "REDACTED") {
                     cardDiv.classList.add('redacted');
                     cardDiv.innerHTML = `
-                        <div class="card-value">?</div>
+                        <div class="card-score">?</div>
                         <div class="card-name">Hidden</div>
+                        <div class="card-description">Card information hidden</div>
                     `;
                 } else if (typeof cardName === 'string') {
                     const cardInfo = CARD_INFO[cardName];
                     if (cardInfo) {
                         cardDiv.onclick = () => showCardInfo(cardName);
+                        const truncatedDescription = cardInfo.description.split(' ').slice(0, 3).join(' ') + '...';
                         cardDiv.innerHTML = `
+                            <div class="card-score">${cardInfo.value}</div>
                             <div class="card-quantity">${getBrailleDots(cardInfo.quantity)}</div>
-                            <div class="card-value">${cardInfo.value}</div>
                             <div class="card-name">${cardName}</div>
+                            <div class="card-description">${truncatedDescription}</div>
                         `;
                     }
                 }
@@ -319,8 +322,9 @@ function updateYourHand() {
         if (handCard === "REDACTED") {
             cardDiv.classList.add('redacted');
             cardDiv.innerHTML = `
-                <div class="card-value">?</div>
+                <div class="card-score">?</div>
                 <div class="card-name">Hidden</div>
+                <div class="card-description">Card information hidden</div>
             `;
         } else if (typeof handCard === 'string') {
             // Card name as string
@@ -328,9 +332,10 @@ function updateYourHand() {
             if (cardInfo) {
                 cardDiv.onclick = () => showCardInfo(handCard);
                 cardDiv.innerHTML = `
+                    <div class="card-score">${cardInfo.value}</div>
                     <div class="card-quantity">${getBrailleDots(cardInfo.quantity)}</div>
-                    <div class="card-value">${cardInfo.value}</div>
                     <div class="card-name">${handCard}</div>
+                    <div class="card-description">${cardInfo.description}</div>
                 `;
             }
         }
