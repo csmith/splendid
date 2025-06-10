@@ -70,15 +70,14 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 		Game:            *s.game,
 		EventHistory:    []model.Event{},
 		updateChan:      s.updateChan,
-		actionGenerator: &actions.DefaultActionGenerator{},
+		actionGenerator: &actions.Generator{},
 	}
 
 	return nil
 }
 
 func (s *EngineTestSuite) givenTheGameHasPhase(phaseName string) error {
-	s.engine.Game.Phase = model.GamePhase(phaseName)
-	return nil
+	return s.engine.applyEvent(&events.PhaseUpdatedEvent{NewPhase: model.GamePhase(phaseName)})
 }
 
 func (s *EngineTestSuite) givenTheCurrentRoundIs(roundNumber int) error {
@@ -197,12 +196,7 @@ func (s *EngineTestSuite) givenPlayerIsEliminated(playerID string) error {
 }
 
 func (s *EngineTestSuite) givenPlayerIsProtected(playerID string) error {
-	player := s.engine.Game.GetPlayer(model.PlayerID(playerID))
-	if player == nil {
-		return s.errorf("player %s not found", playerID)
-	}
-	player.IsProtected = true
-	return nil
+	return s.engine.applyEvent(&events.PlayerProtectionGrantedEvent{Player: model.PlayerID(playerID)})
 }
 
 func (s *EngineTestSuite) thenPlayerShouldNotBeEliminated(playerID string) error {
@@ -357,15 +351,7 @@ func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID st
 		return s.errorf("player %s not found", playerID)
 	}
 
-	visibleTo := make(map[model.PlayerID]bool)
-	for _, p := range s.engine.Game.Players {
-		visibleTo[p.ID] = p.ID == player.ID
-	}
-
-	// Clear existing hand
-	player.Hand = []serialization.Redactable[model.Card]{}
-
-	// Add each card from the table
+	var cards []serialization.Redactable[model.Card]
 	for _, row := range cardTable.Rows {
 		if len(row.Cells) != 1 {
 			return s.errorf("expected 1 column (card name), got %d", len(row.Cells))
@@ -377,14 +363,21 @@ func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID st
 			return err
 		}
 
-		// Convert visibleTo map to player ID slice
-		var playerIDs []model.PlayerID
-		for playerID, visible := range visibleTo {
-			if visible {
-				playerIDs = append(playerIDs, playerID)
-			}
+		cards = append(cards, serialization.NewRedactable(card))
+	}
+
+	if err := s.engine.applyEvent(&events.DeckUpdatedEvent{NewDeck: append(cards, s.game.Deck...)}); err != nil {
+		return err
+	}
+
+	if err := s.engine.applyEvent(&events.PlayerHandClearedEvent{Player: model.PlayerID(playerID)}); err != nil {
+		return err
+	}
+
+	for range cards {
+		if err := s.engine.applyEvent(&events.CardDealtEvent{ToPlayer: model.PlayerID(playerID)}); err != nil {
+			return err
 		}
-		player.Hand = append(player.Hand, serialization.NewRedactable(card, playerIDs...))
 	}
 
 	return nil
@@ -408,8 +401,7 @@ func (s *EngineTestSuite) thenPlayerShouldHaveCardInTheirHand(playerID string, c
 func (s *EngineTestSuite) givenItIsPlayersTurn(playerID string) error {
 	for i, player := range s.engine.Game.Players {
 		if player.ID == model.PlayerID(playerID) {
-			s.engine.Game.CurrentPlayer = i
-			return nil
+			return s.engine.applyEvent(&events.CurrentPlayerUpdatedEvent{NewCurrentPlayer: i})
 		}
 	}
 	return s.errorf("player %s not found", playerID)
@@ -536,15 +528,29 @@ func (s *EngineTestSuite) thenTheAvailableActionsShouldBe(table *godog.Table) er
 		expectedActions[playerID] = append(expectedActions[playerID], actionJSON)
 	}
 
+	// Drain the update channel to get the latest available actions
+	var latestUpdate = (func() model.GameUpdate {
+		var res model.GameUpdate
+		for {
+			select {
+			case update := <-s.updateChan:
+				res = update
+			default:
+				return res
+			}
+		}
+	})()
+
 	// Compare actual vs expected for each player
 	for _, player := range s.engine.Game.Players {
 		playerID := player.ID
 
-		// Generate actual actions for this player
-		actualActionsList := s.engine.actionGenerator.GenerateActionsForPlayer(&s.engine.Game, playerID)
-		actualActions := []string{}
-		for _, action := range actualActionsList {
-			actualActions = append(actualActions, action.String())
+		// Get actual actions for this player from the engine's available actions
+		var actualActions []string
+		if redactableActions, exists := latestUpdate.AvailableActions[playerID]; exists {
+			for _, boxedAction := range redactableActions.Value() {
+				actualActions = append(actualActions, boxedAction.Value.String())
+			}
 		}
 
 		// Get expected actions for this player

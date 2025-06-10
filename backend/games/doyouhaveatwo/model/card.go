@@ -32,6 +32,10 @@ func (c Card) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.name)
 }
 
+func (c Card) String() string {
+	return c.name
+}
+
 var (
 	CardGuard    = Card{value: 1, name: "Guard", description: "Guess another player's card. If correct, that player is eliminated.", quantity: 5}
 	CardPriest   = Card{value: 2, name: "Priest", description: "Look at another player's hand.", quantity: 2}

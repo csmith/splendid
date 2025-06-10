@@ -4,6 +4,9 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"maps"
+	"slices"
 	"strings"
 
 	"github.com/csmith/splendid/backend/model"
@@ -67,6 +70,10 @@ func (r Redactable[T]) Value() T {
 
 func (r Redactable[T]) WithVisibility(playerIDs ...model.PlayerID) Redactable[T] {
 	return NewRedactable(r.value, playerIDs...)
+}
+
+func (r Redactable[T]) String() string {
+	return fmt.Sprintf("Redactable%v(%v)", slices.Collect(maps.Keys(r.visibleTo)), r.value)
 }
 
 func generateRedactToken() (string, error) {

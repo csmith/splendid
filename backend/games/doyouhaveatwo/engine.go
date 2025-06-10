@@ -13,7 +13,7 @@ type Engine struct {
 	Game            model.Game
 	EventHistory    []model.Event
 	updateChan      chan<- model.GameUpdate
-	actionGenerator actions.ActionGenerator
+	actionGenerator *actions.Generator
 	eventLogger     EventLogger
 }
 
@@ -29,7 +29,7 @@ func NewEngine(updateChan chan<- model.GameUpdate, eventLogger EventLogger) *Eng
 		},
 		EventHistory:    []model.Event{},
 		updateChan:      updateChan,
-		actionGenerator: &actions.DefaultActionGenerator{},
+		actionGenerator: &actions.Generator{},
 		eventLogger:     eventLogger,
 	}
 }
@@ -83,17 +83,25 @@ func (e *Engine) applyEvent(event model.Event) error {
 	return nil
 }
 
-func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Redactable[[]serialization.Box[model.Action]] {
-	result := make(map[model.PlayerID]serialization.Redactable[[]serialization.Box[model.Action]])
+func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.Action]] {
+	result := make(map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.Action]])
 
 	for _, player := range e.Game.Players {
-		playerActions := e.actionGenerator.GenerateActionsForPlayer(&e.Game, player.ID)
+		var playerActions []model.Action
+
+		// If player has a pending action, return next steps
+		if player.PendingAction.Value() != nil {
+			playerActions = player.PendingAction.Value().Value.NextActions(&e.Game)
+		} else {
+			// Otherwise, generate initial actions based on game state
+			playerActions = e.actionGenerator.GenerateActionsForPlayer(&e.Game, player.ID)
+		}
 
 		if len(playerActions) > 0 {
 			// Convert to boxes
-			boxedActions := make([]serialization.Box[model.Action], len(playerActions))
+			boxedActions := make([]*serialization.Box[model.Action], len(playerActions))
 			for i, action := range playerActions {
-				boxedActions[i] = serialization.Box[model.Action]{Value: action}
+				boxedActions[i] = &serialization.Box[model.Action]{Value: action}
 			}
 			result[player.ID] = serialization.NewRedactable(boxedActions, player.ID)
 		}
@@ -104,7 +112,13 @@ func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Red
 
 func (e *Engine) validateAction(playerID model.PlayerID, action model.Action) error {
 	// If no available actions have been generated yet, generate them now
-	availableForPlayer := e.actionGenerator.GenerateActionsForPlayer(&e.Game, playerID)
+	var availableForPlayer []model.Action
+	player := e.Game.GetPlayer(playerID)
+	if player != nil && player.PendingAction.Value() != nil {
+		availableForPlayer = player.PendingAction.Value().Value.NextActions(&e.Game)
+	} else {
+		availableForPlayer = e.actionGenerator.GenerateActionsForPlayer(&e.Game, playerID)
+	}
 
 	// Check if the submitted action matches any of the available actions
 	for _, availableAction := range availableForPlayer {

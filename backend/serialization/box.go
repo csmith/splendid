@@ -48,7 +48,7 @@ func RegisterType[T Typeable](example T) {
 }
 
 // MarshalJSON implements json.Marshaler
-func (b Box[T]) MarshalJSON() ([]byte, error) {
+func (b *Box[T]) MarshalJSON() ([]byte, error) {
 	// Get the full type specifier from the value
 	spec := b.Value.Type()
 
@@ -103,6 +103,10 @@ func (b *Box[T]) UnmarshalJSON(data []byte) error {
 
 	b.Value = typedValue
 	return nil
+}
+
+func (b *Box[T]) String() string {
+	return fmt.Sprintf("%v", b.Value)
 }
 
 // Unmarshal is a convenience function for unmarshalling into a Box

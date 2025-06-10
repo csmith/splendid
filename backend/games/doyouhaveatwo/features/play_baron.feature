@@ -74,6 +74,7 @@ Feature: Play Baron
 
   Scenario: Available actions when player holds Baron
     Given it is player A's turn
+    And the game has phase "play"
     Then the available actions should be:
       | player | action               |
       | A      | play_baron(player=A) |

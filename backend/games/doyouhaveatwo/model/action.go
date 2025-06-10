@@ -26,5 +26,5 @@ type Action interface {
 type GameUpdate struct {
 	Game             Game
 	Event            *serialization.Box[Event]
-	AvailableActions map[PlayerID]serialization.Redactable[[]serialization.Box[Action]]
+	AvailableActions map[PlayerID]serialization.Redactable[[]*serialization.Box[Action]]
 }
