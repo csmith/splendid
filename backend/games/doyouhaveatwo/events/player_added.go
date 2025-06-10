@@ -10,7 +10,6 @@ const EventPlayerAdded model.EventType = "player_added"
 type PlayerAddedEvent struct {
 	NewPlayerID   model.PlayerID `json:"player"`
 	NewPlayerName string         `json:"name"`
-	Position      int            `json:"position"`
 }
 
 func (e *PlayerAddedEvent) Type() serialization.Specifier {
@@ -31,7 +30,6 @@ func (e *PlayerAddedEvent) Apply(g *model.Game) error {
 		TokenCount:    0,
 		IsOut:         false,
 		IsProtected:   false,
-		Position:      e.Position,
 		PendingAction: serialization.Redactable[*serialization.Box[model.Action]]{},
 	}
 

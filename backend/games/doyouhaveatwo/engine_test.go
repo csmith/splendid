@@ -50,7 +50,6 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 			TokenCount:  0,
 			IsOut:       false,
 			IsProtected: false,
-			Position:    i,
 		}
 	}
 

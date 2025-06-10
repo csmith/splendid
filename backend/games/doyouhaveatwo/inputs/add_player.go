@@ -33,12 +33,9 @@ func (i *AddPlayerInput) Apply(g *model.Game, apply func(model.Event)) error {
 		return fmt.Errorf("player name cannot be empty")
 	}
 
-	position := len(g.Players)
-
 	apply(&events.PlayerAddedEvent{
 		NewPlayerID:   i.NewPlayerID,
 		NewPlayerName: i.NewPlayerName,
-		Position:      position,
 	})
 
 	return nil

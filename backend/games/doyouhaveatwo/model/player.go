@@ -15,6 +15,5 @@ type Player struct {
 	TokenCount    int                                                  `json:"token_count"`
 	IsOut         bool                                                 `json:"is_out"`
 	IsProtected   bool                                                 `json:"is_protected"`
-	Position      int                                                  `json:"position"`
 	PendingAction serialization.Redactable[*serialization.Box[Action]] `json:"pending_action"`
 }
