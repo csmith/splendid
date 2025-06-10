@@ -266,43 +266,109 @@ function updateDeckDisplay() {
         emptyDeck.className = 'deck-empty';
         emptyDeck.textContent = 'Empty Deck';
         deckContainer.appendChild(emptyDeck);
-        return;
-    }
-
-    const deckSize = gameState.deck.length;
-    
-    if (deckSize === 0) {
-        // Show empty deck outline
-        const emptyDeck = document.createElement('div');
-        emptyDeck.className = 'deck-empty';
-        emptyDeck.textContent = 'Empty Deck';
-        deckContainer.appendChild(emptyDeck);
-        return;
-    }
-
-    // Show staggered deck cards
-    // We'll show up to 5 cards for visual effect, but the real count on the top card
-    const cardsToShow = Math.min(5, deckSize);
-    
-    for (let i = 0; i < cardsToShow; i++) {
-        const deckCard = document.createElement('div');
-        deckCard.className = 'deck-card';
+    } else {
+        const deckSize = gameState.deck.length;
         
-        // Add card back design
-        const cardBack = document.createElement('div');
-        cardBack.className = 'deck-card-back';
-        cardBack.innerHTML = '?';
-        deckCard.appendChild(cardBack);
-        
-        // Add count only to the top (last) card
-        if (i === cardsToShow - 1) {
-            const countBadge = document.createElement('div');
-            countBadge.className = 'deck-count';
-            countBadge.textContent = deckSize.toString();
-            deckCard.appendChild(countBadge);
+        if (deckSize === 0) {
+            // Show empty deck outline
+            const emptyDeck = document.createElement('div');
+            emptyDeck.className = 'deck-empty';
+            emptyDeck.textContent = 'Empty Deck';
+            deckContainer.appendChild(emptyDeck);
+        } else {
+            // Show staggered deck cards
+            // We'll show up to 5 cards for visual effect, but the real count on the top card
+            const cardsToShow = Math.min(5, deckSize);
+            
+            for (let i = 0; i < cardsToShow; i++) {
+                const deckCard = document.createElement('div');
+                deckCard.className = 'deck-card';
+                
+                // Add card back design
+                const cardBack = document.createElement('div');
+                cardBack.className = 'deck-card-back';
+                cardBack.innerHTML = '?';
+                deckCard.appendChild(cardBack);
+                
+                // Add count only to the top (last) card
+                if (i === cardsToShow - 1) {
+                    const countBadge = document.createElement('div');
+                    countBadge.className = 'deck-count';
+                    countBadge.textContent = deckSize.toString();
+                    deckCard.appendChild(countBadge);
+                }
+                
+                deckContainer.appendChild(deckCard);
+            }
         }
+    }
+
+    // Update removed card display
+    updateRemovedCardDisplay();
+    
+    // Update set aside cards display
+    updateSetAsideCardsDisplay();
+}
+
+function updateRemovedCardDisplay() {
+    const removedCardContainer = document.getElementById('removed-card-container');
+    removedCardContainer.innerHTML = '';
+
+    if (gameState && gameState.removed_card) {
+        // Show removed card (always redacted like deck cards)
+        const removedCard = document.createElement('div');
+        removedCard.className = 'removed-card';
         
-        deckContainer.appendChild(deckCard);
+        const cardBack = document.createElement('div');
+        cardBack.className = 'removed-card-back';
+        cardBack.innerHTML = '?';
+        removedCard.appendChild(cardBack);
+        
+        removedCardContainer.appendChild(removedCard);
+    }
+}
+
+function updateSetAsideCardsDisplay() {
+    const setAsideSection = document.getElementById('set-aside-cards-display');
+    const setAsideContainer = document.getElementById('set-aside-cards-container');
+    setAsideContainer.innerHTML = '';
+
+    if (gameState && gameState.set_aside_cards && gameState.set_aside_cards.length > 0) {
+        // Show the set aside cards section
+        setAsideSection.style.display = 'block';
+        
+        // Render each set aside card (like discard pile cards)
+        gameState.set_aside_cards.forEach(cardName => {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card set-aside-card';
+            
+            if (cardName === "REDACTED") {
+                cardDiv.classList.add('redacted');
+                cardDiv.innerHTML = `
+                    <div class="card-score">?</div>
+                    <div class="card-name">Hidden</div>
+                `;
+            } else {
+                const cardInfo = CARD_INFO[cardName];
+                if (cardInfo) {
+                    cardDiv.innerHTML = `
+                        <div class="card-score">${cardInfo.value}</div>
+                        <div class="card-name">${cardName}</div>
+                        <div class="card-quantity">${getBrailleDots(cardInfo.quantity)}</div>
+                    `;
+                    cardDiv.onclick = () => showCardInfo(cardName);
+                } else {
+                    cardDiv.innerHTML = `
+                        <div class="card-name">${cardName}</div>
+                    `;
+                }
+            }
+            
+            setAsideContainer.appendChild(cardDiv);
+        });
+    } else {
+        // Hide the set aside cards section if no cards
+        setAsideSection.style.display = 'none';
     }
 }
 
@@ -510,6 +576,14 @@ function logGameEvent(event) {
                 eventText = `${event.removed_card} was removed from the deck`;
             } else {
                 eventText = `A card was removed from the deck`;
+            }
+            break;
+        case 'cards_set_aside':
+            if (event.set_aside_cards && event.set_aside_cards.length > 0) {
+                const cardNames = event.set_aside_cards.join(', ');
+                eventText = `${event.set_aside_cards.length} cards set aside: ${cardNames}`;
+            } else {
+                eventText = `Cards were set aside`;
             }
             break;
         case 'player_restored':

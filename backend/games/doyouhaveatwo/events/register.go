@@ -14,6 +14,7 @@ func init() {
 	serialization.RegisterType(&CardDealtEvent{})
 	serialization.RegisterType(&CardDiscardedEvent{})
 	serialization.RegisterType(&CardRemovedEvent{})
+	serialization.RegisterType(&CardsSetAsideEvent{})
 	serialization.RegisterType(&CurrentPlayerUpdatedEvent{})
 	serialization.RegisterType(&DeckUpdatedEvent{})
 	serialization.RegisterType(&HandRevealedEvent{})

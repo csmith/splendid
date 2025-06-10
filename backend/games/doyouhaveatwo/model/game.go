@@ -18,6 +18,7 @@ type Game struct {
 	Players          []*Player                        `json:"players"`
 	Deck             []serialization.Redactable[Card] `json:"deck"`
 	RemovedCard      *serialization.Redactable[Card]  `json:"removed_card"`
+	SetAsideCards    []Card                           `json:"set_aside_cards"`
 	CurrentPlayer    int                              `json:"current_player"`
 	Round            int                              `json:"round"`
 	Phase            GamePhase                        `json:"phase"`

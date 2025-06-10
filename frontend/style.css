@@ -305,6 +305,107 @@ button {
     right: 4px !important;
 }
 
+/* Removed card section */
+.removed-card-section {
+    min-width: 80px;
+}
+
+.removed-card-title {
+    font-size: 0.8rem;
+    color: #4a5568;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.removed-card-container {
+    display: flex;
+    justify-content: center;
+}
+
+.removed-card {
+    width: 80px;
+    height: 120px;
+    border: 2px solid #4a5568;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #2d3748, #4a5568);
+    position: relative;
+    margin-right: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.removed-card-back {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+/* Set aside cards section */
+.set-aside-cards-section {
+    min-width: 80px;
+}
+
+.set-aside-cards-title {
+    font-size: 0.8rem;
+    color: #4a5568;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.set-aside-cards-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.set-aside-card {
+    width: 80px !important;
+    height: 120px !important;
+    opacity: 0.9;
+    border-width: 1px !important;
+    position: relative;
+    padding: 4px !important;
+    overflow: hidden;
+}
+
+.set-aside-card:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+.set-aside-card .card-score {
+    font-size: 1rem !important;
+    top: 0px !important;
+    left: 4px !important;
+}
+
+.set-aside-card .card-name {
+    font-size: 0.8rem !important;
+    margin-top: 20px !important;
+    margin-bottom: 8px !important;
+}
+
+.set-aside-card .card-description {
+    font-size: 0.6rem !important;
+    padding: 3px !important;
+}
+
+.set-aside-card .card-quantity {
+    font-size: 0.7rem !important;
+    top: 4px !important;
+    right: 4px !important;
+}
+
 /* Deck section */
 .deck-section {
     margin-bottom: 25px;
@@ -315,11 +416,23 @@ button {
     color: #2d3748;
 }
 
+.deck-area {
+    display: flex;
+    gap: 20px;
+}
+
 .deck-display {
     display: flex;
     align-items: flex-end;
     min-height: 120px;
     position: relative;
+    flex-grow: 1;
+}
+
+.deck-side-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .deck-empty {

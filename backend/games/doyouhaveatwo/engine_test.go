@@ -581,6 +581,14 @@ func (s *EngineTestSuite) thenTheAvailableActionsShouldBe(table *godog.Table) er
 	return nil
 }
 
+func (s *EngineTestSuite) thenCardsShouldBeSetAside(expectedCount int) error {
+	actualCount := len(s.engine.Game.SetAsideCards)
+	if actualCount != expectedCount {
+		return s.errorf("expected %d cards to be set aside, but got %d", expectedCount, actualCount)
+	}
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	suite := &EngineTestSuite{}
 
@@ -633,6 +641,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Then(`^players ([A-Z,]+) should win the round$`, suite.thenPlayersShouldWinTheRound)
 	ctx.Then(`^the game should end$`, suite.thenTheGameShouldEnd)
 	ctx.Then(`^player ([A-Z]) should win the game$`, suite.thenPlayerShouldWinTheGame)
+	ctx.Then(`^(\d+) cards should be set aside$`, suite.thenCardsShouldBeSetAside)
 }
 
 func TestFeatures(t *testing.T) {

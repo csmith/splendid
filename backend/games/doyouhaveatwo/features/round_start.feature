@@ -54,3 +54,19 @@ Feature: Round Start
   Scenario: Game phase is set to draw
     When a round starts
     Then the game phase should be "draw"
+
+  Scenario: Three cards are set aside for two-player games
+    Given a game with 2 players
+    And the game has phase "setup"
+    And the current round is 1
+    When a round starts
+    Then 3 cards should be set aside
+    And the deck should have 10 cards remaining
+
+  Scenario: No cards are set aside for three-player games
+    Given a game with 3 players
+    And the game has phase "setup"
+    And the current round is 1
+    When a round starts
+    Then 0 cards should be set aside
+    And the deck should have 12 cards remaining

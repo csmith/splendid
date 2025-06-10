@@ -72,6 +72,11 @@ func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 	// Remove top card from deck
 	apply(&events.CardRemovedEvent{})
 
+	// For two-player games, set aside 3 cards that are visible to everyone
+	if len(g.Players) == 2 {
+		apply(&events.CardsSetAsideEvent{})
+	}
+
 	// Deal cards to all players
 	for _, player := range g.Players {
 		apply(&events.CardDealtEvent{
