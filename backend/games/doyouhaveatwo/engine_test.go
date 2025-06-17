@@ -65,13 +65,7 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 	s.updateChan = make(chan model.GameUpdate, 100)
 	s.eventChan = make(chan model.Event, 100)
 
-	s.engine = &Engine{
-		Game:            *s.game,
-		EventHistory:    []model.Event{},
-		PendingActions:  make(map[model.PlayerID]model.Action),
-		updateChan:      s.updateChan,
-		actionGenerator: &actions.Generator{},
-	}
+	s.engine = NewEngine(*s.game, s.updateChan, nil)
 
 	return nil
 }

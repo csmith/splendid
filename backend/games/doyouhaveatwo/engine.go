@@ -17,16 +17,9 @@ type Engine struct {
 	eventLogger     EventLogger
 }
 
-func NewEngine(updateChan chan<- model.GameUpdate, eventLogger EventLogger) *Engine {
+func NewEngine(game model.Game, updateChan chan<- model.GameUpdate, eventLogger EventLogger) *Engine {
 	return &Engine{
-		Game: model.Game{
-			Players:       []*model.Player{},
-			Deck:          []serialization.Redactable[model.Card]{},
-			CurrentPlayer: 0,
-			Round:         0,
-			Phase:         model.PhaseSetup,
-			TokensToWin:   4,
-		},
+		Game:            game,
 		EventHistory:    []model.Event{},
 		PendingActions:  make(map[model.PlayerID]model.Action),
 		updateChan:      updateChan,

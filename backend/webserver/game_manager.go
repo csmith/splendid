@@ -62,7 +62,15 @@ func (gm *GameManager) CreateGame() (string, error) {
 
 	// Create engine with JSONL logger
 	logger := doyouhaveatwo.NewJSONLEventLogger(gm.logDir, sessionID)
-	engine := doyouhaveatwo.NewEngine(updateCh, logger)
+	game := model.Game{
+		Players:       []*model.Player{},
+		Deck:          []serialization.Redactable[model.Card]{},
+		CurrentPlayer: 0,
+		Round:         0,
+		Phase:         model.PhaseSetup,
+		TokensToWin:   4,
+	}
+	engine := doyouhaveatwo.NewEngine(game, updateCh, logger)
 
 	session := &GameSession{
 		ID:       sessionID,
