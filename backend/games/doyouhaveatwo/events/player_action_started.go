@@ -5,8 +5,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventPlayerActionStarted model.EventType = "player_action_started"
-
 type PlayerActionStartedEvent struct {
 	Player model.PlayerID                                             `json:"player"`
 	Action serialization.Redactable[*serialization.Box[model.Action]] `json:"action"`

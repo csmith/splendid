@@ -7,8 +7,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventPlayerTokenAwarded model.EventType = "player_token_awarded"
-
 type PlayerTokenAwardedEvent struct {
 	Player model.PlayerID `json:"player"`
 	Tokens int            `json:"tokens"`

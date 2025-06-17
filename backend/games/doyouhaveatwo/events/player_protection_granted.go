@@ -7,8 +7,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventPlayerProtectionGranted model.EventType = "player_protection_granted"
-
 type PlayerProtectionGrantedEvent struct {
 	Player model.PlayerID `json:"player"`
 }

@@ -5,8 +5,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventCurrentPlayerUpdated model.EventType = "current_player_updated"
-
 type CurrentPlayerUpdatedEvent struct {
 	NewCurrentPlayer int `json:"current_player"`
 }

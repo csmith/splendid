@@ -5,8 +5,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventDeckUpdated model.EventType = "deck_updated"
-
 type DeckUpdatedEvent struct {
 	NewDeck []serialization.Redactable[model.Card] `json:"deck"`
 }

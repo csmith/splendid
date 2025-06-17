@@ -5,8 +5,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventPlayerActionCompleted model.EventType = "player_action_completed"
-
 type PlayerActionCompletedEvent struct {
 	Player model.PlayerID `json:"player"`
 }

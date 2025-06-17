@@ -7,8 +7,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventCardDealt model.EventType = "card_dealt"
-
 type CardDealtEvent struct {
 	ToPlayer        model.PlayerID                       `json:"to_player"`
 	ResultCardDealt serialization.Redactable[model.Card] `json:"card_dealt"`

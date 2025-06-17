@@ -5,8 +5,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventPhaseUpdated model.EventType = "phase_updated"
-
 type PhaseUpdatedEvent struct {
 	NewPhase model.GamePhase `json:"phase"`
 }

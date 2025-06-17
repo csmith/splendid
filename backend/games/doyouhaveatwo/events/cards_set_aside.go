@@ -7,8 +7,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventCardsSetAside model.EventType = "cards_set_aside"
-
 type CardsSetAsideEvent struct {
 	ResultSetAsideCards []model.Card `json:"set_aside_cards"`
 }

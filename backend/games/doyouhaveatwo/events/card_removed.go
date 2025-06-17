@@ -5,8 +5,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventCardRemoved model.EventType = "card_removed"
-
 type CardRemovedEvent struct {
 	ResultRemovedCard serialization.Redactable[model.Card] `json:"removed_card"`
 }

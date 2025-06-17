@@ -7,8 +7,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventPlayerProtectionCleared model.EventType = "player_protection_cleared"
-
 type PlayerProtectionClearedEvent struct {
 	Player model.PlayerID `json:"player"`
 }

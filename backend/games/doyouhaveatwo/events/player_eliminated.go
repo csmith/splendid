@@ -7,8 +7,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventPlayerEliminated model.EventType = "player_eliminated"
-
 type PlayerEliminatedEvent struct {
 	Player               model.PlayerID `json:"player"`
 	ResultDiscardedCards []model.Card   `json:"discarded_cards"`

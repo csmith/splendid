@@ -5,8 +5,6 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-const EventRoundUpdated model.EventType = "round_updated"
-
 type RoundUpdatedEvent struct {
 	NewRound int `json:"round"`
 }
