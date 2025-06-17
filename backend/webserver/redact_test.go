@@ -62,7 +62,7 @@ func TestRedact_NestedRedactable(t *testing.T) {
 
 func TestRedact_MultipleRedactables(t *testing.T) {
 	type TestStruct struct {
-		Public  string                    `json:"public"`
+		Public  string                   `json:"public"`
 		Secret1 model.Redactable[string] `json:"secret1"`
 		Secret2 model.Redactable[int]    `json:"secret2"`
 	}

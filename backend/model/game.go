@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+type PlayerID string
+
 // Event represents a game event that can be applied to update the game state.
 // It is generic over the game type G.
 type Event[G any] interface {
@@ -28,6 +30,12 @@ type Action[G any] interface {
 	IsComplete() bool
 	NextActions(G) []Action[G]
 	ToInput() Input[G]
+}
+
+// ActionGenerator generates available actions for players based on the current game state.
+// It is generic over the game type G.
+type ActionGenerator[G any] interface {
+	GenerateActionsForPlayer(g *G, playerID PlayerID) []Action[*G]
 }
 
 // GameUpdate represents the current state of a game along with events and available actions.

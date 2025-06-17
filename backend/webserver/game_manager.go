@@ -163,8 +163,8 @@ func (gm *GameManager) handleGameUpdates(session *GameSession) {
 		// Broadcast update to all connected clients
 		for playerID, client := range session.Clients {
 			// Create the message wrapper
-			gameUpdateMsg := GameUpdateMessage{
-				Game:             *update.Game,
+			gameUpdateMsg := GameUpdateMessage[*model.Game]{
+				Game:             update.Game,
 				Event:            update.Event,
 				AvailableActions: update.AvailableActions,
 			}

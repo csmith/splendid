@@ -3,8 +3,7 @@ package webserver
 import (
 	"encoding/json"
 
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	coremodel "github.com/csmith/splendid/backend/model"
+	"github.com/csmith/splendid/backend/model"
 )
 
 // Message types for WebSocket communication
@@ -25,10 +24,10 @@ type WebSocketMessage struct {
 }
 
 // GameUpdateMessage contains the game state sent to clients
-type GameUpdateMessage struct {
-	Game             model.Game                                                                  `json:"game"`
-	Event            *coremodel.Box[model.Event]                                                 `json:"event,omitempty"`
-	AvailableActions map[model.PlayerID]coremodel.Redactable[[]*coremodel.Box[model.GameAction]] `json:"available_actions"`
+type GameUpdateMessage[G any] struct {
+	Game             G                                                                  `json:"game"`
+	Event            *model.Box[model.Event[G]]                                         `json:"event,omitempty"`
+	AvailableActions map[model.PlayerID]model.Redactable[[]*model.Box[model.Action[G]]] `json:"available_actions"`
 }
 
 // ErrorMessage contains error information

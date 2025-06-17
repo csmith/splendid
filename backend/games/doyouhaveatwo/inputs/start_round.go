@@ -1,8 +1,9 @@
 package inputs
 
 import (
-	coremodel "github.com/csmith/splendid/backend/model"
 	"math/rand"
+
+	coremodel "github.com/csmith/splendid/backend/model"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"

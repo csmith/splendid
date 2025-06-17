@@ -2,6 +2,7 @@ package doyouhaveatwo
 
 import (
 	"fmt"
+
 	coremodel "github.com/csmith/splendid/backend/model"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
@@ -13,7 +14,7 @@ type Engine struct {
 	EventHistory    []model.Event
 	PendingActions  map[model.PlayerID]model.GameAction
 	updateChan      chan<- model.GameUpdate
-	actionGenerator *actions.Generator
+	actionGenerator coremodel.ActionGenerator[model.Game]
 	eventLogger     EventLogger
 }
 

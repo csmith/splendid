@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"time"
 
-"github.com/coder/websocket"
+	model2 "github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/model"
+
+	"github.com/coder/websocket"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
 type WebSocketHandler struct {
@@ -84,16 +86,16 @@ func (h *WebSocketHandler) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 
 func (h *WebSocketHandler) sendInitialGameState(conn *websocket.Conn, session *GameSession, playerID model.PlayerID) {
 	// Create a dummy game update with current state
-	gameUpdate := model.GameUpdate{
+	gameUpdate := model.GameUpdate[model2.Game]{
 		Game:             session.Engine.Game,
 		Event:            nil, // No specific event for initial state
-		AvailableActions: make(map[model.PlayerID]model.Redactable[[]*model.Box[model.GameAction]]),
+		AvailableActions: make(map[model.PlayerID]model.Redactable[[]*model.Box[model.Action[model2.Game]]]),
 	}
 
 	// For now, we'll create an empty map and let the regular update flow handle actions
 	// The engine will send proper updates with actions when events occur
 
-	gameUpdateMsg := GameUpdateMessage{
+	gameUpdateMsg := GameUpdateMessage[model2.Game]{
 		Game:             gameUpdate.Game,
 		Event:            gameUpdate.Event,
 		AvailableActions: gameUpdate.AvailableActions,
