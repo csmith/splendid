@@ -21,14 +21,13 @@ func (e *PlayerAddedEvent) PlayerID() *model.PlayerID {
 func (e *PlayerAddedEvent) Apply(g *model.Game) error {
 	// Create new player
 	newPlayer := &model.Player{
-		ID:            e.NewPlayerID,
-		Name:          e.NewPlayerName,
-		Hand:          []serialization.Redactable[model.Card]{},
-		DiscardPile:   []model.Card{},
-		TokenCount:    0,
-		IsOut:         false,
-		IsProtected:   false,
-		PendingAction: serialization.Redactable[*serialization.Box[model.Action]]{},
+		ID:          e.NewPlayerID,
+		Name:        e.NewPlayerName,
+		Hand:        []serialization.Redactable[model.Card]{},
+		DiscardPile: []model.Card{},
+		TokenCount:  0,
+		IsOut:       false,
+		IsProtected: false,
 	}
 
 	// Add player to game
