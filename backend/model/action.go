@@ -4,21 +4,28 @@ import (
 	"fmt"
 )
 
+// Event represents a game event that can be applied to update the game state.
+// It is generic over the game type G.
+type Event[G any] interface {
+	Typeable
+	PlayerID() *PlayerID
+	Apply(g G) error
+}
+
 // Input represents a game input that can be applied to update the game state.
-// It is generic over the game type G and event type E.
-type Input[G any, E any] interface {
-	Apply(g G, apply func(E)) error
+// It is generic over the game type G.
+type Input[G any] interface {
+	Apply(g G, apply func(Event[G])) error
 	PlayerID() *PlayerID
 }
 
 // Action represents a multi-step player interaction that may require several rounds
-// of client-server communication to complete. It is generic over the game type G
-// and event type E, allowing it to be used by different game implementations.
-type Action[G any, E any] interface {
+// of client-server communication to complete. It is generic over the game type G.
+type Action[G any] interface {
 	fmt.Stringer
 	Typeable
 	PlayerID() PlayerID
 	IsComplete() bool
-	NextActions(G) []Action[G, E]
-	ToInput() Input[G, E]
+	NextActions(G) []Action[G]
+	ToInput() Input[G]
 }
