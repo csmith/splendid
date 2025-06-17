@@ -5,13 +5,11 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-type Input interface {
-	Apply(g *Game, apply func(Event)) error
-	PlayerID() *PlayerID
-}
+// Input is a type alias to the generic Input interface from the shared model package
+type Input = coremodel.Input[*Game, Event]
 
 // Action is a type alias to the generic Action interface from the shared model package
-type Action = coremodel.Action[*Game, Input]
+type Action = coremodel.Action[*Game, Event]
 
 // GameAction is a convenience type alias for actions in this specific game
 type GameAction = Action
