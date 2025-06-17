@@ -3,11 +3,10 @@ package events
 import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	coremodel "github.com/csmith/splendid/backend/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 type DeckUpdatedEvent struct {
-	NewDeck []serialization.Redactable[model.Card] `json:"deck"`
+	NewDeck []coremodel.Redactable[model.Card] `json:"deck"`
 }
 
 func (e *DeckUpdatedEvent) Type() coremodel.Specifier {

@@ -29,3 +29,11 @@ type Action[G any] interface {
 	NextActions(G) []Action[G]
 	ToInput() Input[G]
 }
+
+// GameUpdate represents the current state of a game along with events and available actions.
+// It is generic over the game type G.
+type GameUpdate[G any] struct {
+	Game             G
+	Event            *Box[Event[G]]
+	AvailableActions map[PlayerID]Redactable[[]*Box[Action[G]]]
+}

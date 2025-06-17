@@ -1,11 +1,11 @@
 package inputs
 
 import (
+	coremodel "github.com/csmith/splendid/backend/model"
 	"math/rand"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/events"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 type StartRoundInput struct{}
@@ -92,13 +92,13 @@ func (i *StartRoundInput) Apply(g *model.Game, apply func(model.Event)) error {
 	return nil
 }
 
-func (i *StartRoundInput) createShuffledDeck() []serialization.Redactable[model.Card] {
-	var deck []serialization.Redactable[model.Card]
+func (i *StartRoundInput) createShuffledDeck() []coremodel.Redactable[model.Card] {
+	var deck []coremodel.Redactable[model.Card]
 
 	// Add cards according to their quantities
 	for _, cardType := range model.CardTypes {
 		for j := 0; j < cardType.Quantity(); j++ {
-			deck = append(deck, serialization.NewRedactable(cardType))
+			deck = append(deck, coremodel.NewRedactable(cardType))
 		}
 	}
 

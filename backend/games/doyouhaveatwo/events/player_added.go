@@ -3,7 +3,6 @@ package events
 import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	coremodel "github.com/csmith/splendid/backend/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 type PlayerAddedEvent struct {
@@ -24,7 +23,7 @@ func (e *PlayerAddedEvent) Apply(g *model.Game) error {
 	newPlayer := &model.Player{
 		ID:          e.NewPlayerID,
 		Name:        e.NewPlayerName,
-		Hand:        []serialization.Redactable[model.Card]{},
+		Hand:        []coremodel.Redactable[model.Card]{},
 		DiscardPile: []model.Card{},
 		TokenCount:  0,
 		IsOut:       false,

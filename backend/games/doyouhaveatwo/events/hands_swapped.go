@@ -5,14 +5,13 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	coremodel "github.com/csmith/splendid/backend/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 type HandsSwappedEvent struct {
-	PlayerA     model.PlayerID                       `json:"player_a"`
-	PlayerB     model.PlayerID                       `json:"player_b"`
-	ResultHandA serialization.Redactable[model.Card] `json:"hand_a"`
-	ResultHandB serialization.Redactable[model.Card] `json:"hand_b"`
+	PlayerA     model.PlayerID                   `json:"player_a"`
+	PlayerB     model.PlayerID                   `json:"player_b"`
+	ResultHandA coremodel.Redactable[model.Card] `json:"hand_a"`
+	ResultHandB coremodel.Redactable[model.Card] `json:"hand_b"`
 }
 
 func (e *HandsSwappedEvent) Type() coremodel.Specifier {
@@ -39,8 +38,8 @@ func (e *HandsSwappedEvent) Apply(g *model.Game) error {
 	}
 
 	// Set result cards visible to both players
-	e.ResultHandA = serialization.NewRedactable(playerA.Hand[0].Value(), e.PlayerA, e.PlayerB)
-	e.ResultHandB = serialization.NewRedactable(playerB.Hand[0].Value(), e.PlayerA, e.PlayerB)
+	e.ResultHandA = coremodel.NewRedactable(playerA.Hand[0].Value(), e.PlayerA, e.PlayerB)
+	e.ResultHandB = coremodel.NewRedactable(playerB.Hand[0].Value(), e.PlayerA, e.PlayerB)
 
 	// Swap the hands
 	playerA.Hand, playerB.Hand = playerB.Hand, playerA.Hand

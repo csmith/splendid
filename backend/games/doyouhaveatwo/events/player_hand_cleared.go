@@ -5,7 +5,6 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	coremodel "github.com/csmith/splendid/backend/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 type PlayerHandClearedEvent struct {
@@ -26,6 +25,6 @@ func (e *PlayerHandClearedEvent) Apply(g *model.Game) error {
 		return fmt.Errorf("player with ID %s not found", e.Player)
 	}
 
-	player.Hand = []serialization.Redactable[model.Card]{}
+	player.Hand = []coremodel.Redactable[model.Card]{}
 	return nil
 }

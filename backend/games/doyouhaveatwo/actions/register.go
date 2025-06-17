@@ -2,7 +2,6 @@ package actions
 
 import (
 	coremodel "github.com/csmith/splendid/backend/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 func specifier(name string) coremodel.Specifier {
@@ -14,12 +13,12 @@ func specifier(name string) coremodel.Specifier {
 }
 
 func init() {
-	serialization.RegisterType(&AddPlayerAction{})
-	serialization.RegisterType(&DrawCardAction{})
-	serialization.RegisterType(&StartGameAction{})
-	serialization.RegisterType(&PlayCardWithGuessAction{})
-	serialization.RegisterType(&PlayCardTargetOthersAction{})
-	serialization.RegisterType(&PlayCardTargetAnyAction{})
-	serialization.RegisterType(&PlayCardNoTargetAction{})
-	serialization.RegisterType(&DiscardCardAction{})
+	coremodel.RegisterType(&AddPlayerAction{})
+	coremodel.RegisterType(&DrawCardAction{})
+	coremodel.RegisterType(&StartGameAction{})
+	coremodel.RegisterType(&PlayCardWithGuessAction{})
+	coremodel.RegisterType(&PlayCardTargetOthersAction{})
+	coremodel.RegisterType(&PlayCardTargetAnyAction{})
+	coremodel.RegisterType(&PlayCardNoTargetAction{})
+	coremodel.RegisterType(&DiscardCardAction{})
 }

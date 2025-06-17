@@ -9,7 +9,7 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 	"github.com/cucumber/godog"
 )
 
@@ -19,7 +19,7 @@ type EngineTestSuite struct {
 	players     []*model.Player
 	updateChan  chan model.GameUpdate
 	eventChan   chan model.Event
-	initialDeck []serialization.Redactable[model.Card]
+	initialDeck []coremodel.Redactable[model.Card]
 	lastError   error
 }
 
@@ -45,7 +45,7 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 		s.players[i] = &model.Player{
 			ID:          model.PlayerID(rune('A' + i)),
 			Name:        string(rune('A' + i)),
-			Hand:        []serialization.Redactable[model.Card]{},
+			Hand:        []coremodel.Redactable[model.Card]{},
 			DiscardPile: []model.Card{},
 			TokenCount:  0,
 			IsOut:       false,
@@ -55,7 +55,7 @@ func (s *EngineTestSuite) givenAGameWithPlayers(playerCount int) error {
 
 	s.game = &model.Game{
 		Players:       s.players,
-		Deck:          []serialization.Redactable[model.Card]{},
+		Deck:          []coremodel.Redactable[model.Card]{},
 		CurrentPlayer: 0,
 		Round:         0,
 		Phase:         model.PhaseSetup,
@@ -80,7 +80,7 @@ func (s *EngineTestSuite) givenTheCurrentRoundIs(roundNumber int) error {
 }
 
 func (s *EngineTestSuite) whenARoundStarts() error {
-	s.initialDeck = make([]serialization.Redactable[model.Card], len(s.engine.Game.Deck))
+	s.initialDeck = make([]coremodel.Redactable[model.Card], len(s.engine.Game.Deck))
 	copy(s.initialDeck, s.engine.Game.Deck)
 
 	input := &inputs.StartRoundInput{}
@@ -293,7 +293,7 @@ func (s *EngineTestSuite) whenPlayerDrawsACard(playerID string) error {
 }
 
 func (s *EngineTestSuite) givenTheDeckIsEmpty() error {
-	s.engine.Game.Deck = []serialization.Redactable[model.Card]{}
+	s.engine.Game.Deck = []coremodel.Redactable[model.Card]{}
 	return nil
 }
 
@@ -302,7 +302,7 @@ func (s *EngineTestSuite) givenTheRemovedCardIsA(cardName string) error {
 	if err != nil {
 		return err
 	}
-	removedCard := serialization.NewRedactable(card)
+	removedCard := coremodel.NewRedactable(card)
 	s.engine.Game.RemovedCard = &removedCard
 	return nil
 }
@@ -345,7 +345,7 @@ func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID st
 		return s.errorf("player %s not found", playerID)
 	}
 
-	var cards []serialization.Redactable[model.Card]
+	var cards []coremodel.Redactable[model.Card]
 	for _, row := range cardTable.Rows {
 		if len(row.Cells) != 1 {
 			return s.errorf("expected 1 column (card name), got %d", len(row.Cells))
@@ -357,7 +357,7 @@ func (s *EngineTestSuite) givenPlayerHasTheFollowingCardsInTheirHand(playerID st
 			return err
 		}
 
-		cards = append(cards, serialization.NewRedactable(card))
+		cards = append(cards, coremodel.NewRedactable(card))
 	}
 
 	if err := s.engine.applyEvent(&events.DeckUpdatedEvent{NewDeck: append(cards, s.game.Deck...)}); err != nil {

@@ -2,7 +2,6 @@ package events
 
 import (
 	coremodel "github.com/csmith/splendid/backend/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 func specifier(name string) coremodel.Specifier {
@@ -14,25 +13,25 @@ func specifier(name string) coremodel.Specifier {
 }
 
 func init() {
-	serialization.RegisterType(&CardDealtEvent{})
-	serialization.RegisterType(&CardDiscardedEvent{})
-	serialization.RegisterType(&CardRemovedEvent{})
-	serialization.RegisterType(&CardsSetAsideEvent{})
-	serialization.RegisterType(&CurrentPlayerUpdatedEvent{})
-	serialization.RegisterType(&DeckUpdatedEvent{})
-	serialization.RegisterType(&HandRevealedEvent{})
-	serialization.RegisterType(&HandsSwappedEvent{})
-	serialization.RegisterType(&LastRoundWinnersUpdatedEvent{})
-	serialization.RegisterType(&PhaseUpdatedEvent{})
-	serialization.RegisterType(&PlayerAddedEvent{})
-	serialization.RegisterType(&PlayerDiscardPileClearedEvent{})
-	serialization.RegisterType(&PlayerEliminatedEvent{})
-	serialization.RegisterType(&PlayerHandClearedEvent{})
-	serialization.RegisterType(&PlayerProtectionClearedEvent{})
-	serialization.RegisterType(&PlayerProtectionGrantedEvent{})
-	serialization.RegisterType(&PlayerRestoredEvent{})
-	serialization.RegisterType(&PlayerTokenAwardedEvent{})
-	serialization.RegisterType(&RemovedCardDealtEvent{})
-	serialization.RegisterType(&RoundUpdatedEvent{})
-	serialization.RegisterType(&WinnerDeclaredEvent{})
+	coremodel.RegisterType(&CardDealtEvent{})
+	coremodel.RegisterType(&CardDiscardedEvent{})
+	coremodel.RegisterType(&CardRemovedEvent{})
+	coremodel.RegisterType(&CardsSetAsideEvent{})
+	coremodel.RegisterType(&CurrentPlayerUpdatedEvent{})
+	coremodel.RegisterType(&DeckUpdatedEvent{})
+	coremodel.RegisterType(&HandRevealedEvent{})
+	coremodel.RegisterType(&HandsSwappedEvent{})
+	coremodel.RegisterType(&LastRoundWinnersUpdatedEvent{})
+	coremodel.RegisterType(&PhaseUpdatedEvent{})
+	coremodel.RegisterType(&PlayerAddedEvent{})
+	coremodel.RegisterType(&PlayerDiscardPileClearedEvent{})
+	coremodel.RegisterType(&PlayerEliminatedEvent{})
+	coremodel.RegisterType(&PlayerHandClearedEvent{})
+	coremodel.RegisterType(&PlayerProtectionClearedEvent{})
+	coremodel.RegisterType(&PlayerProtectionGrantedEvent{})
+	coremodel.RegisterType(&PlayerRestoredEvent{})
+	coremodel.RegisterType(&PlayerTokenAwardedEvent{})
+	coremodel.RegisterType(&RemovedCardDealtEvent{})
+	coremodel.RegisterType(&RoundUpdatedEvent{})
+	coremodel.RegisterType(&WinnerDeclaredEvent{})
 }

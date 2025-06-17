@@ -1,15 +1,10 @@
-package serialization
+package model
 
 import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-
-	"github.com/csmith/splendid/backend/model"
 )
-
-// Typeable is an alias to the Typeable interface from the model package
-type Typeable = model.Typeable
 
 // Box is a generic wrapper that handles JSON marshalling/unmarshalling for types with Type() methods
 type Box[T Typeable] struct {

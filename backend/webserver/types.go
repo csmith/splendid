@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 // Message types for WebSocket communication
@@ -26,9 +26,9 @@ type WebSocketMessage struct {
 
 // GameUpdateMessage contains the game state sent to clients
 type GameUpdateMessage struct {
-	Game             model.Game                                                                          `json:"game"`
-	Event            *serialization.Box[model.Event]                                                     `json:"event,omitempty"`
-	AvailableActions map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.GameAction]] `json:"available_actions"`
+	Game             model.Game                                                                  `json:"game"`
+	Event            *coremodel.Box[model.Event]                                                 `json:"event,omitempty"`
+	AvailableActions map[model.PlayerID]coremodel.Redactable[[]*coremodel.Box[model.GameAction]] `json:"available_actions"`
 }
 
 // ErrorMessage contains error information

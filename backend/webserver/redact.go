@@ -1,11 +1,10 @@
-package serialization
+package webserver
 
 import (
 	"encoding/json"
+	"github.com/csmith/splendid/backend/model"
 	"regexp"
 	"strings"
-
-	"github.com/csmith/splendid/backend/model"
 )
 
 func Redact(value any, playerID model.PlayerID) ([]byte, error) {

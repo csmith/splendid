@@ -5,7 +5,6 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 	coremodel "github.com/csmith/splendid/backend/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 type PlayerEliminatedEvent struct {
@@ -33,7 +32,7 @@ func (e *PlayerEliminatedEvent) Apply(g *model.Game) error {
 		discardedCards = append(discardedCards, handCard.Value())
 		player.DiscardPile = append(player.DiscardPile, handCard.Value())
 	}
-	player.Hand = []serialization.Redactable[model.Card]{}
+	player.Hand = []coremodel.Redactable[model.Card]{}
 	e.ResultDiscardedCards = discardedCards
 
 	player.IsOut = true

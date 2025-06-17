@@ -2,10 +2,10 @@ package doyouhaveatwo
 
 import (
 	"fmt"
+	coremodel "github.com/csmith/splendid/backend/model"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
 )
 
 type Engine struct {
@@ -69,16 +69,16 @@ func (e *Engine) applyEvent(event model.Event) error {
 	}
 
 	e.updateChan <- model.GameUpdate{
-		Game:             e.Game,
-		Event:            &serialization.Box[model.Event]{Value: event},
+		Game:             &e.Game,
+		Event:            &coremodel.Box[model.Event]{Value: event},
 		AvailableActions: e.generateAvailableActions(),
 	}
 
 	return nil
 }
 
-func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.GameAction]] {
-	result := make(map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.GameAction]])
+func (e *Engine) generateAvailableActions() map[model.PlayerID]coremodel.Redactable[[]*coremodel.Box[model.GameAction]] {
+	result := make(map[model.PlayerID]coremodel.Redactable[[]*coremodel.Box[model.GameAction]])
 
 	for _, player := range e.Game.Players {
 		var playerActions []model.GameAction
@@ -93,11 +93,11 @@ func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Red
 
 		if len(playerActions) > 0 {
 			// Convert to boxes
-			boxedActions := make([]*serialization.Box[model.GameAction], len(playerActions))
+			boxedActions := make([]*coremodel.Box[model.GameAction], len(playerActions))
 			for i, action := range playerActions {
-				boxedActions[i] = &serialization.Box[model.GameAction]{Value: action}
+				boxedActions[i] = &coremodel.Box[model.GameAction]{Value: action}
 			}
-			result[player.ID] = serialization.NewRedactable(boxedActions, player.ID)
+			result[player.ID] = coremodel.NewRedactable(boxedActions, player.ID)
 		}
 	}
 
@@ -154,7 +154,7 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.GameAction)
 	} else {
 		// Send update for incomplete action (complete actions send updates via processInput)
 		e.updateChan <- model.GameUpdate{
-			Game:             e.Game,
+			Game:             &e.Game,
 			Event:            nil,
 			AvailableActions: e.generateAvailableActions(),
 		}

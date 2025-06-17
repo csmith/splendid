@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type GamePhase string
@@ -15,15 +15,15 @@ const (
 )
 
 type Game struct {
-	Players          []*Player                        `json:"players"`
-	Deck             []serialization.Redactable[Card] `json:"deck"`
-	RemovedCard      *serialization.Redactable[Card]  `json:"removed_card"`
-	SetAsideCards    []Card                           `json:"set_aside_cards"`
-	CurrentPlayer    int                              `json:"current_player"`
-	Round            int                              `json:"round"`
-	Phase            GamePhase                        `json:"phase"`
-	TokensToWin      int                              `json:"tokens_to_win"`
-	LastRoundWinners []PlayerID                       `json:"last_round_winners"`
+	Players          []*Player                    `json:"players"`
+	Deck             []coremodel.Redactable[Card] `json:"deck"`
+	RemovedCard      *coremodel.Redactable[Card]  `json:"removed_card"`
+	SetAsideCards    []Card                       `json:"set_aside_cards"`
+	CurrentPlayer    int                          `json:"current_player"`
+	Round            int                          `json:"round"`
+	Phase            GamePhase                    `json:"phase"`
+	TokensToWin      int                          `json:"tokens_to_win"`
+	LastRoundWinners []PlayerID                   `json:"last_round_winners"`
 }
 
 func (g *Game) GetPlayer(playerID PlayerID) *Player {

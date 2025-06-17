@@ -10,7 +10,7 @@ import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 // GameSession represents an active game session
@@ -64,7 +64,7 @@ func (gm *GameManager) CreateGame() (string, error) {
 	logger := doyouhaveatwo.NewJSONLEventLogger(gm.logDir, sessionID)
 	game := model.Game{
 		Players:       []*model.Player{},
-		Deck:          []serialization.Redactable[model.Card]{},
+		Deck:          []coremodel.Redactable[model.Card]{},
 		CurrentPlayer: 0,
 		Round:         0,
 		Phase:         model.PhaseSetup,
@@ -164,7 +164,7 @@ func (gm *GameManager) handleGameUpdates(session *GameSession) {
 		for playerID, client := range session.Clients {
 			// Create the message wrapper
 			gameUpdateMsg := GameUpdateMessage{
-				Game:             update.Game,
+				Game:             *update.Game,
 				Event:            update.Event,
 				AvailableActions: update.AvailableActions,
 			}
@@ -183,7 +183,7 @@ func (gm *GameManager) handleGameUpdates(session *GameSession) {
 			msg.Data = gameUpdateData
 
 			// Now redact the entire message for this player
-			redactedMsgBytes, err := serialization.Redact(msg, playerID)
+			redactedMsgBytes, err := Redact(msg, playerID)
 			if err != nil {
 				slog.Error("Failed to redact message for player", "error", err, "sessionID", session.ID, "playerID", playerID)
 				continue
