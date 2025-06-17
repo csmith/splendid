@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type CardsSetAsideEvent struct {
 	ResultSetAsideCards []model.Card `json:"set_aside_cards"`
 }
 
-func (e *CardsSetAsideEvent) Type() serialization.Specifier {
+func (e *CardsSetAsideEvent) Type() coremodel.Specifier {
 	return specifier("cards_set_aside")
 }
 

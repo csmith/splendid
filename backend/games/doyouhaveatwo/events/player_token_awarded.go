@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type PlayerTokenAwardedEvent struct {
@@ -12,7 +12,7 @@ type PlayerTokenAwardedEvent struct {
 	Tokens int            `json:"tokens"`
 }
 
-func (e *PlayerTokenAwardedEvent) Type() serialization.Specifier {
+func (e *PlayerTokenAwardedEvent) Type() coremodel.Specifier {
 	return specifier("player_token_awarded")
 }
 

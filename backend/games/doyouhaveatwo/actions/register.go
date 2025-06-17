@@ -1,9 +1,12 @@
 package actions
 
-import "github.com/csmith/splendid/backend/serialization"
+import (
+	coremodel "github.com/csmith/splendid/backend/model"
+	"github.com/csmith/splendid/backend/serialization"
+)
 
-func specifier(name string) serialization.Specifier {
-	return serialization.Specifier{
+func specifier(name string) coremodel.Specifier {
+	return coremodel.Specifier{
 		Domain:   "dyhat",
 		Category: "a",
 		Name:     name,

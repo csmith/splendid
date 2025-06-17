@@ -1,11 +1,11 @@
 package model
 
 import (
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type Event interface {
-	serialization.Typeable
+	coremodel.Typeable
 	PlayerID() *PlayerID
 	Apply(g *Game) error
 }

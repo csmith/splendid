@@ -11,7 +11,7 @@ import (
 type Engine struct {
 	Game            model.Game
 	EventHistory    []model.Event
-	PendingActions  map[model.PlayerID]model.Action
+	PendingActions  map[model.PlayerID]model.GameAction
 	updateChan      chan<- model.GameUpdate
 	actionGenerator *actions.Generator
 	eventLogger     EventLogger
@@ -21,7 +21,7 @@ func NewEngine(game model.Game, updateChan chan<- model.GameUpdate, eventLogger 
 	return &Engine{
 		Game:            game,
 		EventHistory:    []model.Event{},
-		PendingActions:  make(map[model.PlayerID]model.Action),
+		PendingActions:  make(map[model.PlayerID]model.GameAction),
 		updateChan:      updateChan,
 		actionGenerator: &actions.Generator{},
 		eventLogger:     eventLogger,
@@ -77,11 +77,11 @@ func (e *Engine) applyEvent(event model.Event) error {
 	return nil
 }
 
-func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.Action]] {
-	result := make(map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.Action]])
+func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.GameAction]] {
+	result := make(map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.GameAction]])
 
 	for _, player := range e.Game.Players {
-		var playerActions []model.Action
+		var playerActions []model.GameAction
 
 		// If player has a pending action, return next steps
 		if pendingAction, exists := e.PendingActions[player.ID]; exists && pendingAction != nil {
@@ -93,9 +93,9 @@ func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Red
 
 		if len(playerActions) > 0 {
 			// Convert to boxes
-			boxedActions := make([]*serialization.Box[model.Action], len(playerActions))
+			boxedActions := make([]*serialization.Box[model.GameAction], len(playerActions))
 			for i, action := range playerActions {
-				boxedActions[i] = &serialization.Box[model.Action]{Value: action}
+				boxedActions[i] = &serialization.Box[model.GameAction]{Value: action}
 			}
 			result[player.ID] = serialization.NewRedactable(boxedActions, player.ID)
 		}
@@ -104,9 +104,9 @@ func (e *Engine) generateAvailableActions() map[model.PlayerID]serialization.Red
 	return result
 }
 
-func (e *Engine) validateAction(playerID model.PlayerID, action model.Action) error {
+func (e *Engine) validateAction(playerID model.PlayerID, action model.GameAction) error {
 	// If no available actions have been generated yet, generate them now
-	var availableForPlayer []model.Action
+	var availableForPlayer []model.GameAction
 	if pendingAction, exists := e.PendingActions[playerID]; exists && pendingAction != nil {
 		availableForPlayer = pendingAction.NextActions(&e.Game)
 	} else {
@@ -123,11 +123,11 @@ func (e *Engine) validateAction(playerID model.PlayerID, action model.Action) er
 	return fmt.Errorf("action %s is not available for player %s, only: %s", action, playerID, availableForPlayer)
 }
 
-func (e *Engine) actionsMatch(submitted, available model.Action) bool {
+func (e *Engine) actionsMatch(submitted, available model.GameAction) bool {
 	return submitted.String() == available.String()
 }
 
-func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) error {
+func (e *Engine) ProcessAction(playerID model.PlayerID, action model.GameAction) error {
 	player := e.Game.GetPlayer(playerID)
 	if player == nil {
 		return fmt.Errorf("player not found: %s", playerID)
@@ -163,7 +163,7 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.Action) err
 	return nil
 }
 
-func (e *Engine) ProcessServerAction(action model.Action) error {
+func (e *Engine) ProcessServerAction(action model.GameAction) error {
 	// Execute the concrete input directly without validation or pending action handling
 	concreteInput := action.ToInput()
 	if concreteInput != nil {

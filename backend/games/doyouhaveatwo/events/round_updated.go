@@ -2,14 +2,14 @@ package events
 
 import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type RoundUpdatedEvent struct {
 	NewRound int `json:"round"`
 }
 
-func (e *RoundUpdatedEvent) Type() serialization.Specifier {
+func (e *RoundUpdatedEvent) Type() coremodel.Specifier {
 	return specifier("round_updated")
 }
 

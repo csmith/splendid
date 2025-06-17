@@ -2,14 +2,14 @@ package events
 
 import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type CurrentPlayerUpdatedEvent struct {
 	NewCurrentPlayer int `json:"current_player"`
 }
 
-func (e *CurrentPlayerUpdatedEvent) Type() serialization.Specifier {
+func (e *CurrentPlayerUpdatedEvent) Type() coremodel.Specifier {
 	return specifier("current_player_updated")
 }
 

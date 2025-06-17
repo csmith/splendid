@@ -6,7 +6,7 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type PlayCardWithGuessAction struct {
@@ -24,7 +24,7 @@ func (a *PlayCardWithGuessAction) IsComplete() bool {
 	return a.TargetPlayer != nil && a.GuessedRank != nil
 }
 
-func (a *PlayCardWithGuessAction) NextActions(g *model.Game) []model.Action {
+func (a *PlayCardWithGuessAction) NextActions(g *model.Game) []model.GameAction {
 	if a.TargetPlayer == nil {
 		return a.generateTargetActions(g)
 	}
@@ -51,7 +51,7 @@ func (a *PlayCardWithGuessAction) ToInput() model.Input {
 	}
 }
 
-func (a *PlayCardWithGuessAction) Type() serialization.Specifier {
+func (a *PlayCardWithGuessAction) Type() coremodel.Specifier {
 	return specifier("play_card_with_guess")
 }
 
@@ -66,8 +66,8 @@ func (a *PlayCardWithGuessAction) String() string {
 	}
 }
 
-func (a *PlayCardWithGuessAction) generateTargetActions(g *model.Game) []model.Action {
-	var actions []model.Action
+func (a *PlayCardWithGuessAction) generateTargetActions(g *model.Game) []model.GameAction {
+	var actions []model.GameAction
 
 	// Generate actions for each valid target player
 	for _, player := range g.Players {
@@ -87,8 +87,8 @@ func (a *PlayCardWithGuessAction) generateTargetActions(g *model.Game) []model.A
 	return actions
 }
 
-func (a *PlayCardWithGuessAction) generateGuessActions() []model.Action {
-	var actions []model.Action
+func (a *PlayCardWithGuessAction) generateGuessActions() []model.GameAction {
+	var actions []model.GameAction
 
 	// Generate actions for each valid guess (all card ranks except Guard)
 	validRanks := []int{2, 3, 4, 5, 6, 7, 8} // Priest, Baron, Handmaid, Prince, King, Countess, Princess

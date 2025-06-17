@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	coremodel "github.com/csmith/splendid/backend/model"
 	"github.com/csmith/splendid/backend/serialization"
 )
 
@@ -12,7 +13,7 @@ type RemovedCardDealtEvent struct {
 	ResultRemovedCardDealt serialization.Redactable[model.Card] `json:"removed_card_dealt"`
 }
 
-func (e *RemovedCardDealtEvent) Type() serialization.Specifier {
+func (e *RemovedCardDealtEvent) Type() coremodel.Specifier {
 	return specifier("removed_card_dealt")
 }
 

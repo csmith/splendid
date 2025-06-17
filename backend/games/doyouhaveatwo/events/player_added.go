@@ -2,6 +2,7 @@ package events
 
 import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	coremodel "github.com/csmith/splendid/backend/model"
 	"github.com/csmith/splendid/backend/serialization"
 )
 
@@ -10,7 +11,7 @@ type PlayerAddedEvent struct {
 	NewPlayerName string         `json:"name"`
 }
 
-func (e *PlayerAddedEvent) Type() serialization.Specifier {
+func (e *PlayerAddedEvent) Type() coremodel.Specifier {
 	return specifier("player_added")
 }
 

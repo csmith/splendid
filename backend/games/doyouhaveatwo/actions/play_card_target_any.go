@@ -6,7 +6,7 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type PlayCardTargetAnyAction struct {
@@ -23,7 +23,7 @@ func (a *PlayCardTargetAnyAction) IsComplete() bool {
 	return a.TargetPlayer != nil
 }
 
-func (a *PlayCardTargetAnyAction) NextActions(g *model.Game) []model.Action {
+func (a *PlayCardTargetAnyAction) NextActions(g *model.Game) []model.GameAction {
 	if a.TargetPlayer == nil {
 		return a.generateTargetActions(g)
 	}
@@ -46,7 +46,7 @@ func (a *PlayCardTargetAnyAction) ToInput() model.Input {
 	}
 }
 
-func (a *PlayCardTargetAnyAction) Type() serialization.Specifier {
+func (a *PlayCardTargetAnyAction) Type() coremodel.Specifier {
 	return specifier("play_card_target_any")
 }
 
@@ -57,8 +57,8 @@ func (a *PlayCardTargetAnyAction) String() string {
 	return fmt.Sprintf("play_%s(player=%s, target=%s)", strings.ToLower(a.CardName), a.Player, *a.TargetPlayer)
 }
 
-func (a *PlayCardTargetAnyAction) generateTargetActions(g *model.Game) []model.Action {
-	var actions []model.Action
+func (a *PlayCardTargetAnyAction) generateTargetActions(g *model.Game) []model.GameAction {
+	var actions []model.GameAction
 
 	// Generate actions for each valid target player (including self)
 	for _, player := range g.Players {

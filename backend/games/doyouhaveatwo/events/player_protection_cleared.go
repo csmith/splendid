@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type PlayerProtectionClearedEvent struct {
 	Player model.PlayerID `json:"player"`
 }
 
-func (e *PlayerProtectionClearedEvent) Type() serialization.Specifier {
+func (e *PlayerProtectionClearedEvent) Type() coremodel.Specifier {
 	return specifier("player_protection_cleared")
 }
 

@@ -2,14 +2,14 @@ package events
 
 import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type PhaseUpdatedEvent struct {
 	NewPhase model.GamePhase `json:"phase"`
 }
 
-func (e *PhaseUpdatedEvent) Type() serialization.Specifier {
+func (e *PhaseUpdatedEvent) Type() coremodel.Specifier {
 	return specifier("phase_updated")
 }
 

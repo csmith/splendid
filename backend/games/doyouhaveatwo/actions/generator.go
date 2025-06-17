@@ -6,7 +6,7 @@ import (
 
 type Generator struct{}
 
-func (ag *Generator) GenerateActionsForPlayer(g *model.Game, playerID model.PlayerID) []model.Action {
+func (ag *Generator) GenerateActionsForPlayer(g *model.Game, playerID model.PlayerID) []model.GameAction {
 	player := g.GetPlayer(playerID)
 	if player == nil {
 		return nil
@@ -15,8 +15,8 @@ func (ag *Generator) GenerateActionsForPlayer(g *model.Game, playerID model.Play
 	return ag.generateInitialActions(g, player)
 }
 
-func (ag *Generator) generateInitialActions(g *model.Game, player *model.Player) []model.Action {
-	var actions []model.Action
+func (ag *Generator) generateInitialActions(g *model.Game, player *model.Player) []model.GameAction {
+	var actions []model.GameAction
 
 	// During setup phase, allow starting game
 	if g.Phase == model.PhaseSetup {

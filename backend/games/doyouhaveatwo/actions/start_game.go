@@ -5,7 +5,7 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type StartGameAction struct {
@@ -20,7 +20,7 @@ func (a *StartGameAction) IsComplete() bool {
 	return true
 }
 
-func (a *StartGameAction) NextActions(g *model.Game) []model.Action {
+func (a *StartGameAction) NextActions(g *model.Game) []model.GameAction {
 	return nil
 }
 
@@ -28,7 +28,7 @@ func (a *StartGameAction) ToInput() model.Input {
 	return &inputs.StartRoundInput{}
 }
 
-func (a *StartGameAction) Type() serialization.Specifier {
+func (a *StartGameAction) Type() coremodel.Specifier {
 	return specifier("start_game")
 }
 

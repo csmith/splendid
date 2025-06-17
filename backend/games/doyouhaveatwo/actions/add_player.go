@@ -5,7 +5,7 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type AddPlayerAction struct {
@@ -21,7 +21,7 @@ func (a *AddPlayerAction) IsComplete() bool {
 	return a.NewPlayerName != ""
 }
 
-func (a *AddPlayerAction) NextActions(g *model.Game) []model.Action {
+func (a *AddPlayerAction) NextActions(g *model.Game) []model.GameAction {
 	// This is a simple action that doesn't require multiple steps
 	return nil
 }
@@ -33,7 +33,7 @@ func (a *AddPlayerAction) ToInput() model.Input {
 	}
 }
 
-func (a *AddPlayerAction) Type() serialization.Specifier {
+func (a *AddPlayerAction) Type() coremodel.Specifier {
 	return specifier("add_player")
 }
 

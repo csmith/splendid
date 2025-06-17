@@ -5,7 +5,7 @@ import (
 
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/inputs"
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type DiscardCardAction struct {
@@ -21,7 +21,7 @@ func (a *DiscardCardAction) IsComplete() bool {
 	return true
 }
 
-func (a *DiscardCardAction) NextActions(g *model.Game) []model.Action {
+func (a *DiscardCardAction) NextActions(g *model.Game) []model.GameAction {
 	return nil
 }
 
@@ -32,7 +32,7 @@ func (a *DiscardCardAction) ToInput() model.Input {
 	}
 }
 
-func (a *DiscardCardAction) Type() serialization.Specifier {
+func (a *DiscardCardAction) Type() coremodel.Specifier {
 	return specifier("discard_card")
 }
 

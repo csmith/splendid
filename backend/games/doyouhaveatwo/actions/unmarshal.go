@@ -5,8 +5,8 @@ import (
 	"github.com/csmith/splendid/backend/serialization"
 )
 
-func Unmarshal(data []byte) (model.Action, error) {
-	box, err := serialization.Unmarshal[model.Action](data)
+func Unmarshal(data []byte) (model.GameAction, error) {
+	box, err := serialization.Unmarshal[model.GameAction](data)
 	if err != nil {
 		return nil, err
 	}

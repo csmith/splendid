@@ -2,14 +2,14 @@ package events
 
 import (
 	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
-	"github.com/csmith/splendid/backend/serialization"
+	coremodel "github.com/csmith/splendid/backend/model"
 )
 
 type WinnerDeclaredEvent struct {
 	Winner model.PlayerID `json:"winner"`
 }
 
-func (e *WinnerDeclaredEvent) Type() serialization.Specifier {
+func (e *WinnerDeclaredEvent) Type() coremodel.Specifier {
 	return specifier("winner_declared")
 }
 

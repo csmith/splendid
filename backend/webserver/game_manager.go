@@ -203,7 +203,7 @@ func (gm *GameManager) handleGameUpdates(session *GameSession) {
 	}
 }
 
-func (gm *GameManager) ProcessAction(sessionID string, playerID model.PlayerID, action model.Action) error {
+func (gm *GameManager) ProcessAction(sessionID string, playerID model.PlayerID, action model.GameAction) error {
 	session, exists := gm.GetSession(sessionID)
 	if !exists {
 		return fmt.Errorf("session not found: %s", sessionID)

@@ -26,9 +26,9 @@ type WebSocketMessage struct {
 
 // GameUpdateMessage contains the game state sent to clients
 type GameUpdateMessage struct {
-	Game             model.Game                                                                      `json:"game"`
-	Event            *serialization.Box[model.Event]                                                 `json:"event,omitempty"`
-	AvailableActions map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.Action]] `json:"available_actions"`
+	Game             model.Game                                                                          `json:"game"`
+	Event            *serialization.Box[model.Event]                                                     `json:"event,omitempty"`
+	AvailableActions map[model.PlayerID]serialization.Redactable[[]*serialization.Box[model.GameAction]] `json:"available_actions"`
 }
 
 // ErrorMessage contains error information
