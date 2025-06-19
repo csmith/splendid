@@ -1,4 +1,5 @@
 import TakeTokens from "../events/TakeTokens.js";
+import EndTurn from "./EndTurn.js";
 import _ from "lodash";
 
 const allowedTokens = ["emerald", "ruby", "diamond", "sapphire", "onyx"];
@@ -38,11 +39,7 @@ export default {
       });
     }
 
-    yield* [
-      TakeTokens.create(state.turn, filteredTokens),
-      {
-        action: "end-turn",
-      },
-    ];
+    yield TakeTokens.create(state.turn, filteredTokens);
+    yield* EndTurn.perform(state);
   },
 };

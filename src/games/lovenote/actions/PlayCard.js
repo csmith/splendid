@@ -1,5 +1,15 @@
 import cards from "../data/cards.js";
 import { mustDiscardCountess } from "../util.js";
+import DiscardCard from "./DiscardCard.js";
+import EndTurn from "./EndTurn.js";
+import PlayCardBaron from "./PlayCardBaron.js";
+import PlayCardCountess from "./PlayCardCountess.js";
+import PlayCardGuard from "./PlayCardGuard.js";
+import PlayCardHandmaid from "./PlayCardHandmaid.js";
+import PlayCardKing from "./PlayCardKing.js";
+import PlayCardPriest from "./PlayCardPriest.js";
+import PlayCardPrince from "./PlayCardPrince.js";
+import PlayCardPrincess from "./PlayCardPrincess.js";
 
 export default {
   name: "play-card",
@@ -29,22 +39,24 @@ export default {
       throw new Error(`You must discard the Countess`);
     }
 
-    yield {
-      action: "discard-card",
-      playerId: player.id,
-      card,
+    yield* DiscardCard.perform(state, { playerId: player.id, card });
+
+    const cardActions = {
+      baron: PlayCardBaron,
+      countess: PlayCardCountess,
+      guard: PlayCardGuard,
+      handmaid: PlayCardHandmaid,
+      king: PlayCardKing,
+      priest: PlayCardPriest,
+      prince: PlayCardPrince,
+      princess: PlayCardPrincess,
     };
 
-    yield {
-      action: `play-card-${card.type.toLowerCase()}`,
-      playerData,
-      card,
-      targetPlayerId,
-      guessedType,
-    };
+    const cardAction = cardActions[card.type.toLowerCase()];
+    if (cardAction) {
+      yield* cardAction.perform(state, { playerData, card, targetPlayerId, guessedType });
+    }
 
-    yield {
-      action: `end-turn`,
-    };
+    yield* EndTurn.perform(state);
   },
 };

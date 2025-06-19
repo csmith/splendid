@@ -1,4 +1,5 @@
 import DiscardCard from "../events/DiscardCard.js";
+import EliminatePlayer from "./EliminatePlayer.js";
 
 export default {
   name: "discard-card",
@@ -9,11 +10,10 @@ export default {
     yield DiscardCard.create(playerId, card);
 
     if (card.type === "Princess" && !state.players[playerId].eliminated) {
-      yield {
-        action: "eliminate-player",
+      yield* EliminatePlayer.perform(state, {
         playerId,
         reason: `Discarded the Princess`,
-      };
+      });
     }
   },
 };

@@ -1,6 +1,8 @@
 import DiscardCard from "../events/DiscardCard.js";
 import ReserveCard from "../events/ReserveCard.js";
 import TakeTokens from "../events/TakeTokens.js";
+import Deal from "./Deal.js";
+import EndTurn from "./EndTurn.js";
 import _ from "lodash";
 
 export default {
@@ -23,14 +25,7 @@ export default {
       yield TakeTokens.create(state.turn, { gold: 1 });
     }
 
-    yield* [
-      {
-        action: "deal",
-        level: card.level,
-      },
-      {
-        action: "end-turn",
-      },
-    ];
+    yield* Deal.perform(state, { level: card.level });
+    yield* EndTurn.perform(state);
   },
 };

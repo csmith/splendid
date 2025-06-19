@@ -1,6 +1,7 @@
 import CardNoOp from "../events/CardNoOp.js";
 import HandRevealed from "../events/HandRevealed.js";
 import { areAllProtected } from "../util.js";
+import EliminatePlayer from "./EliminatePlayer.js";
 
 export default {
   name: "play-card-baron",
@@ -23,17 +24,15 @@ export default {
     yield HandRevealed.create(otherPlayer.details.id, playerData.details.id, playerData.hand);
 
     if (otherPlayer.hand[0].closeness > playerData.hand[0].closeness) {
-      yield {
-        action: "eliminate-player",
+      yield* EliminatePlayer.perform(state, {
         playerId: playerData.details.id,
         reason: `${playerData.details.name} deployed a Baron against ${otherPlayer.details.name} and lost the comparison`,
-      };
+      });
     } else if (otherPlayer.hand[0].closeness < playerData.hand[0].closeness) {
-      yield {
-        action: "eliminate-player",
+      yield* EliminatePlayer.perform(state, {
         playerId: otherPlayer.details.id,
         reason: `${playerData.details.name} deployed a Baron and won the comparison`,
-      };
+      });
     }
   },
 };

@@ -6,6 +6,8 @@ import DiscardCard from "../events/DiscardCard.js";
 import DiscardReserve from "../events/DiscardReserve.js";
 import ReturnTokens from "../events/ReturnTokens.js";
 import { canAffordCard, costForCard } from "../util.js";
+import Deal from "./Deal.js";
+import EndTurn from "./EndTurn.js";
 import _ from "lodash";
 
 export default {
@@ -54,14 +56,9 @@ export default {
     yield AddBonus.create(state.turn, card.bonus);
 
     if (index !== -1) {
-      yield {
-        action: "deal",
-        level: card.level,
-      };
+      yield* Deal.perform(state, { level: card.level });
     }
 
-    yield {
-      action: "end-turn",
-    };
+    yield* EndTurn.perform(state);
   },
 };

@@ -1,7 +1,7 @@
 import { countPlayers, findPlayer } from "../../../common/state.js";
 import ChangePhase from "../../shared/events/ChangePhase.js";
 import SetPlayerOrder from "../../shared/events/SetPlayerOrder.js";
-import cards from "../data/cards.js";
+import StartRound from "./StartRound.js";
 import _ from "lodash";
 
 export default {
@@ -19,8 +19,6 @@ export default {
     yield SetPlayerOrder.create(turnOrder);
     yield ChangePhase.create("play");
 
-    yield {
-      action: "start-round",
-    };
+    yield* StartRound.perform(state);
   },
 };

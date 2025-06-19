@@ -1,6 +1,7 @@
 import AddPoints from "../events/AddPoints.js";
 import ReceiveNoble from "../events/ReceiveNoble.js";
 import { canReceiveNoble } from "../util.js";
+import EndTurn from "./EndTurn.js";
 import _ from "lodash";
 
 export default {
@@ -20,12 +21,8 @@ export default {
       throw new Error("Not eligible for noble");
     }
 
-    yield* [
-      ReceiveNoble.create(state.turn, noble),
-      AddPoints.create(state.turn, 3),
-      {
-        action: "end-turn",
-      },
-    ];
+    yield ReceiveNoble.create(state.turn, noble);
+    yield AddPoints.create(state.turn, 3);
+    yield* EndTurn.perform(state);
   },
 };

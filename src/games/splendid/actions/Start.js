@@ -5,6 +5,7 @@ import SetPlayerOrder from "../../shared/events/SetPlayerOrder.js";
 import cards from "../data/cards.js";
 import nobles from "../data/nobles.js";
 import Setup from "../events/Setup.js";
+import Deal from "./Deal.js";
 import _ from "lodash";
 
 const tokensToRemovePerPlayerCount = {
@@ -44,12 +45,11 @@ export default {
 
     yield SetPlayerOrder.create(turnOrder);
 
-    yield* _.flatMap(decks, (d, i) =>
-      _.times(4, () => ({
-        action: "deal",
-        level: i + 1,
-      })),
-    );
+    for (let i = 0; i < decks.length; i++) {
+      for (let j = 0; j < 4; j++) {
+        yield* Deal.perform(state, { level: i + 1 });
+      }
+    }
 
     yield ChangePhase.create("play");
   },

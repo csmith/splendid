@@ -2,6 +2,8 @@ import { nextPlayer, remainingPlayers } from "../../../common/state.js";
 import ChangePlayer from "../../shared/events/ChangePlayer.js";
 import DealCard from "../events/DealCard.js";
 import SetProtection from "../events/SetProtection.js";
+import EndRound from "./EndRound.js";
+import _ from "lodash";
 
 export default {
   name: "end-turn",
@@ -12,10 +14,7 @@ export default {
     const players = remainingPlayers(state);
 
     if (players.length === 1) {
-      yield {
-        action: "end-round",
-        winningPlayerId: players[0].details.id,
-      };
+      yield* EndRound.perform(state, { winningPlayerId: players[0].details.id });
       return;
     }
 
@@ -43,10 +42,7 @@ export default {
         throw new Error("The round is fully tied...");
       }
 
-      yield {
-        action: "end-round",
-        winningPlayerId: winners[0],
-      };
+      yield* EndRound.perform(state, { winningPlayerId: winners[0] });
       return;
     }
 
@@ -55,7 +51,7 @@ export default {
     yield ChangePlayer.create(next);
 
     if (state.players[next].protected) {
-      SetProtection.create(next, false);
+      yield SetProtection.create(next, false);
     }
 
     yield DealCard.create(next, state.deck[0]);

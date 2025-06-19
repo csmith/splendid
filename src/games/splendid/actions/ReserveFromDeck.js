@@ -1,6 +1,7 @@
 import RemoveCardFromDeck from "../events/RemoveCardFromDeck.js";
 import ReserveCard from "../events/ReserveCard.js";
 import TakeTokens from "../events/TakeTokens.js";
+import EndTurn from "./EndTurn.js";
 
 export default {
   name: "reserve-card-from-deck",
@@ -26,8 +27,6 @@ export default {
       yield TakeTokens.create(state.turn, { gold: 1 });
     }
 
-    yield {
-      action: "end-turn",
-    };
+    yield* EndTurn.perform(state);
   },
 };

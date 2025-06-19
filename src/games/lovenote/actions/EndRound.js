@@ -2,6 +2,7 @@ import ChangePhase from "../../shared/events/ChangePhase.js";
 import ChangePlayer from "../../shared/events/ChangePlayer.js";
 import GameOver from "../events/GameOver.js";
 import RoundOver from "../events/RoundOver.js";
+import StartRound from "./StartRound.js";
 
 export default {
   name: "end-round",
@@ -19,8 +20,6 @@ export default {
 
     yield ChangePlayer.create(winningPlayerId);
 
-    yield {
-      action: "start-round",
-    };
+    yield* StartRound.perform(state);
   },
 };

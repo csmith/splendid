@@ -1,5 +1,6 @@
 import { findPlayer } from "../../../common/state.js";
 import ReturnTokens from "../events/ReturnTokens.js";
+import EndTurn from "./EndTurn.js";
 import _ from "lodash";
 
 const allowedTokens = ["emerald", "ruby", "diamond", "sapphire", "onyx", "gold"];
@@ -26,11 +27,7 @@ export default {
       }
     });
 
-    yield* [
-      ReturnTokens.create(state.turn, filteredTokens),
-      {
-        action: "end-turn",
-      },
-    ];
+    yield ReturnTokens.create(state.turn, filteredTokens);
+    yield* EndTurn.perform(state);
   },
 };
