@@ -28,8 +28,8 @@
     grid-template-rows: 40px 1fr;
     grid-column-gap: 5px;
     padding: 0;
-    background: linear-gradient(rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.4) 40px, rgba(0, 0, 0, 0) 40px),
-      var(--colour);
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.4) 40px, rgba(0, 0, 0, 0) 40px), var(--colour);
     border: 1px solid black;
     border-radius: 5px;
     box-shadow: 3px 2px 2px rgba(0, 0, 0, 0.3);

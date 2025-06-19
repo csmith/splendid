@@ -19,7 +19,8 @@
     aspect-ratio: 23/29;
     border: 1px solid var(--border);
     position: relative;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 25%, rgba(0, 0, 0, 0) 25%),
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 25%, rgba(0, 0, 0, 0) 25%),
       var(--image), rebeccapurple;
     background-size: cover;
   }

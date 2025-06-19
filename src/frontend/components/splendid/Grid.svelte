@@ -164,40 +164,40 @@
       <Card card={selectedCard} />
       <table>
         <tbody>
-        <tr>
-          <th>Gem</th>
-          {#each Object.keys(selectedCard.cost) as key}
-            <th class="header {key}">
-              <Gem type={key} />
-            </th>
-          {/each}
-        </tr>
-        <tr>
-          <th>Cost</th>
-          {#each Object.values(selectedCard.cost) as value}
-            <td>{value}</td>
-          {/each}
-        </tr>
-        <tr>
-          <th>Bonuses</th>
-          {#each Object.keys(selectedCard.cost) as key}
-            <td>{-player.bonuses[key]}</td>
-          {/each}
-        </tr>
-        <tr>
-          <th>Your gems</th>
-          {#each Object.entries(selectedCard.cost) as pair}
-            <td>{-Math.min(Math.max(0, pair[1] - player.bonuses[pair[0]]), player.tokens[pair[0]])}</td>
-          {/each}
-        </tr>
-        <tr>
-          <th>Remaining</th>
-          {#each Object.entries(selectedCard.cost) as pair}
-            <td class:satisfied={Math.max(0, pair[1] - player.bonuses[pair[0]] - player.tokens[pair[0]]) === 0}>
-              {Math.max(0, pair[1] - player.bonuses[pair[0]] - player.tokens[pair[0]])}
-            </td>
-          {/each}
-        </tr>
+          <tr>
+            <th>Gem</th>
+            {#each Object.keys(selectedCard.cost) as key}
+              <th class="header {key}">
+                <Gem type={key} />
+              </th>
+            {/each}
+          </tr>
+          <tr>
+            <th>Cost</th>
+            {#each Object.values(selectedCard.cost) as value}
+              <td>{value}</td>
+            {/each}
+          </tr>
+          <tr>
+            <th>Bonuses</th>
+            {#each Object.keys(selectedCard.cost) as key}
+              <td>{-player.bonuses[key]}</td>
+            {/each}
+          </tr>
+          <tr>
+            <th>Your gems</th>
+            {#each Object.entries(selectedCard.cost) as pair}
+              <td>{-Math.min(Math.max(0, pair[1] - player.bonuses[pair[0]]), player.tokens[pair[0]])}</td>
+            {/each}
+          </tr>
+          <tr>
+            <th>Remaining</th>
+            {#each Object.entries(selectedCard.cost) as pair}
+              <td class:satisfied={Math.max(0, pair[1] - player.bonuses[pair[0]] - player.tokens[pair[0]]) === 0}>
+                {Math.max(0, pair[1] - player.bonuses[pair[0]] - player.tokens[pair[0]])}
+              </td>
+            {/each}
+          </tr>
         </tbody>
       </table>
       <nav>
