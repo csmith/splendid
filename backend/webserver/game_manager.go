@@ -3,6 +3,7 @@ package webserver
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/csmith/splendid/backend/engine"
 	"log/slog"
 	"sync"
 
@@ -14,17 +15,17 @@ import (
 )
 
 // GameSession represents an active game session
-type GameSession struct {
+type GameSession[G coremodel.Game] struct {
 	ID       string
-	Engine   *doyouhaveatwo.Engine
-	Clients  map[model.PlayerID]*Client
-	UpdateCh chan model.GameUpdate
+	Engine   *doyouhaveatwo.Engine[G]
+	Clients  map[coremodel.PlayerID]*Client
+	UpdateCh chan coremodel.GameUpdate[G]
 	mu       sync.RWMutex
 }
 
 // Client represents a WebSocket connection for a player
 type Client struct {
-	PlayerID     model.PlayerID
+	PlayerID     coremodel.PlayerID
 	PlayerName   string
 	MessageCh    chan []byte
 	DisconnectCh chan struct{}
@@ -32,7 +33,7 @@ type Client struct {
 
 // GameManager manages all active game sessions
 type GameManager struct {
-	sessions  map[string]*GameSession
+	sessions  map[string]any
 	generator *aca.Generator
 	logDir    string
 	mu        sync.RWMutex
@@ -45,7 +46,7 @@ func NewGameManager(logDir string) (*GameManager, error) {
 	}
 
 	return &GameManager{
-		sessions:  make(map[string]*GameSession),
+		sessions:  make(map[string]any),
 		generator: generator,
 		logDir:    logDir,
 	}, nil
@@ -61,7 +62,7 @@ func (gm *GameManager) CreateGame() (string, error) {
 	updateCh := make(chan model.GameUpdate, 100)
 
 	// Create engine with JSONL logger
-	logger := doyouhaveatwo.NewJSONLEventLogger(gm.logDir, sessionID)
+	logger := engine.NewJSONLEventLogger[*model.Game](gm.logDir, sessionID)
 	game := model.Game{
 		Players:       []*model.Player{},
 		Deck:          []coremodel.Redactable[model.Card]{},
@@ -70,9 +71,9 @@ func (gm *GameManager) CreateGame() (string, error) {
 		Phase:         model.PhaseSetup,
 		TokensToWin:   4,
 	}
-	engine := doyouhaveatwo.NewEngine(game, updateCh, logger)
+	engine := doyouhaveatwo.NewEngine(&game, &actions.Generator{}, updateCh, logger)
 
-	session := &GameSession{
+	session := &GameSession[*model.Game]{
 		ID:       sessionID,
 		Engine:   engine,
 		Clients:  make(map[model.PlayerID]*Client),
@@ -156,7 +157,7 @@ func (gm *GameManager) RemovePlayerFromSession(sessionID string, playerID model.
 	}
 }
 
-func (gm *GameManager) handleGameUpdates(session *GameSession) {
+func (gm *GameManager) handleGameUpdates(session *GameSession[any]) {
 	for update := range session.UpdateCh {
 		session.mu.RLock()
 

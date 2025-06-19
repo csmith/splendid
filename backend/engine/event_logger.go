@@ -1,21 +1,20 @@
-package doyouhaveatwo
+package engine
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/csmith/splendid/backend/model"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
-
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
 )
 
-type EventLogger interface {
-	LogEvent(event model.Event) error
+type EventLogger[G model.Game] interface {
+	LogEvent(event model.Event[G]) error
 }
 
-type JSONLEventLogger struct {
+type JSONLEventLogger[G model.Game] struct {
 	dir       string
 	sessionID string
 	file      *os.File
@@ -24,15 +23,15 @@ type JSONLEventLogger struct {
 	timeout   time.Duration
 }
 
-func NewJSONLEventLogger(dir, sessionID string) *JSONLEventLogger {
-	return &JSONLEventLogger{
+func NewJSONLEventLogger[G model.Game](dir, sessionID string) *JSONLEventLogger[G] {
+	return &JSONLEventLogger[G]{
 		dir:       dir,
 		sessionID: sessionID,
 		timeout:   5 * time.Minute,
 	}
 }
 
-func (l *JSONLEventLogger) LogEvent(event model.Event) error {
+func (l *JSONLEventLogger[G]) LogEvent(event model.Event[G]) error {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 
@@ -58,7 +57,7 @@ func (l *JSONLEventLogger) LogEvent(event model.Event) error {
 	return nil
 }
 
-func (l *JSONLEventLogger) ensureFileOpen() error {
+func (l *JSONLEventLogger[G]) ensureFileOpen() error {
 	if l.file != nil {
 		return nil
 	}
@@ -77,7 +76,7 @@ func (l *JSONLEventLogger) ensureFileOpen() error {
 	return nil
 }
 
-func (l *JSONLEventLogger) resetTimer() {
+func (l *JSONLEventLogger[G]) resetTimer() {
 	if l.timer != nil {
 		l.timer.Stop()
 	}
@@ -89,7 +88,7 @@ func (l *JSONLEventLogger) resetTimer() {
 	})
 }
 
-func (l *JSONLEventLogger) closeFile() {
+func (l *JSONLEventLogger[G]) closeFile() {
 	if l.file != nil {
 		l.file.Close()
 		l.file = nil
@@ -100,8 +99,8 @@ func (l *JSONLEventLogger) closeFile() {
 	}
 }
 
-type NoopEventLogger struct{}
+type NoopEventLogger[G model.Game] struct{}
 
-func (n *NoopEventLogger) LogEvent(event model.Event) error {
+func (n *NoopEventLogger[G]) LogEvent(_ model.Event[G]) error {
 	return nil
 }

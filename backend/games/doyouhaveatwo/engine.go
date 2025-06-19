@@ -2,38 +2,35 @@ package doyouhaveatwo
 
 import (
 	"fmt"
-
-	coremodel "github.com/csmith/splendid/backend/model"
-
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/actions"
-	"github.com/csmith/splendid/backend/games/doyouhaveatwo/model"
+	"github.com/csmith/splendid/backend/engine"
+	"github.com/csmith/splendid/backend/model"
 )
 
-type Engine struct {
-	Game            model.Game
-	EventHistory    []model.Event
-	PendingActions  map[model.PlayerID]model.GameAction
-	updateChan      chan<- model.GameUpdate
-	actionGenerator coremodel.ActionGenerator[model.Game]
-	eventLogger     EventLogger
+type Engine[G model.Game] struct {
+	Game            G
+	EventHistory    []model.Event[G]
+	PendingActions  map[model.PlayerID]model.Action[G]
+	updateChan      chan<- model.GameUpdate[G]
+	actionGenerator model.ActionGenerator[G]
+	eventLogger     engine.EventLogger[G]
 }
 
-func NewEngine(game model.Game, updateChan chan<- model.GameUpdate, eventLogger EventLogger) *Engine {
-	return &Engine{
+func NewEngine[G model.Game](game G, actionsGenerator model.ActionGenerator[G], updateChan chan<- model.GameUpdate[G], eventLogger engine.EventLogger[G]) *Engine[G] {
+	return &Engine[G]{
 		Game:            game,
-		EventHistory:    []model.Event{},
-		PendingActions:  make(map[model.PlayerID]model.GameAction),
+		EventHistory:    []model.Event[G]{},
+		PendingActions:  make(map[model.PlayerID]model.Action[G]),
 		updateChan:      updateChan,
-		actionGenerator: &actions.Generator{},
+		actionGenerator: actionsGenerator,
 		eventLogger:     eventLogger,
 	}
 }
 
-func (e *Engine) processInput(input model.Input) error {
+func (e *Engine[G]) processInput(input model.Input[G]) error {
 	var applyError error
 
 	// Create callback function that applies events immediately
-	apply := func(event model.Event) {
+	apply := func(event model.Event[G]) {
 		if applyError != nil {
 			return // Skip if we already have an error
 		}
@@ -41,7 +38,7 @@ func (e *Engine) processInput(input model.Input) error {
 	}
 
 	// Apply the input with the callback
-	err := input.Apply(&e.Game, apply)
+	err := input.Apply(e.Game, apply)
 	if err != nil {
 		return fmt.Errorf("failed to process input: %w", err)
 	}
@@ -54,8 +51,8 @@ func (e *Engine) processInput(input model.Input) error {
 	return nil
 }
 
-func (e *Engine) applyEvent(event model.Event) error {
-	if err := event.Apply(&e.Game); err != nil {
+func (e *Engine[G]) applyEvent(event model.Event[G]) error {
+	if err := event.Apply(e.Game); err != nil {
 		return fmt.Errorf("failed to apply event %s: %w", event.Type(), err)
 	}
 
@@ -69,49 +66,49 @@ func (e *Engine) applyEvent(event model.Event) error {
 		}
 	}
 
-	e.updateChan <- model.GameUpdate{
-		Game:             &e.Game,
-		Event:            &coremodel.Box[model.Event]{Value: event},
+	e.updateChan <- model.GameUpdate[G]{
+		Game:             e.Game,
+		Event:            &model.Box[model.Event[G]]{Value: event},
 		AvailableActions: e.generateAvailableActions(),
 	}
 
 	return nil
 }
 
-func (e *Engine) generateAvailableActions() map[model.PlayerID]coremodel.Redactable[[]*coremodel.Box[model.GameAction]] {
-	result := make(map[model.PlayerID]coremodel.Redactable[[]*coremodel.Box[model.GameAction]])
+func (e *Engine[G]) generateAvailableActions() map[model.PlayerID]model.Redactable[[]*model.Box[model.Action[G]]] {
+	result := make(map[model.PlayerID]model.Redactable[[]*model.Box[model.Action[G]]])
 
-	for _, player := range e.Game.Players {
-		var playerActions []model.GameAction
+	for _, playerID := range e.Game.PlayerIDs() {
+		var playerActions []model.Action[G]
 
 		// If player has a pending action, return next steps
-		if pendingAction, exists := e.PendingActions[player.ID]; exists && pendingAction != nil {
-			playerActions = pendingAction.NextActions(&e.Game)
+		if pendingAction, exists := e.PendingActions[playerID]; exists && pendingAction != nil {
+			playerActions = pendingAction.NextActions(e.Game)
 		} else {
 			// Otherwise, generate initial actions based on game state
-			playerActions = e.actionGenerator.GenerateActionsForPlayer(&e.Game, player.ID)
+			playerActions = e.actionGenerator.GenerateActionsForPlayer(e.Game, playerID)
 		}
 
 		if len(playerActions) > 0 {
 			// Convert to boxes
-			boxedActions := make([]*coremodel.Box[model.GameAction], len(playerActions))
+			boxedActions := make([]*model.Box[model.Action[G]], len(playerActions))
 			for i, action := range playerActions {
-				boxedActions[i] = &coremodel.Box[model.GameAction]{Value: action}
+				boxedActions[i] = &model.Box[model.Action[G]]{Value: action}
 			}
-			result[player.ID] = coremodel.NewRedactable(boxedActions, player.ID)
+			result[playerID] = model.NewRedactable(boxedActions, playerID)
 		}
 	}
 
 	return result
 }
 
-func (e *Engine) validateAction(playerID model.PlayerID, action model.GameAction) error {
+func (e *Engine[G]) validateAction(playerID model.PlayerID, action model.Action[G]) error {
 	// If no available actions have been generated yet, generate them now
-	var availableForPlayer []model.GameAction
+	var availableForPlayer []model.Action[G]
 	if pendingAction, exists := e.PendingActions[playerID]; exists && pendingAction != nil {
-		availableForPlayer = pendingAction.NextActions(&e.Game)
+		availableForPlayer = pendingAction.NextActions(e.Game)
 	} else {
-		availableForPlayer = e.actionGenerator.GenerateActionsForPlayer(&e.Game, playerID)
+		availableForPlayer = e.actionGenerator.GenerateActionsForPlayer(e.Game, playerID)
 	}
 
 	// Check if the submitted action matches any of the available actions
@@ -124,16 +121,11 @@ func (e *Engine) validateAction(playerID model.PlayerID, action model.GameAction
 	return fmt.Errorf("action %s is not available for player %s, only: %s", action, playerID, availableForPlayer)
 }
 
-func (e *Engine) actionsMatch(submitted, available model.GameAction) bool {
+func (e *Engine[G]) actionsMatch(submitted, available model.Action[G]) bool {
 	return submitted.String() == available.String()
 }
 
-func (e *Engine) ProcessAction(playerID model.PlayerID, action model.GameAction) error {
-	player := e.Game.GetPlayer(playerID)
-	if player == nil {
-		return fmt.Errorf("player not found: %s", playerID)
-	}
-
+func (e *Engine[G]) ProcessAction(playerID model.PlayerID, action model.Action[G]) error {
 	// Validate that the action was previously generated for this player
 	if err := e.validateAction(playerID, action); err != nil {
 		return err
@@ -154,8 +146,8 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.GameAction)
 		delete(e.PendingActions, playerID)
 	} else {
 		// Send update for incomplete action (complete actions send updates via processInput)
-		e.updateChan <- model.GameUpdate{
-			Game:             &e.Game,
+		e.updateChan <- model.GameUpdate[G]{
+			Game:             e.Game,
 			Event:            nil,
 			AvailableActions: e.generateAvailableActions(),
 		}
@@ -164,7 +156,7 @@ func (e *Engine) ProcessAction(playerID model.PlayerID, action model.GameAction)
 	return nil
 }
 
-func (e *Engine) ProcessServerAction(action model.GameAction) error {
+func (e *Engine[G]) ProcessServerAction(action model.Action[G]) error {
 	// Execute the concrete input directly without validation or pending action handling
 	concreteInput := action.ToInput()
 	if concreteInput != nil {

@@ -34,3 +34,11 @@ func (g *Game) GetPlayer(playerID PlayerID) *Player {
 	}
 	return nil
 }
+
+func (g *Game) PlayerIDs() []PlayerID {
+	var result []PlayerID
+	for i := range g.Players {
+		result = append(result, g.Players[i].ID)
+	}
+	return result
+}
