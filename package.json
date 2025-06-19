@@ -6,7 +6,8 @@
     "test": "c8 cucumber-js",
     "dev": "vite dev",
     "build": "vite build",
-    "run": "node src/index.js"
+    "run": "node src/index.js",
+    "prettier": "prettier --write ."
   },
   "dependencies": {
     "@noble/hashes": "^1.8.0",
