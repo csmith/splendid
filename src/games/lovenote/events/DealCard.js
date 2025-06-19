@@ -20,7 +20,7 @@ export default {
 
     return {
       ...data,
-      hand: data.hand.map((c) => ({ id: c.id })),
+      card: { id: data.card.id },
     };
   },
 
