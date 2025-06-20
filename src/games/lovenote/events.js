@@ -6,6 +6,7 @@ import CardNoOp from "./events/CardNoOp.js";
 import DealCard from "./events/DealCard.js";
 import DiscardCard from "./events/DiscardCard.js";
 import EliminatePlayer from "./events/EliminatePlayer.js";
+import EndOfRoundShowdown from "./events/EndOfRoundShowdown.js";
 import GameOver from "./events/GameOver.js";
 import GuardFailed from "./events/GuardFailed.js";
 import HandRevealed from "./events/HandRevealed.js";
@@ -23,6 +24,7 @@ export default [
   DealCard,
   DiscardCard,
   EliminatePlayer,
+  EndOfRoundShowdown,
   GameOver,
   GuardFailed,
   HandRevealed,

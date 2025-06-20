@@ -3,8 +3,12 @@ import { Before } from "@cucumber/cucumber";
 
 Before(function () {
   this.parseLoveNoteCard = function (name) {
+    const card = cards.find((card) => card.type === name);
+    if (!card) {
+      throw new Error(`Unable to find card type for '${name}'`);
+    }
     return {
-      ...cards.find((card) => card.type === name),
+      ...card,
       id: crypto.randomUUID(),
     };
   };

@@ -3,6 +3,7 @@ import ChangePlayer from "../../shared/events/ChangePlayer.js";
 import DealCard from "../events/DealCard.js";
 import SetProtection from "../events/SetProtection.js";
 import EndRound from "./EndRound.js";
+import EndOfRoundShowdown from "../events/EndOfRoundShowdown.js";
 import _ from "lodash";
 
 export default {
@@ -19,13 +20,12 @@ export default {
     }
 
     if (state.deck.length === 0) {
-      yield {
-        event: "end-of-round-showdown",
-        hands: players.map((player) => ({
+      yield EndOfRoundShowdown.create(
+        players.map((player) => ({
           playerId: player.details.id,
           hand: player.hand,
-        })),
-      };
+        }))
+      );
 
       const scores = Object.fromEntries(players.map((player) => [player.details.id, player.hand[0].closeness]));
       const bestScore = _.max(Object.values(scores));

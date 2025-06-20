@@ -56,3 +56,24 @@ Then(/^(.*?) will have the following love note cards in their discards:$/, funct
   const expected = dataTable.raw().map((row) => row[0]);
   assert.deepEqual(actual, expected);
 });
+
+Given(/^the love note deck is empty$/, function () {
+  this.setState({
+    ...this.engine.state,
+    deck: [],
+  });
+});
+
+Given(/^(.*?) had the following love note cards in their discard pile:$/, function (playerName, dataTable) {
+  const playerState = this.playerState(playerName);
+  this.setState({
+    ...this.engine.state,
+    players: {
+      ...this.engine.state.players,
+      [playerState.details.id]: {
+        ...playerState,
+        discards: dataTable.raw().map((row) => this.parseLoveNoteCard(row[0])),
+      },
+    },
+  });
+});

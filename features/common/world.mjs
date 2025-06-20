@@ -1,5 +1,5 @@
 import { findPlayerByName } from "../../src/common/state.js";
-import { Before } from "@cucumber/cucumber";
+import { Before, After } from "@cucumber/cucumber";
 
 Before(function () {
   this.setState = function (state) {
@@ -24,4 +24,13 @@ Before(function () {
   };
 
   this.error = null;
+});
+
+After(function (scenario) {
+  if (scenario.result.status === 'FAILED' && this.engine) {
+    console.log("=== DEBUG INFO FOR FAILED TEST ===");
+    console.log("All events raised:", this.events?.map(e => e.event) || []);
+    console.log("Engine state:", JSON.stringify(this.engine.state, null, 2));
+    console.log("=====================================");
+  }
 });
