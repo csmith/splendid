@@ -43,7 +43,12 @@
       case EliminatePlayer.name:
         return `${player} is eliminated from the round: ${e.reason}`;
       case RoundOver.name:
-        return `Round over! ${state.players[e.winningPlayerId].details.name} wins and gets one token of affection.`;
+        if (e.winningPlayerIds.length === 1) {
+          return `Round over! ${state.players[e.winningPlayerIds[0]].details.name} wins and gets one token of affection.`;
+        } else {
+          const winners = e.winningPlayerIds.map((id) => state.players[id].details.name).join(", ");
+          return `Round over! Tied round - ${winners} each get one token of affection.`;
+        }
       case SetPlayerOrder.name:
         return `The turn order will be ${e.order.map((o) => state.players[o].details.name).join(", ")}`;
       case "setup":

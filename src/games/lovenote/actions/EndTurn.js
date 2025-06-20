@@ -14,7 +14,7 @@ export default {
     const players = remainingPlayers(state);
 
     if (players.length === 1) {
-      yield* EndRound.perform(state, { winningPlayerId: players[0].details.id });
+      yield* EndRound.perform(state, { winningPlayerIds: [players[0].details.id] });
       return;
     }
 
@@ -38,11 +38,7 @@ export default {
       const bestDiscards = _.max(Object.values(discardSums));
       const winners = bestPlayers.filter((id) => discardSums[id] === bestDiscards);
 
-      if (winners.length > 1) {
-        throw new Error("The round is fully tied...");
-      }
-
-      yield* EndRound.perform(state, { winningPlayerId: winners[0] });
+      yield* EndRound.perform(state, { winningPlayerIds: winners });
       return;
     }
 

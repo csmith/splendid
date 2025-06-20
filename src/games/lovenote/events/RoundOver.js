@@ -2,16 +2,18 @@ export default {
   name: "round-over",
 
   /**
-   * @param winningPlayerId {string} The ID of the player that won the round.
+   * @param winningPlayerIds {string[]} The IDs of the players that won the round.
    */
-  create: function (winningPlayerId) {
+  create: function (winningPlayerIds) {
     return {
       event: this.name,
-      winningPlayerId,
+      winningPlayerIds,
     };
   },
 
-  perform: (state, { winningPlayerId }) => {
-    state.players[winningPlayerId].points++;
+  perform: (state, { winningPlayerIds }) => {
+    winningPlayerIds.forEach((playerId) => {
+      state.players[playerId].points++;
+    });
   },
 };

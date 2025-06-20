@@ -1,14 +1,13 @@
 export default {
   name: "game-over",
 
-  // TODO: Multiple players can win in the 2nd edition
   /**
-   * @param winningPlayerId {string} The ID of the player that won the game.
+   * @param winningPlayerIds {string[]} The IDs of the players that won the game.
    */
-  create: function (winningPlayerId) {
+  create: function (winningPlayerIds) {
     return {
       event: this.name,
-      winningPlayerId,
+      winningPlayerIds,
     };
   },
 
