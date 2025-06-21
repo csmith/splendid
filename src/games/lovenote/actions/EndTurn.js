@@ -32,11 +32,46 @@ export default {
       const bestPlayers = Object.entries(scores)
         .filter(([_, score]) => score === bestScore)
         .map(([playerId, _]) => playerId);
-      const discardSums = Object.fromEntries(
-        bestPlayers.map((id) => [id, _.sum(state.players[id].discards.map((card) => card.closeness))]),
-      );
-      const bestDiscards = _.max(Object.values(discardSums));
-      const winners = bestPlayers.filter((id) => discardSums[id] === bestDiscards);
+      
+      const tiebreakBehaviour = state.options?.['tiebreak-behaviour'] || 'check-discards';
+      let winners;
+      
+      switch (tiebreakBehaviour) {
+        case 'check-discards':
+          const discardSums = Object.fromEntries(
+            bestPlayers.map((id) => [id, _.sum(state.players[id].discards.map((card) => card.closeness))]),
+          );
+          const bestDiscards = _.max(Object.values(discardSums));
+          winners = bestPlayers.filter((id) => discardSums[id] === bestDiscards);
+          break;
+          
+        case 'all-win':
+          winners = bestPlayers;
+          break;
+          
+        case 'no-winner':
+          winners = bestPlayers.length > 1 ? [] : bestPlayers;
+          break;
+          
+        case 'eliminate-ties':
+          // Group players by score
+          const scoreGroups = _.groupBy(Object.entries(scores), ([_, score]) => score);
+          const sortedScores = Object.keys(scoreGroups).map(Number).sort((a, b) => b - a);
+          
+          // Find the highest score group with only one player
+          winners = [];
+          for (const score of sortedScores) {
+            const playersAtScore = scoreGroups[score].map(([playerId, _]) => playerId);
+            if (playersAtScore.length === 1) {
+              winners = playersAtScore;
+              break;
+            }
+          }
+          break;
+          
+        default:
+          winners = bestPlayers;
+      }
 
       yield* EndRound.perform(state, { winningPlayerIds: winners });
       return;

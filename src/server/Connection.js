@@ -113,11 +113,11 @@ export default class {
     this.#player = { id, name, publicKey };
   }
 
-  #onClientStartGame(name) {
+  #onClientStartGame({ game, options }) {
     this.#requirePlayer();
     this.#requireNoEngine();
 
-    this.#setGame(this.#server.startGame(name));
+    this.#setGame(this.#server.startGame(game, options || {}));
   }
 
   #onEngineAction(args) {

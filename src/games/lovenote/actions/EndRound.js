@@ -20,7 +20,10 @@ export default {
       return;
     }
 
-    yield ChangePlayer.create(_.sample(winningPlayerIds));
+    const nextPlayer = winningPlayerIds.length > 0 
+      ? _.sample(winningPlayerIds)
+      : _.sample(Object.keys(state.players));
+    yield ChangePlayer.create(nextPlayer);
 
     yield* StartRound.perform(state);
   },

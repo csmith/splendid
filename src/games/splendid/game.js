@@ -1,4 +1,5 @@
 import events from "./events.js";
+import options from "./options.js";
 import phases from "./phases.js";
 import state from "./state.js";
 
@@ -15,6 +16,7 @@ export default {
     "You play as a merchant, buying up developments to gain prestige and attract noble visitors. Do you build up a " +
     "strong foundation to support your future purchases, or do you rush to buy the most prestigious developments " +
     "sooner?",
+  options,
   phases,
   state,
   events,

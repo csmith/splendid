@@ -114,8 +114,8 @@ export default class {
     }
   }
 
-  startGame(game) {
-    this.#socket.emit("start-game", game);
+  startGame(game, options = {}) {
+    this.#socket.emit("start-game", { game, options });
   }
 
   joinGame(code) {

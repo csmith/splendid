@@ -1,6 +1,7 @@
 import AddPlayer from "../shared/events/AddPlayer.js";
 import ChangePhase from "../shared/events/ChangePhase.js";
 import ChangePlayer from "../shared/events/ChangePlayer.js";
+import SetOptions from "../shared/events/SetOptions.js";
 import SetPlayerOrder from "../shared/events/SetPlayerOrder.js";
 import AddBonus from "./events/AddBonus.js";
 import AddPoints from "./events/AddPoints.js";
@@ -29,6 +30,7 @@ export default [
   RemoveCardFromDeck,
   ReserveCard,
   ReturnTokens,
+  SetOptions,
   SetPlayerOrder,
   Setup,
   TakeTokens,

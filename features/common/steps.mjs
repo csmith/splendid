@@ -1,6 +1,7 @@
 import Engine from "../../src/common/engine.js";
 import { newPlayer } from "../../src/common/player.js";
 import games from "../../src/games.js";
+import SetOptions from "../../src/games/shared/events/SetOptions.js";
 import { Given, Then } from "@cucumber/cucumber";
 import assert from "assert";
 import _ from "lodash";
@@ -65,6 +66,14 @@ Given(/^the game phase was (.*?)$/, function (phase) {
     ...this.engine.state,
     phase,
   });
+});
+
+Given(/^the game had the following options set:$/, function (dataTable) {
+  const options = {};
+  dataTable.rows().forEach(([key, value]) => {
+    options[key] = value;
+  });
+  this.engine.applyEvent(SetOptions.create(options));
 });
 
 Then(/^an? "(.*?)" error will occur$/, function (message) {

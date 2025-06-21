@@ -1,4 +1,5 @@
 export default {
+  options: {},
   phase: "setup",
   players: {},
   playerSkeleton: {

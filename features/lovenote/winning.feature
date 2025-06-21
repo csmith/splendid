@@ -168,3 +168,82 @@ Feature: winning conditions in Love Note
       | Alice |
       | Bob   |
     And the game phase will be end
+
+  Scenario: deck runs out with tied closeness, all-win option gives both players a point
+    Given the game had the following options set:
+      | key                | value   |
+      | tiebreak-behaviour | all-win |
+    And the following players joined the game:
+      | name  |
+      | Alice |
+      | Bob   |
+    And the game was started by Alice
+    And it was Alice's turn
+    And the love note deck is empty
+    And Alice had the following love note cards in their hand:
+      | Countess |
+      | King |
+    And Bob had the following love note cards in their hand:
+      | King |
+    When Alice plays the love note card Countess
+    Then a "end-of-round-showdown" event will be raised
+    And a "round-over" event will be raised
+    And the round winners will be:
+      | name  |
+      | Alice |
+      | Bob   |
+    And Alice will have 1 point
+    And Bob will have 1 point
+
+  Scenario: deck runs out with tied closeness, no-winner option results in no points
+    Given the game had the following options set:
+      | key                | value     |
+      | tiebreak-behaviour | no-winner |
+    And the following players joined the game:
+      | name  |
+      | Alice |
+      | Bob   |
+    And the game was started by Alice
+    And it was Alice's turn
+    And the love note deck is empty
+    And Alice had the following love note cards in their hand:
+      | Countess |
+      | King |
+    And Bob had the following love note cards in their hand:
+      | King |
+    When Alice plays the love note card Countess
+    Then a "end-of-round-showdown" event will be raised
+    And a "round-over" event will be raised
+    And the round winners will be:
+      | name |
+    And Alice will have 0 points
+    And Bob will have 0 points
+
+  Scenario: deck runs out with tied closeness, eliminate-ties option removes tied players from consideration
+    Given the game had the following options set:
+      | key                | value          |
+      | tiebreak-behaviour | eliminate-ties |
+    And the following players joined the game:
+      | name    |
+      | Alice   |
+      | Bob     |
+      | Charlie |
+    And the game was started by Alice
+    And it was Alice's turn
+    And the love note deck is empty
+    And Alice had the following love note cards in their hand:
+      | Countess |
+      | King |
+    And Bob had the following love note cards in their hand:
+      | King |
+    And Charlie had the following love note cards in their hand:
+      | Baron |
+    When Alice plays the love note card Countess
+    Then a "end-of-round-showdown" event will be raised
+    And a "round-over" event will be raised
+    And the round winners will be:
+      | name    |
+      | Charlie |
+    And Alice will have 0 points
+    And Bob will have 0 points
+    And Charlie will have 1 point

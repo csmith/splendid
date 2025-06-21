@@ -3,6 +3,7 @@
   import Client from "../../client/Client.js";
   import { goto } from "$app/navigation";
   import games from "../../games.js";
+  import GameDetails from "../components/meta/GameDetails.svelte";
 
   const client = new Client();
 
@@ -18,8 +19,8 @@
     client.on("game-joined", (e) => goto(`/play/${e.id}`));
   });
 
-  const startNewGame = (name) => {
-    client.startGame(name);
+  const startNewGame = (name, options = {}) => {
+    client.startGame(name, options);
   };
 
   const joinExistingGame = () => {
@@ -32,9 +33,7 @@
 </script>
 
 <style>
-  h2,
-  h3,
-  p {
+  h2 {
     margin: 0.8em 0;
   }
 </style>
@@ -54,13 +53,6 @@
   </form>
   <h2>Start a new game</h2>
   {#each Object.values(games) as game}
-    <h3>{game.name}</h3>
-    <p>{game.description}</p>
-    <p class="stats">
-      Players: {game.players.min}&ndash;{game.players.max}. Based on:
-      <a href={game.based_on.link}>{game.based_on.game} by {game.based_on.creator}</a>. If you enjoy this game, please
-      consider <a href={game.based_on.purchase}>purchasing a physical copy</a>.
-    </p>
-    <button on:click={() => startNewGame(game.name)}>Start new game</button>
+    <GameDetails {game} on:startGame={(e) => startNewGame(e.detail.name, e.detail.options)} />
   {/each}
 {/if}

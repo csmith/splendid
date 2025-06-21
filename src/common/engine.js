@@ -65,13 +65,7 @@ export default class {
     for (let r of result) {
       try {
         if (_.has(r, "event")) {
-          this.applyEvent({
-            ...r,
-            meta: {
-              id: crypto.randomUUID(),
-              ts: Date.now(),
-            },
-          });
+          this.applyEvent(r);
         } else {
           console.log(`Invalid result of action ${name}: ${JSON.stringify(r)}`);
         }
@@ -81,14 +75,24 @@ export default class {
     }
   }
 
-  applyEvent({ event, ...args }) {
+  applyEvent({ event, meta, ...args }) {
     const e = this.#game.events.find((e) => e.name === event);
     if (!e) {
       throw new Error(`Event ${event} not found`);
     }
+    
+    const eventData = {
+      ...args,
+      event,
+      meta: meta || {
+        id: crypto.randomUUID(),
+        ts: Date.now(),
+      },
+    };
+    
     e.perform(this.#state, _.cloneDeep(args));
-    this.#events.push({ ...args, event });
-    this.#emitter.emit("event", { ...args, event });
+    this.#events.push(eventData);
+    this.#emitter.emit("event", eventData);
   }
 
   get currentPlayer() {

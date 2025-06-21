@@ -1,4 +1,5 @@
 import events from "./events.js";
+import options from "./options.js";
 import phases from "./phases.js";
 import state from "./state.js";
 
@@ -12,6 +13,7 @@ export default {
     purchase: "https://www.board-game.co.uk/product/love-letter-z-man-games/",
   },
   description: "Use your connections to beat out the competition and get your note delivered to the Princess.",
+  options,
   phases,
   state,
   events,

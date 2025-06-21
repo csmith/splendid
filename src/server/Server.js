@@ -1,6 +1,7 @@
 import { verify } from "../common/crypto.js";
 import Engine from "../common/engine.js";
 import games from "../games.js";
+import SetOptions from "../games/shared/events/SetOptions.js";
 import Connection from "./Connection.js";
 import { Server } from "socket.io";
 
@@ -27,13 +28,18 @@ export default class {
     });
   }
 
-  startGame(name) {
+  startGame(name, options = {}) {
     const game = Object.values(games).find((g) => g.name === name);
     if (!game) {
       throw new Error(`Game ${name} not found`);
     }
 
     const engine = new Engine(game);
+    
+    if (Object.keys(options).length > 0) {
+      engine.applyEvent(SetOptions.create(options));
+    }
+    
     const id = this.#store.assignId(engine);
     this.#games[id] = engine;
     return { id, engine, game };

@@ -1,6 +1,7 @@
 import AddPlayer from "../shared/events/AddPlayer.js";
 import ChangePhase from "../shared/events/ChangePhase.js";
 import ChangePlayer from "../shared/events/ChangePlayer.js";
+import SetOptions from "../shared/events/SetOptions.js";
 import SetPlayerOrder from "../shared/events/SetPlayerOrder.js";
 import CardNoOp from "./events/CardNoOp.js";
 import DealCard from "./events/DealCard.js";
@@ -30,6 +31,7 @@ export default [
   HandRevealed,
   ResetHands,
   RoundOver,
+  SetOptions,
   SetPlayerOrder,
   SetProtection,
   Setup,
