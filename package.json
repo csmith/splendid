@@ -12,7 +12,7 @@
   "dependencies": {
     "@noble/hashes": "^1.8.0",
     "@noble/secp256k1": "^2.2.3",
-    "@sveltejs/adapter-node": "^5.2.12",
+    "@sveltejs/adapter-node": "^5.2.13",
     "@sveltejs/kit": "^2.22.2",
     "animejs": "^3.2.2",
     "cors": "^2.8.5",
