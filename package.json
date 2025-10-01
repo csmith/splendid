@@ -22,7 +22,7 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.7.5",
     "svelte": "^5.37.2",
-    "vite": "^6.3.5"
+    "vite": "^7.1.7"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.1.0",
